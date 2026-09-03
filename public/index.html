@@ -1,56 +1,229 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>باهم ببینیم 🎬</title>
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>جهان هستی 🎬</title>
+
+    <!-- فونت فارسی -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet"
+    >
 
     <link rel="stylesheet" href="style.css">
+
 </head>
+
 
 <body>
 
-    <div class="container">
 
-        <h1>🎬 باهم ببینیم</h1>
+    <!-- ================================= -->
+    <!-- فضای کیهانی -->
+    <!-- ================================= -->
 
-        <p class="subtitle">
-            فیلم را انتخاب کنید و باهم تماشا کنید ❤️
-        </p>
+    <div class="space-background">
 
-        <div class="room-box">
+        <div class="stars stars-1"></div>
+        <div class="stars stars-2"></div>
+        <div class="stars stars-3"></div>
 
-            <label for="roomInput">
-                کد اتاق
-            </label>
 
-            <input
-                type="text"
-                id="roomInput"
-                placeholder="مثلاً ABC123"
-            >
+        <!-- منظومه شمسی -->
 
-            <button id="joinBtn">
-                ورود به اتاق
-            </button>
+        <div class="solar-system">
+
+            <div class="sun"></div>
+
+            <div class="orbit orbit-1">
+                <div class="planet planet-1"></div>
+            </div>
+
+            <div class="orbit orbit-2">
+                <div class="planet planet-2"></div>
+            </div>
+
+            <div class="orbit orbit-3">
+                <div class="planet planet-3"></div>
+            </div>
+
+            <div class="orbit orbit-4">
+                <div class="planet planet-4"></div>
+            </div>
+
+            <div class="orbit orbit-5">
+                <div class="planet planet-5"></div>
+            </div>
 
         </div>
 
-        <div id="status" class="status">
+    </div>
+
+
+
+    <!-- ================================= -->
+    <!-- محتوای اصلی -->
+    <!-- ================================= -->
+
+    <main class="container">
+
+
+        <!-- ================================= -->
+        <!-- Header -->
+        <!-- ================================= -->
+
+        <header class="hero">
+
+            <div class="logo-icon">
+                🎬
+            </div>
+
+            <h1>
+                جهان هستی
+            </h1>
+
+            <p class="subtitle">
+                جایی که سینما و جهان هستی به هم می‌رسند
+            </p>
+
+            <div class="hero-line"></div>
+
+        </header>
+
+
+
+        <!-- ================================= -->
+        <!-- اتاق -->
+        <!-- ================================= -->
+
+        <section class="room-card">
+
+            <div class="section-title">
+
+                <span class="title-icon">
+                    🛰️
+                </span>
+
+                <div>
+
+                    <h2>
+                        ورود به جهان مشترک
+                    </h2>
+
+                    <p>
+                        کد اتاق خود را وارد کنید
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="room-box">
+
+                <label for="roomInput">
+                    کد اتاق
+                </label>
+
+                <input
+                    type="text"
+                    id="roomInput"
+                    placeholder="مثلاً ABC123"
+                    autocomplete="off"
+                >
+
+                <button id="joinBtn">
+                    ورود به اتاق
+                    <span>🚀</span>
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================================= -->
+        <!-- وضعیت -->
+        <!-- ================================= -->
+
+        <div
+            id="status"
+            class="status"
+        >
+
+            <span class="status-dot"></span>
+
             هنوز وارد اتاق نشده‌اید
+
         </div>
 
-        <div class="video-section">
 
-            <video
-                id="video"
-                controls
-                preload="metadata"
-            ></video>
+
+        <!-- ================================= -->
+        <!-- سینما -->
+        <!-- ================================= -->
+
+        <section class="cinema-card">
+
+
+            <div class="cinema-header">
+
+                <div class="film-icon">
+                    🎞️
+                </div>
+
+                <div>
+
+                    <h2>
+                        سینمای جهان هستی
+                    </h2>
+
+                    <p>
+                        فیلم خود را انتخاب کنید و باهم تماشا کنید
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- پرده سینما -->
+
+            <div class="movie-frame">
+
+                <div class="movie-glow"></div>
+
+                <video
+                    id="video"
+                    controls
+                    preload="metadata"
+                ></video>
+
+            </div>
+
+
+
+            <!-- انتخاب فیلم -->
 
             <label class="file-button">
-                🎞 انتخاب فیلم
+
+                <span class="file-icon">
+                    🎬
+                </span>
+
+                <span>
+                    انتخاب فیلم
+                </span>
 
                 <input
                     type="file"
@@ -58,28 +231,130 @@
                     accept="video/*"
                     hidden
                 >
+
             </label>
 
-        </div>
 
-        <div class="users">
+        </section>
 
-            <div>
-                👤 شما
-                <span id="meStatus">⚪</span>
+
+
+        <!-- ================================= -->
+        <!-- کاربران -->
+        <!-- ================================= -->
+
+        <section class="users">
+
+
+            <div class="user-card">
+
+                <div class="user-avatar">
+                    👨🏻‍🚀
+                </div>
+
+                <div class="user-info">
+
+                    <span class="user-role">
+                        تماشاگر
+                    </span>
+
+                    <strong>
+                        محمد
+                    </strong>
+
+                </div>
+
+                <span
+                    id="meStatus"
+                    class="connection"
+                >
+                    ⚪
+                </span>
+
             </div>
 
-            <div>
-                ❤️ پارتنر
-                <span id="partnerStatus">⚪</span>
+
+
+            <div class="connection-symbol">
+                ❤️
             </div>
 
-        </div>
 
-    </div>
+
+            <div class="user-card">
+
+                <div class="user-avatar">
+                    👩🏻‍🚀
+                </div>
+
+                <div class="user-info">
+
+                    <span class="user-role">
+                        همراه
+                    </span>
+
+                    <strong>
+                        هستی
+                    </strong>
+
+                </div>
+
+                <span
+                    id="partnerStatus"
+                    class="connection"
+                >
+                    ⚪
+                </span>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ================================= -->
+        <!-- Footer -->
+        <!-- ================================= -->
+
+        <footer>
+
+            <div class="footer-line"></div>
+
+            <div class="couple">
+
+                <span>
+                    محمد
+                </span>
+
+                <span class="heart">
+                    ♥
+                </span>
+
+                <span>
+                    هستی
+                </span>
+
+            </div>
+
+            <p>
+                دو نفر، یک جهان، یک فیلم 🎬
+            </p>
+
+        </footer>
+
+
+    </main>
+
+
+
+    <!-- Socket.IO -->
 
     <script src="/socket.io/socket.io.js"></script>
+
     <script src="app.js"></script>
 
+
 </body>
+
 </html>

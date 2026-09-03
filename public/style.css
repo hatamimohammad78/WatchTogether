@@ -1,191 +1,1918 @@
-```css
+/* =====================================
+   RESET
+===================================== */
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-body {
-    font-family: Tahoma, Arial, sans-serif;
-    background: #0b0f14;
-    color: #ffffff;
-    min-height: 100vh;
+
+/* =====================================
+   VARIABLES
+===================================== */
+
+:root {
+
+    --bg: #03040a;
+
+    --card: rgba(10, 13, 25, 0.78);
+
+    --card-border:
+        rgba(130, 110, 255, 0.22);
+
+    --purple: #8b6cff;
+
+    --blue: #4da3ff;
+
+    --pink: #ff4f9a;
+
+    --text: #ffffff;
+
+    --muted: #9da5bd;
+
 }
+
+
+/* =====================================
+   BODY
+===================================== */
+
+html {
+
+    min-height: 100%;
+
+    background:
+        var(--bg);
+
+}
+
+
+body {
+
+    font-family:
+        "Vazirmatn",
+        Tahoma,
+        Arial,
+        sans-serif;
+
+    background:
+
+        radial-gradient(
+            circle at 50% 15%,
+            rgba(82, 52, 180, 0.18),
+            transparent 30%
+        ),
+
+        radial-gradient(
+            circle at 15% 70%,
+            rgba(36, 100, 190, 0.10),
+            transparent 25%
+        ),
+
+        var(--bg);
+
+    color:
+        var(--text);
+
+    min-height:
+        100vh;
+
+    overflow-x:
+        hidden;
+
+}
+
+
+/* =====================================
+   SPACE BACKGROUND
+===================================== */
+
+.space-background {
+
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    overflow:
+        hidden;
+
+    pointer-events:
+        none;
+
+    z-index:
+        0;
+
+    background:
+
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(60, 42, 130, 0.08),
+            transparent 45%
+        );
+
+}
+
+
+/* =====================================
+   STARS
+===================================== */
+
+.stars {
+
+    position:
+        absolute;
+
+    inset:
+        -50%;
+
+    background-repeat:
+        repeat;
+
+    opacity:
+        0.7;
+
+}
+
+
+.stars-1 {
+
+    background-image:
+
+        radial-gradient(
+            circle,
+            #fff 1px,
+            transparent 1px
+        );
+
+    background-size:
+        95px 95px;
+
+    transform:
+        rotate(8deg);
+
+}
+
+
+.stars-2 {
+
+    background-image:
+
+        radial-gradient(
+            circle,
+            #8fa9ff 1px,
+            transparent 1px
+        );
+
+    background-size:
+        145px 145px;
+
+    transform:
+        rotate(-12deg);
+
+    opacity:
+        0.45;
+
+}
+
+
+.stars-3 {
+
+    background-image:
+
+        radial-gradient(
+            circle,
+            #ffffff 1px,
+            transparent 1px
+        );
+
+    background-size:
+        220px 220px;
+
+    opacity:
+        0.3;
+
+}
+
+
+/* =====================================
+   SOLAR SYSTEM
+===================================== */
+
+.solar-system {
+
+    position:
+        absolute;
+
+    width:
+        520px;
+
+    height:
+        520px;
+
+    left:
+        50%;
+
+    top:
+        50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    opacity:
+        0.55;
+
+}
+
+
+/* =====================================
+   SUN
+===================================== */
+
+.sun {
+
+    position:
+        absolute;
+
+    width:
+        72px;
+
+    height:
+        72px;
+
+    left:
+        50%;
+
+    top:
+        50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius:
+        50%;
+
+    background:
+
+        radial-gradient(
+            circle at 35% 35%,
+            #fffbd1 0%,
+            #ffd75c 25%,
+            #ff8c24 60%,
+            #ff4b12 100%
+        );
+
+    box-shadow:
+
+        0 0 25px
+        #ffb52e,
+
+        0 0 60px
+        rgba(255, 150, 30, 0.45),
+
+        0 0 110px
+        rgba(255, 100, 20, 0.2);
+
+}
+
+
+/* =====================================
+   ORBITS
+===================================== */
+
+.orbit {
+
+    position:
+        absolute;
+
+    left:
+        50%;
+
+    top:
+        50%;
+
+    border:
+        1px solid
+        rgba(170, 170, 255, 0.13);
+
+    border-radius:
+        50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    animation:
+        orbitSpin linear infinite;
+
+}
+
+
+.orbit-1 {
+
+    width:
+        125px;
+
+    height:
+        125px;
+
+    animation-duration:
+        10s;
+
+}
+
+
+.orbit-2 {
+
+    width:
+        190px;
+
+    height:
+        190px;
+
+    animation-duration:
+        16s;
+
+}
+
+
+.orbit-3 {
+
+    width:
+        265px;
+
+    height:
+        265px;
+
+    animation-duration:
+        23s;
+
+}
+
+
+.orbit-4 {
+
+    width:
+        355px;
+
+    height:
+        355px;
+
+    animation-duration:
+        32s;
+
+}
+
+
+.orbit-5 {
+
+    width:
+        455px;
+
+    height:
+        455px;
+
+    animation-duration:
+        45s;
+
+}
+
+
+/* =====================================
+   PLANETS
+===================================== */
+
+.planet {
+
+    position:
+        absolute;
+
+    top:
+        50%;
+
+    right:
+        -5px;
+
+    width:
+        10px;
+
+    height:
+        10px;
+
+    transform:
+        translateY(-50%);
+
+    border-radius:
+        50%;
+
+}
+
+
+.planet-1 {
+
+    width:
+        7px;
+
+    height:
+        7px;
+
+    background:
+        #bfc7d8;
+
+    box-shadow:
+        0 0 8px
+        rgba(210, 220, 255, 0.7);
+
+}
+
+
+.planet-2 {
+
+    width:
+        11px;
+
+    height:
+        11px;
+
+    background:
+        #d79b68;
+
+    box-shadow:
+        0 0 10px
+        rgba(255, 170, 100, 0.5);
+
+}
+
+
+.planet-3 {
+
+    width:
+        13px;
+
+    height:
+        13px;
+
+    background:
+        #4d91ff;
+
+    box-shadow:
+        0 0 12px
+        rgba(70, 140, 255, 0.6);
+
+}
+
+
+.planet-4 {
+
+    width:
+        17px;
+
+    height:
+        17px;
+
+    background:
+        #d56e54;
+
+    box-shadow:
+        0 0 14px
+        rgba(255, 90, 70, 0.45);
+
+}
+
+
+.planet-5 {
+
+    width:
+        23px;
+
+    height:
+        23px;
+
+    background:
+
+        linear-gradient(
+            160deg,
+            #e8b86d,
+            #b87842
+        );
+
+    box-shadow:
+        0 0 15px
+        rgba(240, 180, 100, 0.35);
+
+}
+
+
+/* =====================================
+   ORBIT ANIMATION
+===================================== */
+
+@keyframes orbitSpin {
+
+    from {
+
+        transform:
+            translate(-50%, -50%)
+            rotate(0deg);
+
+    }
+
+    to {
+
+        transform:
+            translate(-50%, -50%)
+            rotate(360deg);
+
+    }
+
+}
+
+
+/* =====================================
+   MAIN CONTAINER
+===================================== */
 
 .container {
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 30px 20px 50px;
+
+    position:
+        relative;
+
+    z-index:
+        2;
+
+    width:
+        100%;
+
+    max-width:
+        1100px;
+
+    margin:
+        0 auto;
+
+    padding:
+        55px 22px 70px;
+
 }
 
-/* Header */
+
+/* =====================================
+   HERO
+===================================== */
+
+.hero {
+
+    text-align:
+        center;
+
+    margin-bottom:
+        38px;
+
+}
+
+
+/* =====================================
+   LOGO
+===================================== */
+
+.logo-icon {
+
+    width:
+        74px;
+
+    height:
+        74px;
+
+    margin:
+        0 auto 18px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        22px;
+
+    font-size:
+        35px;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(139, 108, 255, 0.24),
+            rgba(77, 163, 255, 0.12)
+        );
+
+    border:
+        1px solid
+        rgba(150, 130, 255, 0.3);
+
+    box-shadow:
+
+        0 0 35px
+        rgba(110, 80, 255, 0.18);
+
+    backdrop-filter:
+        blur(10px);
+
+}
+
+
+/* =====================================
+   MAIN TITLE
+===================================== */
 
 h1 {
-    text-align: center;
-    font-size: 34px;
-    margin-bottom: 10px;
+
+    font-family:
+        "Vazirmatn",
+        Tahoma,
+        sans-serif;
+
+    font-size:
+        clamp(40px, 6vw, 66px);
+
+    font-weight:
+        800;
+
+    line-height:
+        1.3;
+
+    letter-spacing:
+        -2px;
+
+    background:
+
+        linear-gradient(
+            100deg,
+            #ffffff 10%,
+            #c8bcff 45%,
+            #ff9bc8 90%
+        );
+
+    -webkit-background-clip:
+        text;
+
+    background-clip:
+        text;
+
+    color:
+        transparent;
+
+    margin-bottom:
+        12px;
+
+    text-shadow:
+        0 0 35px
+        rgba(139, 108, 255, 0.15);
+
 }
+
+
+/* =====================================
+   SUBTITLE
+===================================== */
 
 .subtitle {
-    text-align: center;
-    color: #9da7b3;
-    font-size: 15px;
-    margin-bottom: 30px;
+
+    color:
+        var(--muted);
+
+    font-size:
+        15px;
+
+    font-weight:
+        400;
+
+    line-height:
+        1.9;
+
 }
 
-/* Room */
+
+/* =====================================
+   HERO LINE
+===================================== */
+
+.hero-line {
+
+    width:
+        100px;
+
+    height:
+        2px;
+
+    margin:
+        20px auto 0;
+
+    border-radius:
+        10px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--purple),
+            var(--pink),
+            transparent
+        );
+
+    box-shadow:
+        0 0 15px
+        rgba(139, 108, 255, 0.7);
+
+}
+
+
+/* =====================================
+   CARDS
+===================================== */
+
+.room-card,
+.cinema-card {
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(17, 20, 35, 0.84),
+            rgba(7, 9, 17, 0.78)
+        );
+
+    border:
+        1px solid
+        var(--card-border);
+
+    border-radius:
+        24px;
+
+    padding:
+        22px;
+
+    backdrop-filter:
+        blur(18px);
+
+    box-shadow:
+
+        0 25px 80px
+        rgba(0, 0, 0, 0.35);
+
+}
+
+
+/* =====================================
+   SECTION TITLES
+===================================== */
+
+.section-title,
+.cinema-header {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        15px;
+
+    margin-bottom:
+        20px;
+
+}
+
+
+.title-icon,
+.film-icon {
+
+    width:
+        50px;
+
+    height:
+        50px;
+
+    flex-shrink:
+        0;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        15px;
+
+    font-size:
+        23px;
+
+    background:
+        rgba(139, 108, 255, 0.13);
+
+    border:
+        1px solid
+        rgba(139, 108, 255, 0.2);
+
+}
+
+
+.section-title h2,
+.cinema-header h2 {
+
+    font-family:
+        "Vazirmatn",
+        Tahoma,
+        sans-serif;
+
+    font-size:
+        18px;
+
+    font-weight:
+        700;
+
+    margin-bottom:
+        5px;
+
+}
+
+
+.section-title p,
+.cinema-header p {
+
+    color:
+        var(--muted);
+
+    font-size:
+        12px;
+
+    font-weight:
+        400;
+
+}
+
+
+/* =====================================
+   ROOM BOX
+===================================== */
 
 .room-box {
-    background: #121820;
-    border: 1px solid #202a35;
-    border-radius: 16px;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 15px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+    padding:
+        6px;
+
+    background:
+        rgba(0, 0, 0, 0.28);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.07);
+
+    border-radius:
+        16px;
+
 }
+
 
 .room-box label {
-    color: #b9c2cc;
-    white-space: nowrap;
+
+    color:
+        #cbd0df;
+
+    padding:
+        0 12px;
+
+    white-space:
+        nowrap;
+
+    font-size:
+        13px;
+
+    font-weight:
+        500;
+
 }
+
 
 .room-box input {
-    flex: 1;
-    background: #0b0f14;
-    color: white;
-    border: 1px solid #303b48;
-    border-radius: 10px;
-    padding: 13px 15px;
-    outline: none;
-    font-size: 15px;
-    direction: ltr;
+
+    flex:
+        1;
+
+    min-width:
+        0;
+
+    background:
+        rgba(255, 255, 255, 0.045);
+
+    color:
+        white;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.08);
+
+    border-radius:
+        11px;
+
+    padding:
+        13px 15px;
+
+    outline:
+        none;
+
+    font-family:
+        "Vazirmatn",
+        Tahoma,
+        sans-serif;
+
+    font-size:
+        14px;
+
+    direction:
+        ltr;
+
+    transition:
+        0.25s;
+
 }
+
+
+.room-box input::placeholder {
+
+    color:
+        #687086;
+
+}
+
 
 .room-box input:focus {
-    border-color: #5c7cff;
+
+    border-color:
+        rgba(139, 108, 255, 0.7);
+
+    box-shadow:
+
+        0 0 0 3px
+        rgba(139, 108, 255, 0.09);
+
 }
+
 
 .room-box button {
-    background: #5c7cff;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 13px 22px;
-    font-size: 15px;
-    cursor: pointer;
-    transition: 0.2s;
+
+    border:
+        none;
+
+    border-radius:
+        12px;
+
+    padding:
+        13px 21px;
+
+    color:
+        white;
+
+    font-family:
+        "Vazirmatn",
+        Tahoma,
+        sans-serif;
+
+    font-size:
+        13px;
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #7458ed,
+            #a05cff
+        );
+
+    box-shadow:
+
+        0 8px 25px
+        rgba(124, 86, 255, 0.28);
+
+    transition:
+        transform 0.2s,
+        box-shadow 0.2s;
+
 }
+
 
 .room-box button:hover {
-    transform: translateY(-1px);
-    opacity: 0.9;
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+
+        0 12px 32px
+        rgba(124, 86, 255, 0.42);
+
 }
+
 
 .room-box button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+
+    opacity:
+        0.5;
+
+    cursor:
+        not-allowed;
+
+    transform:
+        none;
+
 }
 
-/* Status */
+
+/* =====================================
+   STATUS
+===================================== */
 
 .status {
-    background: #10161d;
-    border: 1px solid #202a35;
-    border-radius: 12px;
-    padding: 13px;
-    text-align: center;
-    color: #b8c1cb;
-    margin-bottom: 20px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        9px;
+
+    margin:
+        15px 0;
+
+    padding:
+        13px;
+
+    border-radius:
+        14px;
+
+    color:
+        #bfc6d7;
+
+    background:
+        rgba(10, 13, 23, 0.65);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.06);
+
+    font-size:
+        12px;
+
+    font-weight:
+        400;
+
 }
 
-/* Video */
 
-.video-section {
-    background: #121820;
-    border: 1px solid #202a35;
-    border-radius: 18px;
-    padding: 15px;
+.status-dot {
+
+    width:
+        7px;
+
+    height:
+        7px;
+
+    border-radius:
+        50%;
+
+    background:
+        #737b8c;
+
+    box-shadow:
+        0 0 8px
+        rgba(150, 160, 180, 0.4);
+
 }
+
+
+/* =====================================
+   CINEMA
+===================================== */
+
+.cinema-card {
+
+    margin-top:
+        20px;
+
+    padding:
+        18px;
+
+}
+
+
+.cinema-header {
+
+    margin:
+        4px 4px 18px;
+
+}
+
+
+/* =====================================
+   MOVIE FRAME
+===================================== */
+
+.movie-frame {
+
+    position:
+        relative;
+
+    padding:
+        3px;
+
+    border-radius:
+        18px;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            rgba(139, 108, 255, 0.5),
+            rgba(255, 79, 154, 0.25),
+            rgba(77, 163, 255, 0.35)
+        );
+
+    box-shadow:
+
+        0 0 45px
+        rgba(92, 70, 200, 0.15);
+
+}
+
+
+.movie-glow {
+
+    position:
+        absolute;
+
+    inset:
+        15%;
+
+    background:
+        rgba(139, 108, 255, 0.12);
+
+    filter:
+        blur(60px);
+
+    pointer-events:
+        none;
+
+}
+
 
 video {
-    width: 100%;
-    display: block;
-    background: #000;
-    border-radius: 12px;
-    max-height: 600px;
+
+    position:
+        relative;
+
+    z-index:
+        2;
+
+    width:
+        100%;
+
+    display:
+        block;
+
+    aspect-ratio:
+        16 / 9;
+
+    object-fit:
+        contain;
+
+    background:
+        #000;
+
+    border-radius:
+        15px;
+
+    max-height:
+        650px;
+
 }
 
-/* File button */
+
+/* =====================================
+   FILE BUTTON
+===================================== */
 
 .file-button {
-    display: block;
-    width: fit-content;
-    margin: 15px auto 5px;
-    background: #1d2630;
-    border: 1px solid #303b48;
-    color: #ffffff;
-    padding: 12px 22px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.2s;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        10px;
+
+    width:
+        fit-content;
+
+    margin:
+        18px auto 3px;
+
+    padding:
+        12px 24px;
+
+    border-radius:
+        13px;
+
+    color:
+        white;
+
+    font-family:
+        "Vazirmatn",
+        Tahoma,
+        sans-serif;
+
+    font-size:
+        13px;
+
+    font-weight:
+        600;
+
+    cursor:
+        pointer;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            rgba(139, 108, 255, 0.2),
+            rgba(255, 79, 154, 0.12)
+        );
+
+    border:
+        1px solid
+        rgba(139, 108, 255, 0.3);
+
+    transition:
+        0.25s;
+
 }
+
 
 .file-button:hover {
-    background: #27323e;
+
+    transform:
+        translateY(-2px);
+
+    background:
+
+        linear-gradient(
+            135deg,
+            rgba(139, 108, 255, 0.3),
+            rgba(255, 79, 154, 0.18)
+        );
+
+    box-shadow:
+
+        0 10px 30px
+        rgba(139, 108, 255, 0.18);
+
 }
 
-/* Users */
+
+.file-icon {
+
+    font-size:
+        18px;
+
+}
+
+
+/* =====================================
+   USERS
+===================================== */
 
 .users {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-top: 20px;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr 60px 1fr;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+    margin-top:
+        20px;
+
 }
 
-.users div {
-    background: #121820;
-    border: 1px solid #202a35;
-    border-radius: 14px;
-    padding: 16px;
-    text-align: center;
-    color: #d5dbe2;
+
+.user-card {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        13px;
+
+    padding:
+        15px 17px;
+
+    background:
+        rgba(10, 13, 23, 0.72);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.07);
+
+    border-radius:
+        17px;
+
+    backdrop-filter:
+        blur(12px);
+
 }
 
-.users span {
-    margin-right: 8px;
+
+.user-avatar {
+
+    width:
+        43px;
+
+    height:
+        43px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    flex-shrink:
+        0;
+
+    border-radius:
+        13px;
+
+    font-size:
+        21px;
+
+    background:
+        rgba(139, 108, 255, 0.12);
+
+    border:
+        1px solid
+        rgba(139, 108, 255, 0.18);
+
 }
 
-/* Mobile */
+
+.user-info {
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        4px;
+
+    flex:
+        1;
+
+}
+
+
+.user-role {
+
+    color:
+        #777f95;
+
+    font-size:
+        10px;
+
+    font-weight:
+        400;
+
+}
+
+
+.user-info strong {
+
+    color:
+        #ffffff;
+
+    font-family:
+        "Vazirmatn",
+        Tahoma,
+        sans-serif;
+
+    font-size:
+        15px;
+
+    font-weight:
+        700;
+
+}
+
+
+.connection {
+
+    font-size:
+        13px;
+
+}
+
+
+.connection-symbol {
+
+    display:
+        flex;
+
+    justify-content:
+        center;
+
+    align-items:
+        center;
+
+    width:
+        46px;
+
+    height:
+        46px;
+
+    margin:
+        auto;
+
+    border-radius:
+        50%;
+
+    background:
+        rgba(255, 79, 154, 0.09);
+
+    border:
+        1px solid
+        rgba(255, 79, 154, 0.18);
+
+    box-shadow:
+
+        0 0 25px
+        rgba(255, 79, 154, 0.08);
+
+}
+
+
+/* =====================================
+   FOOTER
+===================================== */
+
+footer {
+
+    text-align:
+        center;
+
+    margin-top:
+        42px;
+
+}
+
+
+.footer-line {
+
+    width:
+        100%;
+
+    max-width:
+        300px;
+
+    height:
+        1px;
+
+    margin:
+        0 auto 20px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(139, 108, 255, 0.45),
+            rgba(255, 79, 154, 0.45),
+            transparent
+        );
+
+}
+
+
+.couple {
+
+    display:
+        flex;
+
+    justify-content:
+        center;
+
+    align-items:
+        center;
+
+    gap:
+        13px;
+
+    font-family:
+        "Vazirmatn",
+        Tahoma,
+        sans-serif;
+
+    font-size:
+        16px;
+
+    font-weight:
+        600;
+
+    color:
+        #e8e5f5;
+
+}
+
+
+.heart {
+
+    color:
+        #ff5d9f;
+
+    font-size:
+        20px;
+
+    text-shadow:
+
+        0 0 8px
+        rgba(255, 70, 140, 0.5),
+
+        0 0 20px
+        rgba(255, 70, 140, 0.35);
+
+    animation:
+        heartPulse 1.8s ease-in-out infinite;
+
+}
+
+
+@keyframes heartPulse {
+
+    0%,
+    100% {
+
+        transform:
+            scale(1);
+
+    }
+
+    50% {
+
+        transform:
+            scale(1.15);
+
+    }
+
+}
+
+
+footer p {
+
+    margin-top:
+        9px;
+
+    color:
+        #666d80;
+
+    font-size:
+        11px;
+
+    font-weight:
+        400;
+
+}
+
+
+/* =====================================
+   MOBILE
+===================================== */
 
 @media (max-width: 700px) {
 
     .container {
-        padding: 20px 12px 40px;
+
+        padding:
+            30px 12px 45px;
+
     }
+
+
+    .hero {
+
+        margin-bottom:
+            28px;
+
+    }
+
+
+    .logo-icon {
+
+        width:
+            62px;
+
+        height:
+            62px;
+
+        border-radius:
+            18px;
+
+        font-size:
+            29px;
+
+    }
+
 
     h1 {
-        font-size: 27px;
+
+        font-size:
+            40px;
+
+        letter-spacing:
+            -1.5px;
+
     }
+
+
+    .subtitle {
+
+        font-size:
+            13px;
+
+        padding:
+            0 15px;
+
+    }
+
+
+    .room-card,
+    .cinema-card {
+
+        padding:
+            15px;
+
+        border-radius:
+            19px;
+
+    }
+
 
     .room-box {
-        flex-direction: column;
-        align-items: stretch;
+
+        flex-direction:
+            column;
+
+        align-items:
+            stretch;
+
+        padding:
+            8px;
+
     }
+
 
     .room-box label {
-        text-align: right;
+
+        padding:
+            5px 7px 0;
+
     }
+
+
+    .room-box input {
+
+        width:
+            100%;
+
+        height:
+            47px;
+
+    }
+
 
     .room-box button {
-        width: 100%;
+
+        width:
+            100%;
+
+        height:
+            47px;
+
     }
 
-    .users {
-        grid-template-columns: 1fr;
+
+    .status {
+
+        font-size:
+            12px;
+
     }
+
+
+    .cinema-header {
+
+        margin:
+            3px 2px 14px;
+
+    }
+
+
+    .cinema-header h2 {
+
+        font-size:
+            16px;
+
+    }
+
+
+    .cinema-header p {
+
+        font-size:
+            10px;
+
+        line-height:
+            1.7;
+
+    }
+
+
+    .film-icon,
+    .title-icon {
+
+        width:
+            43px;
+
+        height:
+            43px;
+
+        border-radius:
+            12px;
+
+        font-size:
+            19px;
+
+    }
+
+
+    .movie-frame {
+
+        border-radius:
+            14px;
+
+    }
+
+
+    video {
+
+        border-radius:
+            11px;
+
+        max-height:
+            none;
+
+    }
+
+
+    .file-button {
+
+        width:
+            100%;
+
+        margin-top:
+            14px;
+
+    }
+
+
+    .users {
+
+        grid-template-columns:
+            1fr;
+
+        gap:
+            9px;
+
+    }
+
+
+    .connection-symbol {
+
+        width:
+            38px;
+
+        height:
+            38px;
+
+        margin:
+            -3px auto;
+
+    }
+
+
+    .user-card {
+
+        padding:
+            13px 14px;
+
+    }
+
+
+    footer {
+
+        margin-top:
+            30px;
+
+    }
+
 }
-```
+
+
+/* =====================================
+   VERY SMALL MOBILE
+===================================== */
+
+@media (max-width: 380px) {
+
+    h1 {
+
+        font-size:
+            34px;
+
+    }
+
+
+    .container {
+
+        padding-left:
+            9px;
+
+        padding-right:
+            9px;
+
+    }
+
+
+    .room-card,
+    .cinema-card {
+
+        padding:
+            12px;
+
+    }
+
+}
