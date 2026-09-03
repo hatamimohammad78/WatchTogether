@@ -9,28 +9,30 @@
 }
 
 
-/* =====================================
-   VARIABLES
-===================================== */
-
 :root {
 
     --bg: #03040a;
 
-    --card: rgba(10, 13, 25, 0.78);
+    --card:
+        rgba(10, 13, 25, 0.78);
 
-    --card-border:
+    --purple:
+        #8b6cff;
+
+    --blue:
+        #4da3ff;
+
+    --pink:
+        #ff4f9a;
+
+    --text:
+        #ffffff;
+
+    --muted:
+        #9da5bd;
+
+    --border:
         rgba(130, 110, 255, 0.22);
-
-    --purple: #8b6cff;
-
-    --blue: #4da3ff;
-
-    --pink: #ff4f9a;
-
-    --text: #ffffff;
-
-    --muted: #9da5bd;
 
 }
 
@@ -41,7 +43,8 @@
 
 html {
 
-    min-height: 100%;
+    min-height:
+        100%;
 
     background:
         var(--bg);
@@ -116,10 +119,6 @@ body {
 
 }
 
-
-/* =====================================
-   STARS
-===================================== */
 
 .stars {
 
@@ -228,10 +227,6 @@ body {
 }
 
 
-/* =====================================
-   SUN
-===================================== */
-
 .sun {
 
     position:
@@ -278,10 +273,6 @@ body {
 
 }
 
-
-/* =====================================
-   ORBITS
-===================================== */
 
 .orbit {
 
@@ -379,10 +370,6 @@ body {
 
 }
 
-
-/* =====================================
-   PLANETS
-===================================== */
 
 .planet {
 
@@ -505,10 +492,6 @@ body {
 }
 
 
-/* =====================================
-   ORBIT ANIMATION
-===================================== */
-
 @keyframes orbitSpin {
 
     from {
@@ -546,7 +529,7 @@ body {
         100%;
 
     max-width:
-        1100px;
+        1250px;
 
     margin:
         0 auto;
@@ -571,10 +554,6 @@ body {
 
 }
 
-
-/* =====================================
-   LOGO
-===================================== */
 
 .logo-icon {
 
@@ -625,10 +604,6 @@ body {
 }
 
 
-/* =====================================
-   MAIN TITLE
-===================================== */
-
 h1 {
 
     font-family:
@@ -669,16 +644,8 @@ h1 {
     margin-bottom:
         12px;
 
-    text-shadow:
-        0 0 35px
-        rgba(139, 108, 255, 0.15);
-
 }
 
-
-/* =====================================
-   SUBTITLE
-===================================== */
 
 .subtitle {
 
@@ -696,10 +663,6 @@ h1 {
 
 }
 
-
-/* =====================================
-   HERO LINE
-===================================== */
 
 .hero-line {
 
@@ -737,7 +700,8 @@ h1 {
 ===================================== */
 
 .room-card,
-.cinema-card {
+.cinema-card,
+.chat-card {
 
     background:
 
@@ -749,13 +713,10 @@ h1 {
 
     border:
         1px solid
-        var(--card-border);
+        var(--border);
 
     border-radius:
         24px;
-
-    padding:
-        22px;
 
     backdrop-filter:
         blur(18px);
@@ -769,11 +730,18 @@ h1 {
 
 
 /* =====================================
-   SECTION TITLES
+   ROOM CARD
 ===================================== */
 
-.section-title,
-.cinema-header {
+.room-card {
+
+    padding:
+        22px;
+
+}
+
+
+.section-title {
 
     display:
         flex;
@@ -790,8 +758,7 @@ h1 {
 }
 
 
-.title-icon,
-.film-icon {
+.title-icon {
 
     width:
         50px;
@@ -827,13 +794,7 @@ h1 {
 }
 
 
-.section-title h2,
-.cinema-header h2 {
-
-    font-family:
-        "Vazirmatn",
-        Tahoma,
-        sans-serif;
+.section-title h2 {
 
     font-size:
         18px;
@@ -847,17 +808,13 @@ h1 {
 }
 
 
-.section-title p,
-.cinema-header p {
+.section-title p {
 
     color:
         var(--muted);
 
     font-size:
         12px;
-
-    font-weight:
-        400;
 
 }
 
@@ -943,6 +900,7 @@ h1 {
     font-family:
         "Vazirmatn",
         Tahoma,
+        Arial,
         sans-serif;
 
     font-size:
@@ -950,9 +908,6 @@ h1 {
 
     direction:
         ltr;
-
-    transition:
-        0.25s;
 
 }
 
@@ -995,6 +950,7 @@ h1 {
     font-family:
         "Vazirmatn",
         Tahoma,
+        Arial,
         sans-serif;
 
     font-size:
@@ -1020,8 +976,7 @@ h1 {
         rgba(124, 86, 255, 0.28);
 
     transition:
-        transform 0.2s,
-        box-shadow 0.2s;
+        0.2s;
 
 }
 
@@ -1093,9 +1048,6 @@ h1 {
     font-size:
         12px;
 
-    font-weight:
-        400;
-
 }
 
 
@@ -1121,13 +1073,39 @@ h1 {
 
 
 /* =====================================
-   CINEMA
+   🎬 WATCH AREA
+   دسکتاپ = فیلم + چت کنار هم
+===================================== */
+
+.watch-area {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        minmax(0, 2fr)
+        minmax(300px, 0.82fr);
+
+    gap:
+        20px;
+
+    align-items:
+        stretch;
+
+    margin-top:
+        20px;
+
+}
+
+
+/* =====================================
+   CINEMA CARD
 ===================================== */
 
 .cinema-card {
 
-    margin-top:
-        20px;
+    min-width:
+        0;
 
     padding:
         18px;
@@ -1137,8 +1115,78 @@ h1 {
 
 .cinema-header {
 
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        15px;
+
     margin:
         4px 4px 18px;
+
+}
+
+
+.film-icon {
+
+    width:
+        50px;
+
+    height:
+        50px;
+
+    flex-shrink:
+        0;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        15px;
+
+    font-size:
+        23px;
+
+    background:
+        rgba(139, 108, 255, 0.13);
+
+    border:
+        1px solid
+        rgba(139, 108, 255, 0.2);
+
+}
+
+
+.cinema-header h2 {
+
+    font-size:
+        18px;
+
+    font-weight:
+        700;
+
+    margin-bottom:
+        5px;
+
+}
+
+
+.cinema-header p {
+
+    color:
+        var(--muted);
+
+    font-size:
+        12px;
 
 }
 
@@ -1168,7 +1216,6 @@ h1 {
         );
 
     box-shadow:
-
         0 0 45px
         rgba(92, 70, 200, 0.15);
 
@@ -1221,9 +1268,6 @@ video {
     border-radius:
         15px;
 
-    max-height:
-        650px;
-
 }
 
 
@@ -1263,6 +1307,7 @@ video {
     font-family:
         "Vazirmatn",
         Tahoma,
+        Arial,
         sans-serif;
 
     font-size:
@@ -1297,16 +1342,7 @@ video {
     transform:
         translateY(-2px);
 
-    background:
-
-        linear-gradient(
-            135deg,
-            rgba(139, 108, 255, 0.3),
-            rgba(255, 79, 154, 0.18)
-        );
-
     box-shadow:
-
         0 10px 30px
         rgba(139, 108, 255, 0.18);
 
@@ -1317,6 +1353,654 @@ video {
 
     font-size:
         18px;
+
+}
+
+
+/* =====================================
+   💬 CHAT CARD
+   دسکتاپ = ارتفاع هماهنگ با فیلم
+===================================== */
+
+.chat-card {
+
+    position:
+        relative;
+
+    min-width:
+        0;
+
+    height:
+        100%;
+
+    padding:
+        18px;
+
+    overflow:
+        hidden;
+
+}
+
+
+.chat-card::before {
+
+    content:
+        "";
+
+    position:
+        absolute;
+
+    top:
+        0;
+
+    left:
+        12%;
+
+    right:
+        12%;
+
+    height:
+        1px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(139, 108, 255, 0.7),
+            rgba(255, 79, 154, 0.7),
+            transparent
+        );
+
+}
+
+
+/* =====================================
+   CHAT HEADER
+===================================== */
+
+.chat-header {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        12px;
+
+    padding:
+        3px 2px 15px;
+
+    border-bottom:
+        1px solid
+        rgba(255, 255, 255, 0.06);
+
+}
+
+
+.chat-icon {
+
+    width:
+        48px;
+
+    height:
+        48px;
+
+    flex-shrink:
+        0;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        14px;
+
+    font-size:
+        22px;
+
+    background:
+
+        linear-gradient(
+            145deg,
+            rgba(139, 108, 255, 0.18),
+            rgba(255, 79, 154, 0.10)
+        );
+
+    border:
+        1px solid
+        rgba(139, 108, 255, 0.25);
+
+}
+
+
+.chat-title {
+
+    flex:
+        1;
+
+    min-width:
+        0;
+
+}
+
+
+.chat-header h2 {
+
+    font-size:
+        17px;
+
+    margin:
+        0 0 4px;
+
+}
+
+
+.chat-title p {
+
+    color:
+        var(--muted);
+
+    font-size:
+        10px;
+
+}
+
+
+.chat-online {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        6px;
+
+    color:
+        #8f97aa;
+
+    font-size:
+        9px;
+
+    white-space:
+        nowrap;
+
+}
+
+
+.chat-online span {
+
+    width:
+        7px;
+
+    height:
+        7px;
+
+    border-radius:
+        50%;
+
+    background:
+        #48d597;
+
+    box-shadow:
+        0 0 9px
+        rgba(72, 213, 151, 0.7);
+
+}
+
+
+/* =====================================
+   CHAT MESSAGES
+===================================== */
+
+.chat-messages {
+
+    height:
+        390px;
+
+    overflow-y:
+        auto;
+
+    padding:
+        18px 5px;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        10px;
+
+    scroll-behavior:
+        smooth;
+
+}
+
+
+.chat-messages::-webkit-scrollbar {
+
+    width:
+        5px;
+
+}
+
+
+.chat-messages::-webkit-scrollbar-track {
+
+    background:
+        transparent;
+
+}
+
+
+.chat-messages::-webkit-scrollbar-thumb {
+
+    background:
+        rgba(139, 108, 255, 0.3);
+
+    border-radius:
+        10px;
+
+}
+
+
+/* =====================================
+   EMPTY CHAT
+===================================== */
+
+.chat-empty {
+
+    height:
+        100%;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        6px;
+
+    color:
+        #71798d;
+
+    text-align:
+        center;
+
+}
+
+
+.empty-icon {
+
+    font-size:
+        30px;
+
+    margin-bottom:
+        4px;
+
+    opacity:
+        0.75;
+
+}
+
+
+.chat-empty span {
+
+    font-size:
+        11px;
+
+}
+
+
+.chat-empty small {
+
+    font-size:
+        9px;
+
+    color:
+        #555d70;
+
+}
+
+
+/* =====================================
+   MESSAGE
+===================================== */
+
+.chat-message {
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    max-width:
+        88%;
+
+    padding:
+        9px 11px;
+
+    border-radius:
+        14px;
+
+    animation:
+        messageAppear 0.25s ease;
+
+}
+
+
+@keyframes messageAppear {
+
+    from {
+
+        opacity:
+            0;
+
+        transform:
+            translateY(6px);
+
+    }
+
+    to {
+
+        opacity:
+            1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+.chat-message.mine {
+
+    align-self:
+        flex-start;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            rgba(112, 82, 225, 0.28),
+            rgba(139, 108, 255, 0.16)
+        );
+
+    border:
+        1px solid
+        rgba(139, 108, 255, 0.20);
+
+    border-bottom-right-radius:
+        5px;
+
+}
+
+
+.chat-message.theirs {
+
+    align-self:
+        flex-end;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            rgba(255, 79, 154, 0.18),
+            rgba(120, 55, 110, 0.12)
+        );
+
+    border:
+        1px solid
+        rgba(255, 79, 154, 0.16);
+
+    border-bottom-left-radius:
+        5px;
+
+}
+
+
+.chat-message-name {
+
+    font-size:
+        9px;
+
+    color:
+        #9d8cff;
+
+    margin-bottom:
+        4px;
+
+    font-weight:
+        600;
+
+}
+
+
+.chat-message.theirs .chat-message-name {
+
+    color:
+        #ff82b5;
+
+}
+
+
+.chat-message-text {
+
+    color:
+        #e8e9f2;
+
+    font-size:
+        11px;
+
+    line-height:
+        1.8;
+
+    word-break:
+        break-word;
+
+}
+
+
+.chat-message-time {
+
+    margin-top:
+        4px;
+
+    font-size:
+        8px;
+
+    color:
+        #687086;
+
+    direction:
+        ltr;
+
+}
+
+
+/* =====================================
+   CHAT INPUT
+===================================== */
+
+.chat-input-box {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    padding:
+        6px;
+
+    background:
+        rgba(0, 0, 0, 0.28);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.07);
+
+    border-radius:
+        15px;
+
+}
+
+
+.chat-input-box input {
+
+    flex:
+        1;
+
+    min-width:
+        0;
+
+    height:
+        42px;
+
+    border:
+        none;
+
+    outline:
+        none;
+
+    background:
+        transparent;
+
+    color:
+        white;
+
+    padding:
+        0 10px;
+
+    font-family:
+        "Vazirmatn",
+        Tahoma,
+        Arial,
+        sans-serif;
+
+    font-size:
+        11px;
+
+}
+
+
+.chat-input-box input::placeholder {
+
+    color:
+        #626a7e;
+
+}
+
+
+.chat-input-box button {
+
+    width:
+        42px;
+
+    height:
+        42px;
+
+    flex-shrink:
+        0;
+
+    border:
+        none;
+
+    border-radius:
+        12px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    color:
+        white;
+
+    font-size:
+        18px;
+
+    cursor:
+        pointer;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #7458ed,
+            #a05cff
+        );
+
+    box-shadow:
+        0 6px 20px
+        rgba(124, 86, 255, 0.25);
+
+    transition:
+        0.2s;
+
+}
+
+
+.chat-input-box button:hover {
+
+    transform:
+        scale(1.05);
+
+    box-shadow:
+        0 8px 25px
+        rgba(124, 86, 255, 0.4);
+
+}
+
+
+.chat-input-box button:active {
+
+    transform:
+        scale(0.95);
+
+}
+
+
+.chat-hint {
+
+    text-align:
+        center;
+
+    margin-top:
+        6px;
+
+    color:
+        #4e566a;
+
+    font-size:
+        8px;
 
 }
 
@@ -1436,9 +2120,6 @@ video {
     font-size:
         10px;
 
-    font-weight:
-        400;
-
 }
 
 
@@ -1446,11 +2127,6 @@ video {
 
     color:
         #ffffff;
-
-    font-family:
-        "Vazirmatn",
-        Tahoma,
-        sans-serif;
 
     font-size:
         15px;
@@ -1500,7 +2176,6 @@ video {
         rgba(255, 79, 154, 0.18);
 
     box-shadow:
-
         0 0 25px
         rgba(255, 79, 154, 0.08);
 
@@ -1563,11 +2238,6 @@ footer {
     gap:
         13px;
 
-    font-family:
-        "Vazirmatn",
-        Tahoma,
-        sans-serif;
-
     font-size:
         16px;
 
@@ -1622,28 +2292,12 @@ footer {
 }
 
 
-footer p {
-
-    margin-top:
-        9px;
-
-    color:
-        #666d80;
-
-    font-size:
-        11px;
-
-    font-weight:
-        400;
-
-}
-
-
 /* =====================================
-   MOBILE
+   📱 MOBILE
+   فیلم بالا / چت پایین
 ===================================== */
 
-@media (max-width: 700px) {
+@media (max-width: 800px) {
 
     .container {
 
@@ -1700,8 +2354,7 @@ footer p {
     }
 
 
-    .room-card,
-    .cinema-card {
+    .room-card {
 
         padding:
             15px;
@@ -1764,6 +2417,36 @@ footer p {
     }
 
 
+    /* فیلم و چت زیر هم */
+
+    .watch-area {
+
+        grid-template-columns:
+            1fr;
+
+        gap:
+            15px;
+
+    }
+
+
+    .cinema-card,
+    .chat-card {
+
+        border-radius:
+            19px;
+
+    }
+
+
+    .cinema-card {
+
+        padding:
+            15px;
+
+    }
+
+
     .cinema-header {
 
         margin:
@@ -1822,9 +2505,6 @@ footer p {
         border-radius:
             11px;
 
-        max-height:
-            none;
-
     }
 
 
@@ -1835,6 +2515,84 @@ footer p {
 
         margin-top:
             14px;
+
+    }
+
+
+    /* چت موبایل */
+
+    .chat-card {
+
+        padding:
+            15px;
+
+    }
+
+
+    .chat-header {
+
+        gap:
+            10px;
+
+    }
+
+
+    .chat-icon {
+
+        width:
+            43px;
+
+        height:
+            43px;
+
+        border-radius:
+            12px;
+
+        font-size:
+            19px;
+
+    }
+
+
+    .chat-header h2 {
+
+        font-size:
+            16px;
+
+    }
+
+
+    .chat-online {
+
+        font-size:
+            9px;
+
+    }
+
+
+    .chat-messages {
+
+        height:
+            260px;
+
+        padding:
+            15px 5px;
+
+    }
+
+
+    .chat-message {
+
+        max-width:
+            82%;
+
+    }
+
+
+    .chat-message-text {
+
+        font-size:
+            11px;
 
     }
 
@@ -1883,7 +2641,7 @@ footer p {
 
 
 /* =====================================
-   VERY SMALL MOBILE
+   📱 VERY SMALL MOBILE
 ===================================== */
 
 @media (max-width: 380px) {
@@ -1908,11 +2666,395 @@ footer p {
 
 
     .room-card,
-    .cinema-card {
+    .cinema-card,
+    .chat-card {
 
         padding:
             12px;
 
+    }
+
+
+    .chat-messages {
+
+        height:
+            240px;
+
+    }
+
+}
+/* =========================================================
+   IDENTITY SELECTION — محمد / هستی
+   اضافه شده بدون حذف استایل‌های قبلی
+========================================================= */
+
+.identity-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(35, 25, 70, 0.72),
+            rgba(0, 0, 0, 0.94)
+        );
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.identity-modal.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.identity-box {
+    width: min(460px, 100%);
+    padding: 35px 30px;
+    text-align: center;
+    border-radius: 28px;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(30, 30, 55, 0.98),
+            rgba(10, 10, 25, 0.98)
+        );
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.65);
+    animation: identityBoxIn 0.45s ease;
+}
+
+@keyframes identityBoxIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.identity-icon {
+    font-size: 50px;
+    margin-bottom: 12px;
+}
+
+.identity-box h2 {
+    margin: 0 0 8px;
+    font-size: 28px;
+}
+
+.identity-box p {
+    margin: 0 0 25px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.identity-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.identity-btn {
+    border: none;
+    border-radius: 20px;
+    padding: 20px 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    font-family: "Vazirmatn", Tahoma, Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.identity-btn:hover {
+    transform: translateY(-4px);
+}
+
+.identity-btn:active {
+    transform: translateY(0) scale(0.97);
+}
+
+.identity-btn.mohammad {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(45, 110, 180, 0.85),
+            rgba(20, 55, 110, 0.95)
+        );
+    box-shadow: 0 10px 30px rgba(30, 100, 200, 0.2);
+}
+
+.identity-btn.hasti {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(180, 75, 135, 0.85),
+            rgba(100, 30, 75, 0.95)
+        );
+    box-shadow: 0 10px 30px rgba(200, 70, 150, 0.2);
+}
+
+.identity-avatar {
+    font-size: 35px;
+}
+
+
+/* =========================================================
+   CHAT IDENTITY
+========================================================= */
+
+.chat-identity {
+    white-space: nowrap;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   CHAT NOTIFICATIONS
+   دسکتاپ: کنار بخش فیلم
+   موبایل: پایین صفحه
+========================================================= */
+
+.chat-notifications {
+    position: fixed;
+    left: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 9990;
+    width: min(330px, calc(100vw - 40px));
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.chat-notification {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 15px;
+    border-radius: 18px;
+    background: rgba(20, 20, 35, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    opacity: 0;
+    transform: translateX(-30px) scale(0.95);
+    transition:
+        opacity 0.35s ease,
+        transform 0.35s ease;
+}
+
+.chat-notification.show {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+}
+
+.notification-icon {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 21px;
+}
+
+.notification-content {
+    min-width: 0;
+    text-align: right;
+}
+
+.notification-name {
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 3px;
+}
+
+.notification-message {
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #e8e9f2;
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   CHANGE IDENTITY BUTTON
+========================================================= */
+
+.change-identity-btn {
+    cursor: pointer;
+    margin-right: auto;
+    margin-left: 0;
+    padding: 7px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    color: inherit;
+    font-family: "Vazirmatn", Tahoma, Arial, sans-serif;
+    font-size: 10px;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.change-identity-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   MOBILE — هویت و نوتیفیکیشن
+========================================================= */
+
+@media (max-width: 800px) {
+
+    .identity-box {
+        padding: 28px 20px;
+        border-radius: 23px;
+    }
+
+    .identity-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .identity-btn {
+        flex-direction: row;
+        padding: 15px;
+    }
+
+    .chat-notifications {
+        top: auto;
+        bottom: 20px;
+        left: 15px;
+        width: calc(100vw - 30px);
+        transform: none;
+    }
+
+    .chat-notification {
+        transform: translateY(20px) scale(0.95);
+    }
+
+    .chat-notification.show {
+        transform: translateY(0) scale(1);
+    }
+
+    .notification-message {
+        max-width: calc(100vw - 120px);
+    }
+}
+
+@media (max-width: 450px) {
+
+    .identity-box h2 {
+        font-size: 24px;
+    }
+
+    .identity-box p {
+        font-size: 12px;
+    }
+
+    .chat-notification {
+        padding: 11px 12px;
+    }
+
+}
+
+
+/* =========================================================
+   EMOJI PICKER
+========================================================= */
+
+.emoji-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.emoji-wrapper > button {
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    font-size: 19px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.emoji-wrapper > button:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-1px);
+}
+
+.emoji-panel {
+    position: absolute;
+    bottom: 52px;
+    right: 0;
+    width: 240px;
+    max-height: 220px;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 4px;
+    padding: 10px;
+    border-radius: 16px;
+    background: rgba(20, 20, 35, 0.97);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 500;
+}
+
+.emoji-panel.hidden {
+    display: none;
+}
+
+.emoji-panel span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    font-size: 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.emoji-panel span:hover {
+    background: rgba(139, 108, 255, 0.22);
+}
+
+@media (max-width: 800px) {
+
+    .emoji-panel {
+        right: auto;
+        left: 0;
+        width: 220px;
     }
 
 }

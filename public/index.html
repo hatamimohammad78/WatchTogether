@@ -12,13 +12,15 @@
 
     <title>جهان هستی 🎬</title>
 
-    <!-- فونت فارسی -->
     <link
         href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet"
     >
 
-    <link rel="stylesheet" href="style.css">
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 
 </head>
 
@@ -26,9 +28,61 @@
 <body>
 
 
-    <!-- ================================= -->
-    <!-- فضای کیهانی -->
-    <!-- ================================= -->
+    <!-- =====================================
+         مودال انتخاب هویت (محمد / هستی)
+    ====================================== -->
+
+    <div id="identityModal" class="identity-modal">
+
+        <div class="identity-box">
+
+            <div class="identity-icon">
+                💫
+            </div>
+
+            <h2>
+                شما کی هستید؟
+            </h2>
+
+            <p>
+                لطفاً هویت خود را انتخاب کنید
+            </p>
+
+            <div class="identity-buttons">
+
+                <button
+                    id="mohammadBtn"
+                    class="identity-btn mohammad"
+                    type="button"
+                >
+                    <span class="identity-avatar">
+                        👨🏻‍🚀
+                    </span>
+                    محمد
+                </button>
+
+                <button
+                    id="hastiBtn"
+                    class="identity-btn hasti"
+                    type="button"
+                >
+                    <span class="identity-avatar">
+                        👩🏻‍🚀
+                    </span>
+                    هستی
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================
+         پس‌زمینه فضایی
+    ====================================== -->
 
     <div class="space-background">
 
@@ -36,8 +90,6 @@
         <div class="stars stars-2"></div>
         <div class="stars stars-3"></div>
 
-
-        <!-- منظومه شمسی -->
 
         <div class="solar-system">
 
@@ -69,16 +121,24 @@
 
 
 
-    <!-- ================================= -->
-    <!-- محتوای اصلی -->
-    <!-- ================================= -->
+    <!-- =====================================
+         نوتیفیکیشن‌های چت
+    ====================================== -->
+
+    <div id="chatNotifications" class="chat-notifications"></div>
+
+
+
+    <!-- =====================================
+         محتوای اصلی
+    ====================================== -->
 
     <main class="container">
 
 
-        <!-- ================================= -->
-        <!-- Header -->
-        <!-- ================================= -->
+        <!-- =====================================
+             Header
+        ====================================== -->
 
         <header class="hero">
 
@@ -100,9 +160,9 @@
 
 
 
-        <!-- ================================= -->
-        <!-- اتاق -->
-        <!-- ================================= -->
+        <!-- =====================================
+             اتاق
+        ====================================== -->
 
         <section class="room-card">
 
@@ -140,9 +200,17 @@
                     autocomplete="off"
                 >
 
-                <button id="joinBtn">
+                <button
+                    id="joinBtn"
+                    type="button"
+                >
+
                     ورود به اتاق
-                    <span>🚀</span>
+
+                    <span>
+                        🚀
+                    </span>
+
                 </button>
 
             </div>
@@ -151,9 +219,9 @@
 
 
 
-        <!-- ================================= -->
-        <!-- وضعیت -->
-        <!-- ================================= -->
+        <!-- =====================================
+             وضعیت
+        ====================================== -->
 
         <div
             id="status"
@@ -168,80 +236,210 @@
 
 
 
-        <!-- ================================= -->
-        <!-- سینما -->
-        <!-- ================================= -->
+        <!-- =====================================
+             فیلم + چت
+        ====================================== -->
 
-        <section class="cinema-card">
+        <section class="watch-area">
 
 
-            <div class="cinema-header">
+            <!-- =====================================
+                 سینما
+            ====================================== -->
 
-                <div class="film-icon">
-                    🎞️
+            <section class="cinema-card">
+
+                <div class="cinema-header">
+
+                    <div class="film-icon">
+                        🎞️
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            سینمای جهان هستی
+                        </h2>
+
+                        <p>
+                            فیلم خود را انتخاب کنید و باهم تماشا کنید
+                        </p>
+
+                    </div>
+
                 </div>
 
-                <div>
 
-                    <h2>
-                        سینمای جهان هستی
-                    </h2>
 
-                    <p>
-                        فیلم خود را انتخاب کنید و باهم تماشا کنید
-                    </p>
+                <div class="movie-frame">
+
+                    <div class="movie-glow"></div>
+
+                    <video
+                        id="video"
+                        controls
+                        preload="metadata"
+                    ></video>
 
                 </div>
 
-            </div>
+
+
+                <label class="file-button">
+
+                    <span class="file-icon">
+                        🎬
+                    </span>
+
+                    <span>
+                        انتخاب فیلم
+                    </span>
+
+                    <input
+                        type="file"
+                        id="fileInput"
+                        accept="video/*"
+                        hidden
+                    >
+
+                </label>
+
+            </section>
 
 
 
-            <!-- پرده سینما -->
+            <!-- =====================================
+                 چت
+            ====================================== -->
 
-            <div class="movie-frame">
+            <section class="chat-card">
 
-                <div class="movie-glow"></div>
+                <div class="chat-header">
 
-                <video
-                    id="video"
-                    controls
-                    preload="metadata"
-                ></video>
+                    <div class="chat-icon">
+                        💬
+                    </div>
 
-            </div>
+                    <div class="chat-title">
+
+                        <h2>
+                            گفتگوی ما
+                        </h2>
+
+                        <p>
+                            محمد ❤️ هستی
+                        </p>
+
+                    </div>
+
+                    <span
+                        id="chatIdentity"
+                        class="chat-identity"
+                    >
+                        —
+                    </span>
+
+                    <button
+                        id="changeIdentityBtn"
+                        class="change-identity-btn"
+                        type="button"
+                    >
+                        تغییر هویت
+                    </button>
+
+                    <div class="chat-online">
+
+                        <span></span>
+
+                        آنلاین
+
+                    </div>
+
+                </div>
 
 
 
-            <!-- انتخاب فیلم -->
-
-            <label class="file-button">
-
-                <span class="file-icon">
-                    🎬
-                </span>
-
-                <span>
-                    انتخاب فیلم
-                </span>
-
-                <input
-                    type="file"
-                    id="fileInput"
-                    accept="video/*"
-                    hidden
+                <div
+                    id="chatMessages"
+                    class="chat-messages"
                 >
 
-            </label>
+                    <div
+                        id="chatEmpty"
+                        class="chat-empty"
+                    >
+
+                        <div class="empty-icon">
+                            💫
+                        </div>
+
+                        <span>
+                            هنوز پیامی ارسال نشده
+                        </span>
+
+                        <small>
+                            گفتگوی خود را شروع کنید ❤️
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="chat-input-box">
+
+                    <div class="emoji-wrapper">
+
+                        <button
+                            id="emojiBtn"
+                            type="button"
+                            aria-label="ایموجی"
+                        >
+                            😊
+                        </button>
+
+                        <div
+                            id="emojiPanel"
+                            class="emoji-panel hidden"
+                        ></div>
+
+                    </div>
+
+                    <input
+                        type="text"
+                        id="chatInput"
+                        placeholder="پیام خود را بنویسید..."
+                        autocomplete="off"
+                        maxlength="500"
+                        disabled
+                    >
+
+                    <button
+                        id="sendChatBtn"
+                        type="button"
+                        aria-label="ارسال پیام"
+                    >
+                        ➤
+                    </button>
+
+                </div>
+
+
+                <div class="chat-hint">
+                    برای ارسال سریع، Enter را بزنید
+                </div>
+
+            </section>
 
 
         </section>
 
 
 
-        <!-- ================================= -->
-        <!-- کاربران -->
-        <!-- ================================= -->
+        <!-- =====================================
+             کاربران
+        ====================================== -->
 
         <section class="users">
 
@@ -313,9 +511,9 @@
 
 
 
-        <!-- ================================= -->
-        <!-- Footer -->
-        <!-- ================================= -->
+        <!-- =====================================
+             Footer
+        ====================================== -->
 
         <footer>
 
@@ -348,7 +546,9 @@
 
 
 
-    <!-- Socket.IO -->
+    <!-- =====================================
+         Socket.IO
+    ====================================== -->
 
     <script src="/socket.io/socket.io.js"></script>
 
