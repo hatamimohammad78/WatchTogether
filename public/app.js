@@ -16,15 +16,6 @@ let roomId = null;
 // جلوگیری از ارسال دوباره فرمانی که از طرف مقابل دریافت شده
 let isRemoteAction = false;
 
-// زمان آخرین همگام‌سازی
-let lastSyncTime = 0;
-
-// فاصله زمانی مجاز بین دو فیلم
-const SYNC_THRESHOLD = 0.25;
-
-// هر چند میلی‌ثانیه یک بار Sync بررسی شود
-const SYNC_INTERVAL = 3000;
-
 
 // =====================================
 // انتخاب فیلم
@@ -46,7 +37,8 @@ fileInput.addEventListener("change", () => {
 
     video.load();
 
-    status.textContent = `فیلم "${file.name}" آماده پخش است 🎬`;
+    status.textContent =
+        `فیلم "${file.name}" آماده پخش است 🎬`;
 });
 
 
@@ -59,7 +51,9 @@ joinBtn.addEventListener("click", () => {
     const room = roomInput.value.trim();
 
     if (!room) {
+
         alert("لطفاً کد اتاق را وارد کنید.");
+
         return;
     }
 
@@ -73,6 +67,7 @@ joinBtn.addEventListener("click", () => {
     meStatus.textContent = "🟢";
 
     roomInput.disabled = true;
+
     joinBtn.disabled = true;
 });
 
@@ -162,7 +157,7 @@ video.addEventListener("seeked", () => {
 
 
 // =====================================
-// دریافت فرمان از نفر دوم
+// دریافت فرمان از طرف مقابل
 // =====================================
 
 socket.on("video-action", async (data) => {
@@ -198,108 +193,13 @@ socket.on("video-action", async (data) => {
 
     }
 
-    setTimeout(() => {
-
-        isRemoteAction = false;
-
-    }, 100);
-});
-
-
-// =====================================
-// درخواست Sync از نفر دیگر
-// =====================================
-
-socket.on("sync-request", () => {
-
-    if (!video.src || !roomId) return;
-
-    socket.emit("sync-response", {
-
-        roomId: roomId,
-
-        time: video.currentTime,
-
-        playing: !video.paused
-
-    });
-});
-
-
-// =====================================
-// دریافت اطلاعات Sync
-// =====================================
-
-socket.on("sync-response", async (data) => {
-
-    if (!video.src) return;
-
-    const now = Date.now();
-
-    // جلوگیری از Sync بیش از حد
-    if (now - lastSyncTime < 1000) {
-        return;
-    }
-
-    lastSyncTime = now;
-
-    const difference =
-        Math.abs(video.currentTime - data.time);
-
-    // اگر اختلاف کمتر از حد مجاز است
-    // کاری انجام نمی‌دهیم
-    if (difference < SYNC_THRESHOLD) {
-
-        return;
-    }
-
-    isRemoteAction = true;
-
-    try {
-
-        // اصلاح زمان
-        video.currentTime = data.time;
-
-        // اصلاح وضعیت Play / Pause
-        if (data.playing && video.paused) {
-
-            await video.play();
-
-        } else if (!data.playing && !video.paused) {
-
-            video.pause();
-
-        }
-
-    } catch (error) {
-
-        console.log("Sync error:", error);
-
-    }
+    // کمی زمان می‌دهیم تا eventهای ویدیو
+    // دوباره فرمان را ارسال نکنند
 
     setTimeout(() => {
 
         isRemoteAction = false;
 
-    }, 100);
+    }, 300);
 
 });
-
-
-// =====================================
-// هر چند ثانیه Sync را بررسی کن
-// =====================================
-
-setInterval(() => {
-
-    if (!roomId || !video.src) {
-        return;
-    }
-
-    socket.emit("request-sync", {
-
-        roomId: roomId
-
-    });
-
-}, SYNC_INTERVAL);
