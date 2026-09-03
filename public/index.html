@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>باهم ببینیم 🎬</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>🎬 باهم ببینیم</h1>
+
+        <p class="subtitle">
+            فیلم را انتخاب کنید و باهم تماشا کنید ❤️
+        </p>
+
+        <div class="room-box">
+
+            <label for="roomInput">
+                کد اتاق
+            </label>
+
+            <input
+                type="text"
+                id="roomInput"
+                placeholder="مثلاً ABC123"
+            >
+
+            <button id="joinBtn">
+                ورود به اتاق
+            </button>
+
+        </div>
+
+        <div id="status" class="status">
+            هنوز وارد اتاق نشده‌اید
+        </div>
+
+        <div class="video-section">
+
+            <video
+                id="video"
+                controls
+                preload="metadata"
+            ></video>
+
+            <label class="file-button">
+                🎞 انتخاب فیلم
+
+                <input
+                    type="file"
+                    id="fileInput"
+                    accept="video/*"
+                    hidden
+                >
+            </label>
+
+        </div>
+
+        <div class="users">
+
+            <div>
+                👤 شما
+                <span id="meStatus">⚪</span>
+            </div>
+
+            <div>
+                ❤️ پارتنر
+                <span id="partnerStatus">⚪</span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+
+</body>
+</html>

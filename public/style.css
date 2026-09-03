@@ -1,0 +1,191 @@
+```css
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Tahoma, Arial, sans-serif;
+    background: #0b0f14;
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px 20px 50px;
+}
+
+/* Header */
+
+h1 {
+    text-align: center;
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #9da7b3;
+    font-size: 15px;
+    margin-bottom: 30px;
+}
+
+/* Room */
+
+.room-box {
+    background: #121820;
+    border: 1px solid #202a35;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.room-box label {
+    color: #b9c2cc;
+    white-space: nowrap;
+}
+
+.room-box input {
+    flex: 1;
+    background: #0b0f14;
+    color: white;
+    border: 1px solid #303b48;
+    border-radius: 10px;
+    padding: 13px 15px;
+    outline: none;
+    font-size: 15px;
+    direction: ltr;
+}
+
+.room-box input:focus {
+    border-color: #5c7cff;
+}
+
+.room-box button {
+    background: #5c7cff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 22px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.room-box button:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
+}
+
+.room-box button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Status */
+
+.status {
+    background: #10161d;
+    border: 1px solid #202a35;
+    border-radius: 12px;
+    padding: 13px;
+    text-align: center;
+    color: #b8c1cb;
+    margin-bottom: 20px;
+}
+
+/* Video */
+
+.video-section {
+    background: #121820;
+    border: 1px solid #202a35;
+    border-radius: 18px;
+    padding: 15px;
+}
+
+video {
+    width: 100%;
+    display: block;
+    background: #000;
+    border-radius: 12px;
+    max-height: 600px;
+}
+
+/* File button */
+
+.file-button {
+    display: block;
+    width: fit-content;
+    margin: 15px auto 5px;
+    background: #1d2630;
+    border: 1px solid #303b48;
+    color: #ffffff;
+    padding: 12px 22px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.file-button:hover {
+    background: #27323e;
+}
+
+/* Users */
+
+.users {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.users div {
+    background: #121820;
+    border: 1px solid #202a35;
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+    color: #d5dbe2;
+}
+
+.users span {
+    margin-right: 8px;
+}
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+    .container {
+        padding: 20px 12px 40px;
+    }
+
+    h1 {
+        font-size: 27px;
+    }
+
+    .room-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .room-box label {
+        text-align: right;
+    }
+
+    .room-box button {
+        width: 100%;
+    }
+
+    .users {
+        grid-template-columns: 1fr;
+    }
+}
+```
