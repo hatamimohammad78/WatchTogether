@@ -91,6 +91,18 @@ const emojiPanel =
 
 
 // =====================================
+// Subtitle Picker
+// =====================================
+
+const subtitleInput =
+    document.getElementById("subtitleInput");
+
+let subtitleUrl = null;
+
+let subtitleTrackElement = null;
+
+
+// =====================================
 // Variables
 // =====================================
 
@@ -255,6 +267,145 @@ fileInput.addEventListener(
 
         status.textContent =
             `فیلم "${file.name}" آماده پخش است 🎬`;
+
+    }
+);
+
+
+// =====================================
+// تبدیل فرمت SRT به VTT
+// (چون تگ <track> فقط VTT را می‌فهمد)
+// =====================================
+
+function convertSrtToVtt(srtText) {
+
+    let vttText =
+        "WEBVTT\n\n" +
+        srtText
+            .replace(/\r+/g, "")
+            .replace(
+                /(\d{2}:\d{2}:\d{2}),(\d{3})/g,
+                "$1.$2"
+            );
+
+    return vttText;
+
+}
+
+
+// =====================================
+// انتخاب زیرنویس
+// =====================================
+
+subtitleInput.addEventListener(
+    "change",
+    async () => {
+
+        const file =
+            subtitleInput.files[0];
+
+        if (!file) return;
+
+
+        const rawText =
+            await file.text();
+
+
+        const isSrt =
+            file.name
+                .toLowerCase()
+                .endsWith(".srt");
+
+
+        const vttText =
+            isSrt
+                ? convertSrtToVtt(rawText)
+                : rawText;
+
+
+        // پاک کردن زیرنویس قبلی
+
+        if (subtitleUrl) {
+
+            URL.revokeObjectURL(
+                subtitleUrl
+            );
+
+        }
+
+
+        if (subtitleTrackElement) {
+
+            subtitleTrackElement.remove();
+
+        }
+
+
+        // ساخت فایل VTT موقت در حافظه
+
+        const blob =
+            new Blob(
+                [vttText],
+                { type: "text/vtt" }
+            );
+
+
+        subtitleUrl =
+            URL.createObjectURL(blob);
+
+
+        // ساخت تگ track و افزودن به ویدیو
+
+        subtitleTrackElement =
+            document.createElement(
+                "track"
+            );
+
+
+        subtitleTrackElement.kind =
+            "subtitles";
+
+
+        subtitleTrackElement.label =
+            "فارسی";
+
+
+        subtitleTrackElement.srclang =
+            "fa";
+
+
+        subtitleTrackElement.src =
+            subtitleUrl;
+
+
+        subtitleTrackElement.default =
+            true;
+
+
+        video.appendChild(
+            subtitleTrackElement
+        );
+
+
+        // فعال کردن نمایش زیرنویس
+
+        setTimeout(
+            () => {
+
+                if (video.textTracks[0]) {
+
+                    video.textTracks[0].mode =
+                        "showing";
+
+                }
+
+            },
+            100
+        );
+
+
+        status.textContent =
+            `زیرنویس "${file.name}" فعال شد ✅`;
 
     }
 );
