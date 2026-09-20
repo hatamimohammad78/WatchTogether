@@ -1272,6 +1272,879 @@ video {
 
 
 /* =====================================
+   🎮 PLAYER WRAPPER (پلیر اختصاصی)
+===================================== */
+
+.player-wrapper {
+
+    position:
+        relative;
+
+    width:
+        100%;
+
+    border-radius:
+        15px;
+
+    overflow:
+        hidden;
+
+}
+
+
+.player-wrapper.is-fullscreen video {
+
+    border-radius:
+        0;
+
+    aspect-ratio:
+        auto;
+
+    height:
+        100vh;
+
+}
+
+
+/* =====================================
+   دکمه پلی بزرگ وسط
+===================================== */
+
+.center-play-btn {
+
+    position:
+        absolute;
+
+    top:
+        50%;
+
+    left:
+        50%;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1);
+
+    width:
+        68px;
+
+    height:
+        68px;
+
+    border-radius:
+        50%;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.25);
+
+    background:
+        rgba(15, 15, 30, 0.55);
+
+    backdrop-filter:
+        blur(6px);
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    color:
+        white;
+
+    cursor:
+        pointer;
+
+    z-index:
+        4;
+
+    opacity:
+        1;
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.2s ease,
+        background 0.2s ease;
+
+}
+
+
+.center-play-btn svg {
+
+    width:
+        26px;
+
+    height:
+        26px;
+
+    margin-left:
+        3px;
+
+}
+
+
+.center-play-btn:hover {
+
+    background:
+        rgba(139, 108, 255, 0.4);
+
+    transform:
+        translate(-50%, -50%)
+        scale(1.08);
+
+}
+
+
+.center-play-btn.is-playing {
+
+    opacity:
+        0;
+
+    pointer-events:
+        none;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0.85);
+
+}
+
+
+/* =====================================
+   REACTIONS LAYER
+===================================== */
+
+.reactions-layer {
+
+    position:
+        absolute;
+
+    inset:
+        0;
+
+    overflow:
+        hidden;
+
+    pointer-events:
+        none;
+
+    z-index:
+        5;
+
+    border-radius:
+        15px;
+
+}
+
+
+.reaction-emoji {
+
+    position:
+        absolute;
+
+    bottom:
+        14%;
+
+    font-size:
+        32px;
+
+    animation:
+        reactionFloat 2.2s ease-out forwards;
+
+    filter:
+        drop-shadow(0 4px 10px rgba(0, 0, 0, 0.45));
+
+}
+
+
+@keyframes reactionFloat {
+
+    0% {
+
+        transform:
+            translateY(0)
+            scale(0.5)
+            rotate(0deg);
+
+        opacity:
+            0;
+
+    }
+
+    15% {
+
+        opacity:
+            1;
+
+        transform:
+            translateY(-15%)
+            scale(1.15)
+            rotate(0deg);
+
+    }
+
+    100% {
+
+        transform:
+            translateY(-230%)
+            scale(1.25)
+            rotate(var(--rot, 0deg));
+
+        opacity:
+            0;
+
+    }
+
+}
+
+
+.reaction-sparkle {
+
+    position:
+        absolute;
+
+    bottom:
+        16%;
+
+    font-size:
+        14px;
+
+    color:
+        #ffd75c;
+
+    animation:
+        sparkleFloat 1.6s ease-out forwards;
+
+    text-shadow:
+        0 0 6px
+        rgba(255, 215, 92, 0.8);
+
+}
+
+
+@keyframes sparkleFloat {
+
+    0% {
+
+        transform:
+            translate(0, 0)
+            scale(0.4)
+            rotate(0deg);
+
+        opacity:
+            0;
+
+    }
+
+    20% {
+
+        opacity:
+            1;
+
+        transform:
+            translate(var(--drift, 0), -25%)
+            scale(1)
+            rotate(90deg);
+
+    }
+
+    100% {
+
+        transform:
+            translate(var(--drift, 0), -140%)
+            scale(0.3)
+            rotate(220deg);
+
+        opacity:
+            0;
+
+    }
+
+}
+
+
+/* =====================================
+   PLAYER CONTROLS
+===================================== */
+
+.player-controls {
+
+    position:
+        absolute;
+
+    left:
+        0;
+
+    right:
+        0;
+
+    bottom:
+        0;
+
+    z-index:
+        6;
+
+    padding:
+        10px 14px 12px;
+
+    background:
+
+        linear-gradient(
+            to top,
+            rgba(0, 0, 0, 0.82),
+            rgba(0, 0, 0, 0.2) 70%,
+            transparent
+        );
+
+    border-radius:
+        0 0 15px 15px;
+
+    opacity:
+        1;
+
+    transform:
+        translateY(0);
+
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+
+}
+
+
+.player-controls.controls-hidden {
+
+    opacity:
+        0;
+
+    transform:
+        translateY(6px);
+
+    pointer-events:
+        none;
+
+}
+
+
+.progress-bar-wrap {
+
+    position:
+        relative;
+
+    height:
+        5px;
+
+    background:
+        rgba(255, 255, 255, 0.18);
+
+    border-radius:
+        10px;
+
+    cursor:
+        pointer;
+
+    margin-bottom:
+        10px;
+
+    transition:
+        height 0.15s ease;
+
+}
+
+
+.progress-bar-wrap:hover {
+
+    height:
+        7px;
+
+}
+
+
+.progress-bar-buffered {
+
+    position:
+        absolute;
+
+    top:
+        0;
+
+    left:
+        0;
+
+    height:
+        100%;
+
+    width:
+        0%;
+
+    border-radius:
+        10px;
+
+    background:
+        rgba(255, 255, 255, 0.3);
+
+}
+
+
+.progress-bar-filled {
+
+    position:
+        absolute;
+
+    top:
+        0;
+
+    left:
+        0;
+
+    height:
+        100%;
+
+    width:
+        0%;
+
+    border-radius:
+        10px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            #8b6cff,
+            #ff4f9a
+        );
+
+    box-shadow:
+        0 0 8px
+        rgba(139, 108, 255, 0.6);
+
+}
+
+
+.progress-bar-handle {
+
+    position:
+        absolute;
+
+    top:
+        50%;
+
+    left:
+        0%;
+
+    width:
+        12px;
+
+    height:
+        12px;
+
+    border-radius:
+        50%;
+
+    background:
+        #ffffff;
+
+    transform:
+        translate(-50%, -50%);
+
+    box-shadow:
+        0 0 8px
+        rgba(139, 108, 255, 0.8);
+
+}
+
+
+.controls-row {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    direction:
+        ltr;
+
+}
+
+
+.spacer {
+
+    flex:
+        1;
+
+}
+
+
+.player-btn {
+
+    width:
+        32px;
+
+    height:
+        32px;
+
+    flex-shrink:
+        0;
+
+    border:
+        none;
+
+    border-radius:
+        9px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    background:
+        rgba(255, 255, 255, 0.1);
+
+    color:
+        white;
+
+    font-size:
+        14px;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.15s ease;
+
+}
+
+
+.player-btn:hover {
+
+    background:
+        rgba(255, 255, 255, 0.2);
+
+}
+
+
+.player-btn svg {
+
+    width:
+        16px;
+
+    height:
+        16px;
+
+}
+
+
+.hidden-icon {
+
+    display:
+        none !important;
+
+}
+
+
+@keyframes popPulse {
+
+    0% {
+
+        transform:
+            scale(1);
+
+    }
+
+    40% {
+
+        transform:
+            scale(1.25);
+
+    }
+
+    100% {
+
+        transform:
+            scale(1);
+
+    }
+
+}
+
+
+.player-btn.pop {
+
+    animation:
+        popPulse 0.35s ease;
+
+}
+
+
+.time-display {
+
+    color:
+        #cfd3e0;
+
+    font-size:
+        10px;
+
+    white-space:
+        nowrap;
+
+}
+
+
+.volume-wrapper {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        6px;
+
+}
+
+
+.volume-wrapper input[type="range"] {
+
+    width:
+        60px;
+
+    accent-color:
+        #8b6cff;
+
+}
+
+
+.reaction-picker-wrapper,
+.speed-wrapper {
+
+    position:
+        relative;
+
+}
+
+
+.speed-btn {
+
+    width:
+        auto;
+
+    padding:
+        0 8px;
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+
+    font-family:
+        "Vazirmatn",
+        Tahoma,
+        Arial,
+        sans-serif;
+
+}
+
+
+.reaction-picker,
+.speed-menu {
+
+    position:
+        absolute;
+
+    bottom:
+        42px;
+
+    background:
+        rgba(20, 20, 35, 0.97);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.12);
+
+    border-radius:
+        14px;
+
+    box-shadow:
+        0 10px 30px
+        rgba(0, 0, 0, 0.4);
+
+    z-index:
+        20;
+
+}
+
+
+.reaction-picker {
+
+    left:
+        50%;
+
+    transform:
+        translateX(-50%);
+
+    display:
+        flex;
+
+    gap:
+        6px;
+
+    padding:
+        8px;
+
+}
+
+
+.reaction-picker.hidden,
+.speed-menu.hidden {
+
+    display:
+        none;
+
+}
+
+
+.reaction-picker button {
+
+    border:
+        none;
+
+    background:
+        transparent;
+
+    font-size:
+        20px;
+
+    padding:
+        4px;
+
+    border-radius:
+        8px;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.15s ease,
+        transform 0.15s ease;
+
+}
+
+
+.reaction-picker button:hover {
+
+    background:
+        rgba(139, 108, 255, 0.25);
+
+    transform:
+        scale(1.15);
+
+}
+
+
+.speed-menu {
+
+    left:
+        50%;
+
+    transform:
+        translateX(-50%);
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    padding:
+        6px;
+
+    min-width:
+        70px;
+
+}
+
+
+.speed-menu button {
+
+    border:
+        none;
+
+    background:
+        transparent;
+
+    color:
+        #cfd3e0;
+
+    font-size:
+        12px;
+
+    font-family:
+        "Vazirmatn",
+        Tahoma,
+        Arial,
+        sans-serif;
+
+    padding:
+        7px 10px;
+
+    border-radius:
+        8px;
+
+    cursor:
+        pointer;
+
+    text-align:
+        center;
+
+    transition:
+        background 0.15s ease;
+
+}
+
+
+.speed-menu button:hover {
+
+    background:
+        rgba(255, 255, 255, 0.08);
+
+}
+
+
+.speed-menu button.active {
+
+    background:
+
+        linear-gradient(
+            135deg,
+            rgba(139, 108, 255, 0.35),
+            rgba(255, 79, 154, 0.2)
+        );
+
+    color:
+        #ffffff;
+
+    font-weight:
+        700;
+
+}
+
+
+/* =====================================
    FILE BUTTON
 ===================================== */
 
@@ -2508,6 +3381,76 @@ footer {
     }
 
 
+    .player-wrapper {
+
+        border-radius:
+            11px;
+
+    }
+
+
+    .reactions-layer {
+
+        border-radius:
+            11px;
+
+    }
+
+
+    .player-controls {
+
+        padding:
+            7px 8px 9px;
+
+    }
+
+
+    .controls-row {
+
+        gap:
+            5px;
+
+    }
+
+
+    .time-display {
+
+        display:
+            none;
+
+    }
+
+
+    .volume-wrapper input[type="range"] {
+
+        width:
+            36px;
+
+    }
+
+
+    .center-play-btn {
+
+        width:
+            54px;
+
+        height:
+            54px;
+
+    }
+
+
+    .center-play-btn svg {
+
+        width:
+            20px;
+
+        height:
+            20px;
+
+    }
+
+
     .file-button {
 
         width:
@@ -2986,7 +3929,7 @@ footer {
 
 
 /* =========================================================
-   EMOJI PICKER
+   EMOJI PICKER (چت)
 ========================================================= */
 
 .emoji-wrapper {

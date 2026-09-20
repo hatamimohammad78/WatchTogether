@@ -80,7 +80,7 @@ const changeIdentityBtn =
 
 
 // =====================================
-// Emoji Picker
+// Emoji Picker (چت)
 // =====================================
 
 const emojiBtn =
@@ -103,6 +103,212 @@ let subtitleTrackElement = null;
 
 
 // =====================================
+// Player اختصاصی
+// =====================================
+
+const playerWrapper =
+    document.getElementById("playerWrapper");
+
+const centerPlayBtn =
+    document.getElementById("centerPlayBtn");
+
+const playPauseBtn =
+    document.getElementById("playPauseBtn");
+
+const playPauseIconPlay =
+    playPauseBtn.querySelector(".icon-play");
+
+const playPauseIconPause =
+    playPauseBtn.querySelector(".icon-pause");
+
+const progressBarWrap =
+    document.getElementById("progressBarWrap");
+
+const progressBarBuffered =
+    document.getElementById("progressBarBuffered");
+
+const progressBarFilled =
+    document.getElementById("progressBarFilled");
+
+const progressBarHandle =
+    document.getElementById("progressBarHandle");
+
+const timeDisplay =
+    document.getElementById("timeDisplay");
+
+const muteBtn =
+    document.getElementById("muteBtn");
+
+const volIconOn =
+    muteBtn.querySelector(".icon-vol-on");
+
+const volIconOff =
+    muteBtn.querySelector(".icon-vol-off");
+
+const volumeSlider =
+    document.getElementById("volumeSlider");
+
+const fullscreenBtn =
+    document.getElementById("fullscreenBtn");
+
+const expandIcon =
+    fullscreenBtn.querySelector(".icon-expand");
+
+const compressIcon =
+    fullscreenBtn.querySelector(".icon-compress");
+
+const playerControls =
+    document.getElementById("playerControls");
+
+
+// =====================================
+// Speed Control (سرعت پخش)
+// =====================================
+
+const speedBtn =
+    document.getElementById("speedBtn");
+
+const speedMenu =
+    document.getElementById("speedMenu");
+
+const speedOptions = [
+    0.25, 0.5, 0.75,
+    1, 1.25, 1.5, 1.75, 2
+];
+
+let currentSpeed = 1;
+
+
+speedOptions.forEach((speed) => {
+
+    const item =
+        document.createElement("button");
+
+    item.type =
+        "button";
+
+    item.textContent =
+        `${speed}×`;
+
+    item.dataset.speed =
+        speed;
+
+    if (speed === 1) {
+
+        item.classList.add(
+            "active"
+        );
+
+    }
+
+
+    item.addEventListener(
+        "click",
+        () => {
+
+            setPlaybackRate(speed);
+
+            speedMenu.classList.add(
+                "hidden"
+            );
+
+        }
+    );
+
+
+    speedMenu.appendChild(
+        item
+    );
+
+});
+
+
+function setPlaybackRate(speed) {
+
+    currentSpeed =
+        speed;
+
+
+    video.playbackRate =
+        speed;
+
+
+    speedBtn.textContent =
+        `${speed}×`;
+
+
+    speedMenu
+        .querySelectorAll("button")
+        .forEach((btn) => {
+
+            btn.classList.toggle(
+                "active",
+                Number(btn.dataset.speed) === speed
+            );
+
+        });
+
+}
+
+
+speedBtn.addEventListener(
+    "click",
+    (event) => {
+
+        event.stopPropagation();
+
+        speedMenu.classList.toggle(
+            "hidden"
+        );
+
+
+        reactionPicker.classList.add(
+            "hidden"
+        );
+
+    }
+);
+
+
+document.addEventListener(
+    "click",
+    (event) => {
+
+        if (
+            !speedMenu.contains(event.target) &&
+            event.target !== speedBtn
+        ) {
+
+            speedMenu.classList.add(
+                "hidden"
+            );
+
+        }
+
+    }
+);
+
+
+// =====================================
+// Reactions (ری‌اکشن روی پلیر)
+// =====================================
+
+const reactionBtn =
+    document.getElementById("reactionBtn");
+
+const reactionPicker =
+    document.getElementById("reactionPicker");
+
+const reactionsLayer =
+    document.getElementById("reactionsLayer");
+
+const reactionEmojiList = [
+    "❤️", "😂", "😮", "👏",
+    "🔥", "😢", "🎉", "😱"
+];
+
+
+// =====================================
 // Variables
 // =====================================
 
@@ -117,6 +323,12 @@ let myName = null;
 // فرمانی که از طرف مقابل آمده
 
 let isRemoteAction = false;
+
+
+// جلوگیری از seek ناخواسته
+// هنگام کشیدن نوار پیشرفت
+
+let isDraggingProgress = false;
 
 
 // =====================================
@@ -263,6 +475,9 @@ fileInput.addEventListener(
 
 
         video.load();
+
+
+        setPlaybackRate(1);
 
 
         status.textContent =
@@ -515,12 +730,70 @@ socket.on(
 
 
 // =====================================
-// PLAY
+// PLAY / PAUSE (پلیر اختصاصی)
 // =====================================
+
+function togglePlayPause() {
+
+    if (!video.src) {
+
+        return;
+
+    }
+
+
+    if (video.paused) {
+
+        video.play();
+
+    }
+    else {
+
+        video.pause();
+
+    }
+
+}
+
+
+playPauseBtn.addEventListener(
+    "click",
+    togglePlayPause
+);
+
+
+centerPlayBtn.addEventListener(
+    "click",
+    togglePlayPause
+);
+
+
+video.addEventListener(
+    "click",
+    togglePlayPause
+);
+
 
 video.addEventListener(
     "play",
     () => {
+
+        playPauseIconPlay.classList.add(
+            "hidden-icon"
+        );
+
+        playPauseIconPause.classList.remove(
+            "hidden-icon"
+        );
+
+
+        centerPlayBtn.classList.add(
+            "is-playing"
+        );
+
+
+        armControlsAutoHide();
+
 
         if (
             isRemoteAction ||
@@ -550,13 +823,30 @@ video.addEventListener(
 );
 
 
-// =====================================
-// PAUSE
-// =====================================
-
 video.addEventListener(
     "pause",
     () => {
+
+        playPauseIconPlay.classList.remove(
+            "hidden-icon"
+        );
+
+        playPauseIconPause.classList.add(
+            "hidden-icon"
+        );
+
+
+        centerPlayBtn.classList.remove(
+            "is-playing"
+        );
+
+
+        showControls();
+
+        clearTimeout(
+            controlsHideTimeout
+        );
+
 
         if (
             isRemoteAction ||
@@ -587,7 +877,7 @@ video.addEventListener(
 
 
 // =====================================
-// SEEK
+// SEEK (رویداد بومی ویدیو)
 // =====================================
 
 video.addEventListener(
@@ -696,6 +986,700 @@ socket.on(
             },
             300
         );
+
+    }
+);
+
+
+// =====================================
+// نوار پیشرفت (Progress Bar)
+// =====================================
+
+function formatTime(seconds) {
+
+    if (
+        !isFinite(seconds) ||
+        isNaN(seconds)
+    ) {
+
+        return "00:00";
+
+    }
+
+
+    const totalSeconds =
+        Math.floor(seconds);
+
+    const minutes =
+        Math.floor(totalSeconds / 60);
+
+    const secs =
+        totalSeconds % 60;
+
+
+    const pad =
+        (n) => String(n).padStart(2, "0");
+
+
+    return `${pad(minutes)}:${pad(secs)}`;
+
+}
+
+
+function updateProgressUI() {
+
+    if (
+        !video.duration ||
+        isDraggingProgress
+    ) {
+
+        return;
+
+    }
+
+
+    const ratio =
+        video.currentTime / video.duration;
+
+
+    progressBarFilled.style.width =
+        `${ratio * 100}%`;
+
+
+    progressBarHandle.style.left =
+        `${ratio * 100}%`;
+
+
+    timeDisplay.textContent =
+        `${formatTime(video.currentTime)} / ${formatTime(video.duration)}`;
+
+}
+
+
+video.addEventListener(
+    "timeupdate",
+    updateProgressUI
+);
+
+
+video.addEventListener(
+    "loadedmetadata",
+    updateProgressUI
+);
+
+
+// نمایش بخش بافر شده
+
+video.addEventListener(
+    "progress",
+    () => {
+
+        if (
+            !video.duration ||
+            !video.buffered.length
+        ) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const bufferedEnd =
+                video.buffered.end(
+                    video.buffered.length - 1
+                );
+
+
+            const ratio =
+                bufferedEnd / video.duration;
+
+
+            progressBarBuffered.style.width =
+                `${ratio * 100}%`;
+
+        }
+        catch (error) {
+
+            // نادیده گرفتن خطای buffered
+
+        }
+
+    }
+);
+
+
+function seekFromClientX(clientX) {
+
+    const rect =
+        progressBarWrap.getBoundingClientRect();
+
+
+    let ratio =
+        (clientX - rect.left) / rect.width;
+
+
+    ratio =
+        Math.min(1, Math.max(0, ratio));
+
+
+    progressBarFilled.style.width =
+        `${ratio * 100}%`;
+
+
+    progressBarHandle.style.left =
+        `${ratio * 100}%`;
+
+
+    if (video.duration) {
+
+        video.currentTime =
+            ratio * video.duration;
+
+    }
+
+}
+
+
+progressBarWrap.addEventListener(
+    "mousedown",
+    (event) => {
+
+        if (!video.src) return;
+
+        isDraggingProgress = true;
+
+        seekFromClientX(event.clientX);
+
+    }
+);
+
+
+window.addEventListener(
+    "mousemove",
+    (event) => {
+
+        if (!isDraggingProgress) return;
+
+        seekFromClientX(event.clientX);
+
+    }
+);
+
+
+window.addEventListener(
+    "mouseup",
+    () => {
+
+        isDraggingProgress = false;
+
+    }
+);
+
+
+// پشتیبانی از لمس (موبایل)
+
+progressBarWrap.addEventListener(
+    "touchstart",
+    (event) => {
+
+        if (!video.src) return;
+
+        isDraggingProgress = true;
+
+        seekFromClientX(
+            event.touches[0].clientX
+        );
+
+    }
+);
+
+
+window.addEventListener(
+    "touchmove",
+    (event) => {
+
+        if (!isDraggingProgress) return;
+
+        seekFromClientX(
+            event.touches[0].clientX
+        );
+
+    }
+);
+
+
+window.addEventListener(
+    "touchend",
+    () => {
+
+        isDraggingProgress = false;
+
+    }
+);
+
+
+// =====================================
+// صدا (Volume)
+// =====================================
+
+function updateVolumeIcon() {
+
+    const isMuted =
+        video.muted ||
+        video.volume === 0;
+
+
+    volIconOn.classList.toggle(
+        "hidden-icon",
+        isMuted
+    );
+
+
+    volIconOff.classList.toggle(
+        "hidden-icon",
+        !isMuted
+    );
+
+}
+
+
+volumeSlider.addEventListener(
+    "input",
+    () => {
+
+        video.volume =
+            Number(volumeSlider.value);
+
+
+        video.muted =
+            video.volume === 0;
+
+
+        updateVolumeIcon();
+
+    }
+);
+
+
+muteBtn.addEventListener(
+    "click",
+    () => {
+
+        video.muted =
+            !video.muted;
+
+
+        if (
+            !video.muted &&
+            video.volume === 0
+        ) {
+
+            video.volume = 1;
+
+            volumeSlider.value = 1;
+
+        }
+
+
+        updateVolumeIcon();
+
+    }
+);
+
+
+updateVolumeIcon();
+
+
+// =====================================
+// تمام صفحه (Fullscreen)
+// =====================================
+
+function isCurrentlyFullscreen() {
+
+    return Boolean(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement
+    );
+
+}
+
+
+function updateFullscreenIcon() {
+
+    const active =
+        isCurrentlyFullscreen();
+
+
+    expandIcon.classList.toggle(
+        "hidden-icon",
+        active
+    );
+
+
+    compressIcon.classList.toggle(
+        "hidden-icon",
+        !active
+    );
+
+
+    playerWrapper.classList.toggle(
+        "is-fullscreen",
+        active
+    );
+
+}
+
+
+fullscreenBtn.addEventListener(
+    "click",
+    () => {
+
+        if (!isCurrentlyFullscreen()) {
+
+            if (playerWrapper.requestFullscreen) {
+
+                playerWrapper.requestFullscreen();
+
+            }
+            else if (playerWrapper.webkitRequestFullscreen) {
+
+                playerWrapper.webkitRequestFullscreen();
+
+            }
+
+        }
+        else {
+
+            if (document.exitFullscreen) {
+
+                document.exitFullscreen();
+
+            }
+            else if (document.webkitExitFullscreen) {
+
+                document.webkitExitFullscreen();
+
+            }
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "fullscreenchange",
+    updateFullscreenIcon
+);
+
+
+document.addEventListener(
+    "webkitfullscreenchange",
+    updateFullscreenIcon
+);
+
+
+// =====================================
+// مخفی/نمایش خودکار نوار کنترل
+// =====================================
+
+let controlsHideTimeout = null;
+
+
+function showControls() {
+
+    playerControls.classList.remove(
+        "controls-hidden"
+    );
+
+}
+
+
+function armControlsAutoHide() {
+
+    showControls();
+
+
+    clearTimeout(
+        controlsHideTimeout
+    );
+
+
+    if (video.paused) {
+
+        return;
+
+    }
+
+
+    controlsHideTimeout =
+        setTimeout(
+            () => {
+
+                if (!video.paused) {
+
+                    playerControls.classList.add(
+                        "controls-hidden"
+                    );
+
+                }
+
+            },
+            2600
+        );
+
+}
+
+
+playerWrapper.addEventListener(
+    "mousemove",
+    armControlsAutoHide
+);
+
+
+playerWrapper.addEventListener(
+    "touchstart",
+    armControlsAutoHide
+);
+
+
+playerControls.addEventListener(
+    "mouseenter",
+    () => {
+
+        clearTimeout(
+            controlsHideTimeout
+        );
+
+        showControls();
+
+    }
+);
+
+
+// =====================================
+// ری‌اکشن‌ها (Reactions)
+// =====================================
+
+reactionEmojiList.forEach((emoji) => {
+
+    const btn =
+        document.createElement("button");
+
+    btn.type =
+        "button";
+
+    btn.textContent =
+        emoji;
+
+    btn.addEventListener(
+        "click",
+        () => {
+
+            sendReaction(emoji);
+
+            reactionPicker.classList.add(
+                "hidden"
+            );
+
+        }
+    );
+
+    reactionPicker.appendChild(
+        btn
+    );
+
+});
+
+
+reactionBtn.addEventListener(
+    "click",
+    (event) => {
+
+        event.stopPropagation();
+
+        reactionPicker.classList.toggle(
+            "hidden"
+        );
+
+
+        speedMenu.classList.add(
+            "hidden"
+        );
+
+
+        reactionBtn.classList.remove(
+            "pop"
+        );
+
+        void reactionBtn.offsetWidth;
+
+        reactionBtn.classList.add(
+            "pop"
+        );
+
+    }
+);
+
+
+document.addEventListener(
+    "click",
+    (event) => {
+
+        if (
+            !reactionPicker.contains(event.target) &&
+            event.target !== reactionBtn
+        ) {
+
+            reactionPicker.classList.add(
+                "hidden"
+            );
+
+        }
+
+    }
+);
+
+
+function spawnReactionEmoji(emoji) {
+
+    const randomLeft =
+        10 + Math.random() * 75;
+
+
+    // ایموجی اصلی
+
+    const span =
+        document.createElement("span");
+
+    span.className =
+        "reaction-emoji";
+
+    span.textContent =
+        emoji;
+
+
+    const randomRotate =
+        (Math.random() * 30 - 15).toFixed(1);
+
+
+    span.style.left =
+        `${randomLeft}%`;
+
+    span.style.setProperty(
+        "--rot",
+        `${randomRotate}deg`
+    );
+
+
+    reactionsLayer.appendChild(
+        span
+    );
+
+
+    setTimeout(
+        () => {
+
+            span.remove();
+
+        },
+        2300
+    );
+
+
+    // ذرات درخشان دور ایموجی
+
+    for (let i = 0; i < 3; i++) {
+
+        const sparkle =
+            document.createElement("span");
+
+        sparkle.className =
+            "reaction-sparkle";
+
+        sparkle.textContent =
+            "✦";
+
+
+        const sparkleLeft =
+            randomLeft + (Math.random() * 16 - 8);
+
+
+        const sparkleDelay =
+            Math.random() * 0.3;
+
+
+        const sparkleDrift =
+            (Math.random() * 40 - 20).toFixed(0);
+
+
+        sparkle.style.left =
+            `${sparkleLeft}%`;
+
+        sparkle.style.animationDelay =
+            `${sparkleDelay}s`;
+
+        sparkle.style.setProperty(
+            "--drift",
+            `${sparkleDrift}px`
+        );
+
+
+        reactionsLayer.appendChild(
+            sparkle
+        );
+
+
+        setTimeout(
+            () => {
+
+                sparkle.remove();
+
+            },
+            1800
+        );
+
+    }
+
+}
+
+
+function sendReaction(emoji) {
+
+    spawnReactionEmoji(emoji);
+
+
+    if (roomId) {
+
+        socket.emit(
+            "video-reaction",
+            {
+
+                roomId: roomId,
+
+                emoji: emoji
+
+            }
+        );
+
+    }
+
+}
+
+
+socket.on(
+    "video-reaction",
+    (data) => {
+
+        if (data && data.emoji) {
+
+            spawnReactionEmoji(
+                data.emoji
+            );
+
+        }
 
     }
 );
@@ -1136,7 +2120,7 @@ function playMessageSound() {
 
 
 // =====================================
-// Emoji Picker
+// Emoji Picker (چت)
 // =====================================
 
 const emojiList = [
