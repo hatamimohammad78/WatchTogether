@@ -7,7 +7,7 @@
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     >
 
     <title>جهان هستی 🎬</title>
@@ -315,6 +315,162 @@
                         ></div>
 
 
+                        <!-- پنل چت داخل پلیر -->
+
+                        <div
+                            id="miniChatPanel"
+                            class="control-panel mini-chat-panel hidden"
+                        >
+
+                            <div
+                                id="miniChatMessages"
+                                class="mini-chat-messages"
+                            >
+
+                                <div class="mini-chat-empty">
+                                    هنوز پیامی نیست
+                                </div>
+
+                            </div>
+
+
+                            <div class="mini-chat-input-box">
+
+                                <input
+                                    type="text"
+                                    id="miniChatInput"
+                                    placeholder="پیام..."
+                                    autocomplete="off"
+                                    maxlength="500"
+                                >
+
+                                <button
+                                    id="miniChatSendBtn"
+                                    type="button"
+                                    aria-label="ارسال"
+                                >
+                                    ➤
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- پنل تنظیمات زیرنویس -->
+
+                        <div
+                            id="subtitleSettingsPanel"
+                            class="control-panel subtitle-settings-panel hidden"
+                        >
+
+                            <div class="subtitle-settings-title">
+                                زیرنویس
+                            </div>
+
+
+                            <div class="subtitle-settings-row">
+
+                                <label
+                                    for="subtitleInput"
+                                    class="subtitle-file-label"
+                                >
+                                    📝 انتخاب فایل زیرنویس
+                                </label>
+
+                                <input
+                                    type="file"
+                                    id="subtitleInput"
+                                    accept=".vtt,.srt"
+                                    hidden
+                                >
+
+                            </div>
+
+
+                            <div class="subtitle-settings-row">
+
+                                <label>
+                                    اندازه فونت
+                                </label>
+
+                                <input
+                                    type="range"
+                                    id="subtitleFontSizeSlider"
+                                    min="14"
+                                    max="40"
+                                    step="1"
+                                    value="20"
+                                >
+
+                            </div>
+
+
+                            <div class="subtitle-settings-row">
+
+                                <label>
+                                    رنگ متن
+                                </label>
+
+                                <div
+                                    id="subtitleColorSwatches"
+                                    class="subtitle-color-swatches"
+                                ></div>
+
+                            </div>
+
+
+                            <div class="subtitle-settings-row">
+
+                                <label>
+                                    شفافیت پس‌زمینه
+                                </label>
+
+                                <input
+                                    type="range"
+                                    id="subtitleBgOpacitySlider"
+                                    min="0"
+                                    max="1"
+                                    step="0.1"
+                                    value="0.6"
+                                >
+
+                            </div>
+
+
+                            <div class="subtitle-settings-row">
+
+                                <label>
+                                    هماهنگی زمانی (تأخیر/جلو)
+                                </label>
+
+                                <div class="subtitle-offset-control">
+
+                                    <button
+                                        id="subtitleOffsetMinusBtn"
+                                        type="button"
+                                    >
+                                        −
+                                    </button>
+
+                                    <span id="subtitleOffsetDisplay">
+                                        ۰.۰ ثانیه
+                                    </span>
+
+                                    <button
+                                        id="subtitleOffsetPlusBtn"
+                                        type="button"
+                                    >
+                                        +
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
                         <!-- نوار کنترل سفارشی -->
 
                         <div
@@ -349,7 +505,7 @@
 
                                 <button
                                     id="playPauseBtn"
-                                    class="player-btn"
+                                    class="player-btn round-btn"
                                     type="button"
                                     aria-label="پخش / توقف"
                                 >
@@ -369,7 +525,7 @@
 
                                     <button
                                         id="muteBtn"
-                                        class="player-btn"
+                                        class="player-btn round-btn"
                                         type="button"
                                         aria-label="صدا"
                                     >
@@ -409,25 +565,6 @@
                                 <div class="spacer"></div>
 
 
-                                <div class="reaction-picker-wrapper">
-
-                                    <button
-                                        id="reactionBtn"
-                                        class="player-btn"
-                                        type="button"
-                                        aria-label="ری‌اکشن"
-                                    >
-                                        😍
-                                    </button>
-
-                                    <div
-                                        id="reactionPicker"
-                                        class="reaction-picker hidden"
-                                    ></div>
-
-                                </div>
-
-
                                 <div class="speed-wrapper">
 
                                     <button
@@ -441,15 +578,64 @@
 
                                     <div
                                         id="speedMenu"
-                                        class="speed-menu hidden"
+                                        class="control-panel speed-menu hidden"
                                     ></div>
 
                                 </div>
 
 
                                 <button
+                                    id="subtitleSettingsBtn"
+                                    class="player-btn round-btn text-btn"
+                                    type="button"
+                                    aria-label="تنظیمات زیرنویس"
+                                >
+                                    CC
+                                </button>
+
+
+                                <button
+                                    id="voiceBtn"
+                                    class="player-btn round-btn"
+                                    type="button"
+                                    aria-label="ویس (نگه دارید)"
+                                >
+                                    🎙️
+                                </button>
+
+
+                                <div class="reaction-picker-wrapper">
+
+                                    <button
+                                        id="reactionBtn"
+                                        class="player-btn round-btn"
+                                        type="button"
+                                        aria-label="ری‌اکشن"
+                                    >
+                                        😍
+                                    </button>
+
+                                    <div
+                                        id="reactionPicker"
+                                        class="control-panel reaction-picker hidden"
+                                    ></div>
+
+                                </div>
+
+
+                                <button
+                                    id="chatToggleBtn"
+                                    class="player-btn round-btn"
+                                    type="button"
+                                    aria-label="چت"
+                                >
+                                    💬
+                                </button>
+
+
+                                <button
                                     id="fullscreenBtn"
-                                    class="player-btn"
+                                    class="player-btn round-btn"
                                     type="button"
                                     aria-label="تمام صفحه"
                                 >
@@ -488,27 +674,6 @@
                         type="file"
                         id="fileInput"
                         accept="video/*"
-                        hidden
-                    >
-
-                </label>
-
-
-
-                <label class="file-button subtitle-button">
-
-                    <span class="file-icon">
-                        📝
-                    </span>
-
-                    <span>
-                        انتخاب زیرنویس
-                    </span>
-
-                    <input
-                        type="file"
-                        id="subtitleInput"
-                        accept=".vtt,.srt"
                         hidden
                     >
 

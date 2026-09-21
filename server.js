@@ -105,6 +105,33 @@ io.on(
                     `${name} (${socket.id}) joined room ${roomId}`
                 );
 
+
+                // اگر از قبل نفر دیگری در اتاق باشد
+                // به تازه‌واردشده اطلاع می‌دهیم تا او
+                // شروع‌کننده اتصال صوتی (WebRTC) باشد
+
+                const otherIds =
+                    room
+                        ? [...room].filter(
+                            (id) => id !== socket.id
+                        )
+                        : [];
+
+
+                if (otherIds.length > 0) {
+
+                    socket.emit(
+                        "existing-peer",
+                        {
+
+                            peerId:
+                                otherIds[0]
+
+                        }
+                    );
+
+                }
+
             }
         );
 
@@ -280,6 +307,107 @@ io.on(
 
                         }
                     );
+
+            }
+        );
+
+
+        // =====================================
+        // WebRTC Signaling (ویس)
+        // فقط بین دو نفر داخل اتاق رد و بدل می‌شود
+        // =====================================
+
+        socket.on(
+            "webrtc-offer",
+            (data) => {
+
+                if (
+                    !data ||
+                    !data.to ||
+                    !data.offer
+                ) {
+
+                    return;
+
+                }
+
+
+                io.to(data.to).emit(
+                    "webrtc-offer",
+                    {
+
+                        from:
+                            socket.id,
+
+                        offer:
+                            data.offer
+
+                    }
+                );
+
+            }
+        );
+
+
+        socket.on(
+            "webrtc-answer",
+            (data) => {
+
+                if (
+                    !data ||
+                    !data.to ||
+                    !data.answer
+                ) {
+
+                    return;
+
+                }
+
+
+                io.to(data.to).emit(
+                    "webrtc-answer",
+                    {
+
+                        from:
+                            socket.id,
+
+                        answer:
+                            data.answer
+
+                    }
+                );
+
+            }
+        );
+
+
+        socket.on(
+            "webrtc-ice-candidate",
+            (data) => {
+
+                if (
+                    !data ||
+                    !data.to ||
+                    !data.candidate
+                ) {
+
+                    return;
+
+                }
+
+
+                io.to(data.to).emit(
+                    "webrtc-ice-candidate",
+                    {
+
+                        from:
+                            socket.id,
+
+                        candidate:
+                            data.candidate
+
+                    }
+                );
 
             }
         );

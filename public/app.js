@@ -28,7 +28,7 @@ const partnerStatus =
 
 
 // =====================================
-// Chat
+// Chat (پنل اصلی)
 // =====================================
 
 const chatMessages =
@@ -100,6 +100,10 @@ const subtitleInput =
 let subtitleUrl = null;
 
 let subtitleTrackElement = null;
+
+let originalCueTimes = [];
+
+let subtitleOffsetSeconds = 0;
 
 
 // =====================================
@@ -257,17 +261,72 @@ speedBtn.addEventListener(
 
         event.stopPropagation();
 
-        speedMenu.classList.toggle(
-            "hidden"
+
+        const willOpen =
+            speedMenu.classList.contains(
+                "hidden"
+            );
+
+
+        closeAllPopupsExcept(
+            willOpen
+                ? "speed"
+                : null
         );
 
 
-        reactionPicker.classList.add(
-            "hidden"
+        speedMenu.classList.toggle(
+            "hidden",
+            !willOpen
         );
 
     }
 );
+
+
+// =====================================
+// مدیریت باز/بسته شدن پنل‌ها
+// (به‌جز ری‌اکشن که رفتار مستقل دارد)
+// =====================================
+
+function closeAllPopupsExcept(exceptName) {
+
+    if (exceptName !== "speed") {
+
+        speedMenu.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    if (exceptName !== "subtitle") {
+
+        subtitleSettingsPanel.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    if (exceptName !== "chat") {
+
+        miniChatPanel.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    if (exceptName !== "emoji") {
+
+        emojiPanel.classList.add(
+            "hidden"
+        );
+
+    }
+
+}
 
 
 document.addEventListener(
@@ -285,12 +344,52 @@ document.addEventListener(
 
         }
 
+
+        if (
+            !subtitleSettingsPanel.contains(event.target) &&
+            event.target !== subtitleSettingsBtn
+        ) {
+
+            subtitleSettingsPanel.classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        if (
+            !miniChatPanel.contains(event.target) &&
+            event.target !== chatToggleBtn
+        ) {
+
+            miniChatPanel.classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        if (
+            !emojiPanel.contains(event.target) &&
+            event.target !== emojiBtn
+        ) {
+
+            emojiPanel.classList.add(
+                "hidden"
+            );
+
+        }
+
+        // توجه: پنل ری‌اکشن عمداً اینجا نیست
+        // چون باید تا غیرفعال شدن دکمه باز بماند
+
     }
 );
 
 
 // =====================================
 // Reactions (ری‌اکشن روی پلیر)
+// پنل تا زمانی که دکمه فعال است باز می‌ماند
 // =====================================
 
 const reactionBtn =
@@ -306,6 +405,1126 @@ const reactionEmojiList = [
     "❤️", "😂", "😮", "👏",
     "🔥", "😢", "🎉", "😱"
 ];
+
+let reactionPanelActive = false;
+
+
+reactionEmojiList.forEach((emoji) => {
+
+    const btn =
+        document.createElement("button");
+
+    btn.type =
+        "button";
+
+    btn.textContent =
+        emoji;
+
+    btn.addEventListener(
+        "click",
+        () => {
+
+            // فقط ری‌اکشن می‌فرستد،
+            // پنل را نمی‌بندد تا بتوان
+            // پشت‌سرهم ری‌اکشن زد
+
+            sendReaction(emoji);
+
+        }
+    );
+
+    reactionPicker.appendChild(
+        btn
+    );
+
+});
+
+
+reactionBtn.addEventListener(
+    "click",
+    (event) => {
+
+        event.stopPropagation();
+
+
+        reactionPanelActive =
+            !reactionPanelActive;
+
+
+        reactionBtn.classList.toggle(
+            "active",
+            reactionPanelActive
+        );
+
+
+        reactionPicker.classList.toggle(
+            "hidden",
+            !reactionPanelActive
+        );
+
+
+        if (reactionPanelActive) {
+
+            closeAllPopupsExcept(
+                "reaction"
+            );
+
+        }
+
+    }
+);
+
+
+function spawnReactionEmoji(emoji) {
+
+    const randomLeft =
+        10 + Math.random() * 75;
+
+
+    // ایموجی اصلی
+
+    const span =
+        document.createElement("span");
+
+    span.className =
+        "reaction-emoji";
+
+    span.textContent =
+        emoji;
+
+
+    const randomRotate =
+        (Math.random() * 30 - 15).toFixed(1);
+
+
+    span.style.left =
+        `${randomLeft}%`;
+
+    span.style.setProperty(
+        "--rot",
+        `${randomRotate}deg`
+    );
+
+
+    reactionsLayer.appendChild(
+        span
+    );
+
+
+    setTimeout(
+        () => {
+
+            span.remove();
+
+        },
+        2300
+    );
+
+
+    // ذرات درخشان دور ایموجی
+
+    for (let i = 0; i < 3; i++) {
+
+        const sparkle =
+            document.createElement("span");
+
+        sparkle.className =
+            "reaction-sparkle";
+
+        sparkle.textContent =
+            "✦";
+
+
+        const sparkleLeft =
+            randomLeft + (Math.random() * 16 - 8);
+
+
+        const sparkleDelay =
+            Math.random() * 0.3;
+
+
+        const sparkleDrift =
+            (Math.random() * 40 - 20).toFixed(0);
+
+
+        sparkle.style.left =
+            `${sparkleLeft}%`;
+
+        sparkle.style.animationDelay =
+            `${sparkleDelay}s`;
+
+        sparkle.style.setProperty(
+            "--drift",
+            `${sparkleDrift}px`
+        );
+
+
+        reactionsLayer.appendChild(
+            sparkle
+        );
+
+
+        setTimeout(
+            () => {
+
+                sparkle.remove();
+
+            },
+            1800
+        );
+
+    }
+
+}
+
+
+function sendReaction(emoji) {
+
+    spawnReactionEmoji(emoji);
+
+
+    if (roomId) {
+
+        socket.emit(
+            "video-reaction",
+            {
+
+                roomId: roomId,
+
+                emoji: emoji
+
+            }
+        );
+
+    }
+
+}
+
+
+socket.on(
+    "video-reaction",
+    (data) => {
+
+        if (data && data.emoji) {
+
+            spawnReactionEmoji(
+                data.emoji
+            );
+
+        }
+
+    }
+);
+
+
+// =====================================
+// پنل تنظیمات زیرنویس
+// =====================================
+
+const subtitleSettingsBtn =
+    document.getElementById("subtitleSettingsBtn");
+
+const subtitleSettingsPanel =
+    document.getElementById("subtitleSettingsPanel");
+
+const subtitleFontSizeSlider =
+    document.getElementById("subtitleFontSizeSlider");
+
+const subtitleColorSwatches =
+    document.getElementById("subtitleColorSwatches");
+
+const subtitleBgOpacitySlider =
+    document.getElementById("subtitleBgOpacitySlider");
+
+const subtitleOffsetDisplay =
+    document.getElementById("subtitleOffsetDisplay");
+
+const subtitleOffsetMinusBtn =
+    document.getElementById("subtitleOffsetMinusBtn");
+
+const subtitleOffsetPlusBtn =
+    document.getElementById("subtitleOffsetPlusBtn");
+
+
+let subtitleFontSize = 20;
+
+let subtitleColor = "#ffffff";
+
+let subtitleBgOpacity = 0.6;
+
+
+const subtitleColorOptions = [
+    "#ffffff",
+    "#ffe066",
+    "#7be0ff",
+    "#ff9bd0",
+    "#baff6b"
+];
+
+
+const subtitleStyleTag =
+    document.createElement("style");
+
+subtitleStyleTag.id =
+    "subtitleStyleTag";
+
+document.head.appendChild(
+    subtitleStyleTag
+);
+
+
+function updateSubtitleStyleTag() {
+
+    subtitleStyleTag.textContent = `
+        #video::cue {
+            color: ${subtitleColor};
+            font-size: ${subtitleFontSize}px;
+            background-color: rgba(0, 0, 0, ${subtitleBgOpacity});
+        }
+    `;
+
+}
+
+
+subtitleColorOptions.forEach((color) => {
+
+    const swatch =
+        document.createElement("button");
+
+    swatch.type =
+        "button";
+
+    swatch.className =
+        "subtitle-color-swatch";
+
+    swatch.style.background =
+        color;
+
+    if (color === subtitleColor) {
+
+        swatch.classList.add(
+            "active"
+        );
+
+    }
+
+
+    swatch.addEventListener(
+        "click",
+        () => {
+
+            subtitleColor =
+                color;
+
+
+            subtitleColorSwatches
+                .querySelectorAll(
+                    ".subtitle-color-swatch"
+                )
+                .forEach((el) => {
+
+                    el.classList.remove(
+                        "active"
+                    );
+
+                });
+
+
+            swatch.classList.add(
+                "active"
+            );
+
+
+            updateSubtitleStyleTag();
+
+        }
+    );
+
+
+    subtitleColorSwatches.appendChild(
+        swatch
+    );
+
+});
+
+
+subtitleFontSizeSlider.addEventListener(
+    "input",
+    () => {
+
+        subtitleFontSize =
+            Number(subtitleFontSizeSlider.value);
+
+
+        updateSubtitleStyleTag();
+
+    }
+);
+
+
+subtitleBgOpacitySlider.addEventListener(
+    "input",
+    () => {
+
+        subtitleBgOpacity =
+            Number(subtitleBgOpacitySlider.value);
+
+
+        updateSubtitleStyleTag();
+
+    }
+);
+
+
+function updateSubtitleOffsetDisplay() {
+
+    subtitleOffsetDisplay.textContent =
+        `${subtitleOffsetSeconds.toFixed(1)} ثانیه`;
+
+}
+
+
+function applySubtitleOffset() {
+
+    originalCueTimes.forEach((item) => {
+
+        item.cue.startTime =
+            Math.max(
+                0,
+                item.start + subtitleOffsetSeconds
+            );
+
+
+        item.cue.endTime =
+            Math.max(
+                0,
+                item.end + subtitleOffsetSeconds
+            );
+
+    });
+
+}
+
+
+subtitleOffsetMinusBtn.addEventListener(
+    "click",
+    () => {
+
+        subtitleOffsetSeconds -= 0.5;
+
+        applySubtitleOffset();
+
+        updateSubtitleOffsetDisplay();
+
+    }
+);
+
+
+subtitleOffsetPlusBtn.addEventListener(
+    "click",
+    () => {
+
+        subtitleOffsetSeconds += 0.5;
+
+        applySubtitleOffset();
+
+        updateSubtitleOffsetDisplay();
+
+    }
+);
+
+
+subtitleSettingsBtn.addEventListener(
+    "click",
+    (event) => {
+
+        event.stopPropagation();
+
+
+        const willOpen =
+            subtitleSettingsPanel.classList.contains(
+                "hidden"
+            );
+
+
+        closeAllPopupsExcept(
+            willOpen
+                ? "subtitle"
+                : null
+        );
+
+
+        subtitleSettingsPanel.classList.toggle(
+            "hidden",
+            !willOpen
+        );
+
+    }
+);
+
+
+updateSubtitleStyleTag();
+
+
+// =====================================
+// پنل چت داخل پلیر (Mini Chat)
+// =====================================
+
+const chatToggleBtn =
+    document.getElementById("chatToggleBtn");
+
+const miniChatPanel =
+    document.getElementById("miniChatPanel");
+
+const miniChatMessages =
+    document.getElementById("miniChatMessages");
+
+const miniChatInput =
+    document.getElementById("miniChatInput");
+
+const miniChatSendBtn =
+    document.getElementById("miniChatSendBtn");
+
+
+let chatHistory = [];
+
+
+chatToggleBtn.addEventListener(
+    "click",
+    (event) => {
+
+        event.stopPropagation();
+
+
+        const willOpen =
+            miniChatPanel.classList.contains(
+                "hidden"
+            );
+
+
+        closeAllPopupsExcept(
+            willOpen
+                ? "chat"
+                : null
+        );
+
+
+        miniChatPanel.classList.toggle(
+            "hidden",
+            !willOpen
+        );
+
+    }
+);
+
+
+function renderMiniChat() {
+
+    const lastThree =
+        chatHistory.slice(-3);
+
+
+    if (lastThree.length === 0) {
+
+        miniChatMessages.innerHTML =
+            `<div class="mini-chat-empty">هنوز پیامی نیست</div>`;
+
+        return;
+
+    }
+
+
+    miniChatMessages.innerHTML =
+        lastThree
+            .map((item) => `
+
+                <div class="mini-chat-message ${item.mine ? "mine" : "theirs"}">
+                    <span class="mini-chat-name">${escapeHTML(item.name)}</span>
+                    <span class="mini-chat-text">${escapeHTML(item.message)}</span>
+                </div>
+
+            `)
+            .join("");
+
+
+    miniChatMessages.scrollTop =
+        miniChatMessages.scrollHeight;
+
+}
+
+
+function sendChatFrom(inputElement) {
+
+    const message =
+        inputElement.value.trim();
+
+
+    if (!message) {
+
+        return;
+
+    }
+
+
+    if (!roomId) {
+
+        alert(
+            "اول وارد اتاق شو."
+        );
+
+        return;
+
+    }
+
+
+    if (!myName) {
+
+        alert(
+            "اول هویت خودت را انتخاب کن."
+        );
+
+        return;
+
+    }
+
+
+    const messageData = {
+
+        roomId: roomId,
+
+        name: myName,
+
+        message: message,
+
+        time:
+            new Date().toLocaleTimeString(
+                "fa-IR",
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            )
+
+    };
+
+
+    // نمایش پیام برای خودمان
+
+    addChatMessage(
+        messageData,
+        true
+    );
+
+
+    // ارسال برای طرف مقابل
+
+    socket.emit(
+        "chat-message",
+        messageData
+    );
+
+
+    inputElement.value = "";
+
+    inputElement.focus();
+
+}
+
+
+miniChatSendBtn.addEventListener(
+    "click",
+    () => {
+
+        sendChatFrom(
+            miniChatInput
+        );
+
+    }
+);
+
+
+miniChatInput.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (
+            event.key === "Enter" &&
+            !event.shiftKey
+        ) {
+
+            event.preventDefault();
+
+            sendChatFrom(
+                miniChatInput
+            );
+
+        }
+
+    }
+);
+
+
+// =====================================
+// ویس با نگه‌داشتن (WebRTC Push-to-Talk)
+// =====================================
+
+const voiceBtn =
+    document.getElementById("voiceBtn");
+
+let localStream = null;
+
+let peerConnection = null;
+
+let partnerSocketId = null;
+
+const remoteAudio =
+    new Audio();
+
+remoteAudio.autoplay =
+    true;
+
+document.body.appendChild(
+    remoteAudio
+);
+
+
+const rtcConfig = {
+
+    iceServers: [
+        {
+            urls:
+                "stun:stun.l.google.com:19302"
+        }
+    ]
+
+};
+
+
+async function ensureLocalStream() {
+
+    if (localStream) {
+
+        return localStream;
+
+    }
+
+
+    try {
+
+        localStream =
+            await navigator.mediaDevices.getUserMedia({
+                audio: true
+            });
+
+
+        localStream
+            .getAudioTracks()
+            .forEach((track) => {
+
+                track.enabled = false;
+
+            });
+
+
+        return localStream;
+
+    }
+    catch (error) {
+
+        console.log(
+            "Microphone permission error:",
+            error
+        );
+
+
+        status.textContent =
+            "دسترسی به میکروفون داده نشد ❌";
+
+
+        return null;
+
+    }
+
+}
+
+
+function createPeerConnection() {
+
+    peerConnection =
+        new RTCPeerConnection(rtcConfig);
+
+
+    peerConnection.onicecandidate =
+        (event) => {
+
+            if (
+                event.candidate &&
+                partnerSocketId
+            ) {
+
+                socket.emit(
+                    "webrtc-ice-candidate",
+                    {
+
+                        to: partnerSocketId,
+
+                        candidate:
+                            event.candidate
+
+                    }
+                );
+
+            }
+
+        };
+
+
+    peerConnection.ontrack =
+        (event) => {
+
+            remoteAudio.srcObject =
+                event.streams[0];
+
+
+            remoteAudio
+                .play()
+                .catch(() => {
+
+                    // نادیده گرفتن خطای autoplay
+
+                });
+
+        };
+
+}
+
+
+async function attachLocalTracks() {
+
+    if (
+        !peerConnection ||
+        !localStream
+    ) {
+
+        return;
+
+    }
+
+
+    localStream
+        .getTracks()
+        .forEach((track) => {
+
+            const alreadyAdded =
+                peerConnection
+                    .getSenders()
+                    .find(
+                        (sender) => sender.track === track
+                    );
+
+
+            if (!alreadyAdded) {
+
+                peerConnection.addTrack(
+                    track,
+                    localStream
+                );
+
+            }
+
+        });
+
+}
+
+
+socket.on(
+    "existing-peer",
+    async (data) => {
+
+        partnerSocketId =
+            data.peerId;
+
+
+        await ensureLocalStream();
+
+
+        createPeerConnection();
+
+
+        await attachLocalTracks();
+
+
+        try {
+
+            const offer =
+                await peerConnection.createOffer();
+
+
+            await peerConnection.setLocalDescription(
+                offer
+            );
+
+
+            socket.emit(
+                "webrtc-offer",
+                {
+
+                    to: partnerSocketId,
+
+                    offer: offer
+
+                }
+            );
+
+        }
+        catch (error) {
+
+            console.log(
+                "WebRTC offer error:",
+                error
+            );
+
+        }
+
+    }
+);
+
+
+socket.on(
+    "webrtc-offer",
+    async (data) => {
+
+        partnerSocketId =
+            data.from;
+
+
+        await ensureLocalStream();
+
+
+        if (!peerConnection) {
+
+            createPeerConnection();
+
+        }
+
+
+        await attachLocalTracks();
+
+
+        try {
+
+            await peerConnection.setRemoteDescription(
+                data.offer
+            );
+
+
+            const answer =
+                await peerConnection.createAnswer();
+
+
+            await peerConnection.setLocalDescription(
+                answer
+            );
+
+
+            socket.emit(
+                "webrtc-answer",
+                {
+
+                    to: partnerSocketId,
+
+                    answer: answer
+
+                }
+            );
+
+        }
+        catch (error) {
+
+            console.log(
+                "WebRTC answer error:",
+                error
+            );
+
+        }
+
+    }
+);
+
+
+socket.on(
+    "webrtc-answer",
+    async (data) => {
+
+        if (!peerConnection) {
+
+            return;
+
+        }
+
+
+        try {
+
+            await peerConnection.setRemoteDescription(
+                data.answer
+            );
+
+        }
+        catch (error) {
+
+            console.log(
+                "WebRTC set remote answer error:",
+                error
+            );
+
+        }
+
+    }
+);
+
+
+socket.on(
+    "webrtc-ice-candidate",
+    async (data) => {
+
+        if (
+            !peerConnection ||
+            !data.candidate
+        ) {
+
+            return;
+
+        }
+
+
+        try {
+
+            await peerConnection.addIceCandidate(
+                data.candidate
+            );
+
+        }
+        catch (error) {
+
+            console.log(
+                "WebRTC ICE candidate error:",
+                error
+            );
+
+        }
+
+    }
+);
+
+
+function closeVoiceConnection() {
+
+    if (peerConnection) {
+
+        peerConnection.close();
+
+        peerConnection = null;
+
+    }
+
+
+    partnerSocketId = null;
+
+
+    remoteAudio.srcObject = null;
+
+
+    voiceBtn.classList.remove(
+        "active"
+    );
+
+}
+
+
+function startTalking(event) {
+
+    event.preventDefault();
+
+
+    if (!localStream) {
+
+        ensureLocalStream();
+
+        return;
+
+    }
+
+
+    localStream
+        .getAudioTracks()
+        .forEach((track) => {
+
+            track.enabled = true;
+
+        });
+
+
+    voiceBtn.classList.add(
+        "active"
+    );
+
+}
+
+
+function stopTalking() {
+
+    if (localStream) {
+
+        localStream
+            .getAudioTracks()
+            .forEach((track) => {
+
+                track.enabled = false;
+
+            });
+
+    }
+
+
+    voiceBtn.classList.remove(
+        "active"
+    );
+
+}
+
+
+voiceBtn.addEventListener(
+    "pointerdown",
+    startTalking
+);
+
+
+voiceBtn.addEventListener(
+    "pointerup",
+    stopTalking
+);
+
+
+voiceBtn.addEventListener(
+    "pointerleave",
+    stopTalking
+);
+
+
+voiceBtn.addEventListener(
+    "pointercancel",
+    stopTalking
+);
+
+
+voiceBtn.addEventListener(
+    "contextmenu",
+    (event) => {
+
+        event.preventDefault();
+
+    }
+);
 
 
 // =====================================
@@ -556,6 +1775,13 @@ subtitleInput.addEventListener(
         }
 
 
+        originalCueTimes = [];
+
+        subtitleOffsetSeconds = 0;
+
+        updateSubtitleOffsetDisplay();
+
+
         // ساخت فایل VTT موقت در حافظه
 
         const blob =
@@ -597,12 +1823,24 @@ subtitleInput.addEventListener(
             true;
 
 
+        subtitleTrackElement.addEventListener(
+            "load",
+            () => {
+
+                captureOriginalCueTimes();
+
+            }
+        );
+
+
         video.appendChild(
             subtitleTrackElement
         );
 
 
         // فعال کردن نمایش زیرنویس
+        // و تلاش برای گرفتن cueها در صورتی که
+        // رویداد load زودتر اجرا نشده باشد
 
         setTimeout(
             () => {
@@ -614,8 +1852,15 @@ subtitleInput.addEventListener(
 
                 }
 
+
+                if (originalCueTimes.length === 0) {
+
+                    captureOriginalCueTimes();
+
+                }
+
             },
-            100
+            150
         );
 
 
@@ -624,6 +1869,48 @@ subtitleInput.addEventListener(
 
     }
 );
+
+
+function captureOriginalCueTimes() {
+
+    const track =
+        video.textTracks[
+            video.textTracks.length - 1
+        ];
+
+
+    if (
+        !track ||
+        !track.cues
+    ) {
+
+        return;
+
+    }
+
+
+    originalCueTimes = [];
+
+
+    for (let i = 0; i < track.cues.length; i++) {
+
+        const cue =
+            track.cues[i];
+
+
+        originalCueTimes.push({
+
+            cue: cue,
+
+            start: cue.startTime,
+
+            end: cue.endTime
+
+        });
+
+    }
+
+}
 
 
 // =====================================
@@ -722,6 +2009,9 @@ socket.on(
 
             status.textContent =
                 "منتظر ورود پارتنر...";
+
+
+            closeVoiceConnection();
 
         }
 
@@ -1460,309 +2750,14 @@ playerControls.addEventListener(
 
 
 // =====================================
-// ری‌اکشن‌ها (Reactions)
-// =====================================
-
-reactionEmojiList.forEach((emoji) => {
-
-    const btn =
-        document.createElement("button");
-
-    btn.type =
-        "button";
-
-    btn.textContent =
-        emoji;
-
-    btn.addEventListener(
-        "click",
-        () => {
-
-            sendReaction(emoji);
-
-            reactionPicker.classList.add(
-                "hidden"
-            );
-
-        }
-    );
-
-    reactionPicker.appendChild(
-        btn
-    );
-
-});
-
-
-reactionBtn.addEventListener(
-    "click",
-    (event) => {
-
-        event.stopPropagation();
-
-        reactionPicker.classList.toggle(
-            "hidden"
-        );
-
-
-        speedMenu.classList.add(
-            "hidden"
-        );
-
-
-        reactionBtn.classList.remove(
-            "pop"
-        );
-
-        void reactionBtn.offsetWidth;
-
-        reactionBtn.classList.add(
-            "pop"
-        );
-
-    }
-);
-
-
-document.addEventListener(
-    "click",
-    (event) => {
-
-        if (
-            !reactionPicker.contains(event.target) &&
-            event.target !== reactionBtn
-        ) {
-
-            reactionPicker.classList.add(
-                "hidden"
-            );
-
-        }
-
-    }
-);
-
-
-function spawnReactionEmoji(emoji) {
-
-    const randomLeft =
-        10 + Math.random() * 75;
-
-
-    // ایموجی اصلی
-
-    const span =
-        document.createElement("span");
-
-    span.className =
-        "reaction-emoji";
-
-    span.textContent =
-        emoji;
-
-
-    const randomRotate =
-        (Math.random() * 30 - 15).toFixed(1);
-
-
-    span.style.left =
-        `${randomLeft}%`;
-
-    span.style.setProperty(
-        "--rot",
-        `${randomRotate}deg`
-    );
-
-
-    reactionsLayer.appendChild(
-        span
-    );
-
-
-    setTimeout(
-        () => {
-
-            span.remove();
-
-        },
-        2300
-    );
-
-
-    // ذرات درخشان دور ایموجی
-
-    for (let i = 0; i < 3; i++) {
-
-        const sparkle =
-            document.createElement("span");
-
-        sparkle.className =
-            "reaction-sparkle";
-
-        sparkle.textContent =
-            "✦";
-
-
-        const sparkleLeft =
-            randomLeft + (Math.random() * 16 - 8);
-
-
-        const sparkleDelay =
-            Math.random() * 0.3;
-
-
-        const sparkleDrift =
-            (Math.random() * 40 - 20).toFixed(0);
-
-
-        sparkle.style.left =
-            `${sparkleLeft}%`;
-
-        sparkle.style.animationDelay =
-            `${sparkleDelay}s`;
-
-        sparkle.style.setProperty(
-            "--drift",
-            `${sparkleDrift}px`
-        );
-
-
-        reactionsLayer.appendChild(
-            sparkle
-        );
-
-
-        setTimeout(
-            () => {
-
-                sparkle.remove();
-
-            },
-            1800
-        );
-
-    }
-
-}
-
-
-function sendReaction(emoji) {
-
-    spawnReactionEmoji(emoji);
-
-
-    if (roomId) {
-
-        socket.emit(
-            "video-reaction",
-            {
-
-                roomId: roomId,
-
-                emoji: emoji
-
-            }
-        );
-
-    }
-
-}
-
-
-socket.on(
-    "video-reaction",
-    (data) => {
-
-        if (data && data.emoji) {
-
-            spawnReactionEmoji(
-                data.emoji
-            );
-
-        }
-
-    }
-);
-
-
-// =====================================
-// ارسال پیام
+// ارسال پیام (چت اصلی)
 // =====================================
 
 function sendChatMessage() {
 
-    const message =
-        chatInput.value.trim();
-
-
-    if (!message) {
-
-        return;
-
-    }
-
-
-    if (!roomId) {
-
-        alert(
-            "اول وارد اتاق شو."
-        );
-
-        return;
-
-    }
-
-
-    if (!myName) {
-
-        alert(
-            "اول هویت خودت را انتخاب کن."
-        );
-
-        return;
-
-    }
-
-
-    const messageData = {
-
-        roomId: roomId,
-
-        name: myName,
-
-        message: message,
-
-        time:
-            new Date().toLocaleTimeString(
-                "fa-IR",
-                {
-                    hour: "2-digit",
-                    minute: "2-digit"
-                }
-            )
-
-    };
-
-
-    // نمایش پیام برای خودمان
-
-    addChatMessage(
-        messageData,
-        true
+    sendChatFrom(
+        chatInput
     );
-
-
-    // ارسال برای طرف مقابل
-
-    socket.emit(
-        "chat-message",
-        messageData
-    );
-
-
-    chatInput.value = "";
-
-    chatInput.focus();
 
 }
 
@@ -1833,6 +2828,20 @@ function addChatMessage(
     data,
     isMine
 ) {
+
+    chatHistory.push({
+
+        name: data.name,
+
+        message: data.message,
+
+        mine: isMine
+
+    });
+
+
+    renderMiniChat();
+
 
     if (chatEmpty) {
 
@@ -2167,30 +3176,24 @@ emojiBtn.addEventListener(
 
         event.stopPropagation();
 
-        emojiPanel.classList.toggle(
-            "hidden"
-        );
 
-    }
-);
-
-
-// بستن پنل با کلیک بیرون از آن
-
-document.addEventListener(
-    "click",
-    (event) => {
-
-        if (
-            !emojiPanel.contains(event.target) &&
-            event.target !== emojiBtn
-        ) {
-
-            emojiPanel.classList.add(
+        const willOpen =
+            emojiPanel.classList.contains(
                 "hidden"
             );
 
-        }
+
+        closeAllPopupsExcept(
+            willOpen
+                ? "emoji"
+                : null
+        );
+
+
+        emojiPanel.classList.toggle(
+            "hidden",
+            !willOpen
+        );
 
     }
 );
