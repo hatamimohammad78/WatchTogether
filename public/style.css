@@ -18,6 +18,30 @@ a {
     touch-action:
         manipulation;
 
+    -webkit-touch-callout:
+        none;
+
+    -webkit-user-select:
+        none;
+
+    user-select:
+        none;
+
+}
+
+
+.progress-bar-wrap,
+.progress-bar-handle {
+
+    -webkit-touch-callout:
+        none;
+
+    -webkit-user-select:
+        none;
+
+    user-select:
+        none;
+
 }
 
 
@@ -870,6 +894,9 @@ h1 {
     padding:
         8px 12px;
 
+    user-select:
+        text;
+
 }
 
 
@@ -1389,9 +1416,6 @@ video {
 
 }
 
-
-/* نکته مهم: این قانون قبلاً جا افتاده بود
-   و باعث می‌شد نشانگر همیشه روی صفحه بماند */
 
 .voice-indicator.hidden {
 
@@ -2196,9 +2220,6 @@ video {
     touch-action:
         none;
 
-    user-select:
-        none;
-
 }
 
 
@@ -2573,6 +2594,9 @@ video {
     max-width:
         90%;
 
+    user-select:
+        text;
+
 }
 
 
@@ -2853,6 +2877,15 @@ video {
     transition:
         background 0.2s ease;
 
+    -webkit-touch-callout:
+        none;
+
+    -webkit-user-select:
+        none;
+
+    user-select:
+        none;
+
 }
 
 
@@ -2957,6 +2990,15 @@ video {
     transition:
         transform 0.15s ease,
         border-color 0.15s ease;
+
+    -webkit-touch-callout:
+        none;
+
+    -webkit-user-select:
+        none;
+
+    user-select:
+        none;
 
 }
 
@@ -3111,6 +3153,15 @@ video {
 
     transition:
         0.25s;
+
+    -webkit-touch-callout:
+        none;
+
+    -webkit-user-select:
+        none;
+
+    user-select:
+        none;
 
 }
 
@@ -3482,6 +3533,9 @@ video {
 
     animation:
         messageAppear 0.25s ease;
+
+    user-select:
+        text;
 
 }
 
@@ -3935,7 +3989,7 @@ footer {
 
 /* =====================================
    📱 MOBILE
-   فیلم بالا / چت پایین
+   فیلم بالا / چت پایین + بهینه‌سازی کارایی
 ===================================== */
 
 @media (max-width: 800px) {
@@ -3969,6 +4023,12 @@ footer {
 
         font-size:
             29px;
+
+        backdrop-filter:
+            none;
+
+        -webkit-backdrop-filter:
+            none;
 
     }
 
@@ -4041,6 +4101,12 @@ footer {
 
         border-radius:
             19px;
+
+        backdrop-filter:
+            none;
+
+        -webkit-backdrop-filter:
+            none;
 
     }
 
@@ -4191,6 +4257,12 @@ footer {
         height:
             54px;
 
+        backdrop-filter:
+            none;
+
+        -webkit-backdrop-filter:
+            none;
+
     }
 
 
@@ -4335,6 +4407,48 @@ footer {
 
         margin-top:
             30px;
+
+    }
+
+
+    /* کاهش بار پس‌زمینه فضایی روی موبایل
+       (اصلی‌ترین دلیل هنگ‌کردن گوشی‌ها) */
+
+    .stars-2,
+    .stars-3 {
+
+        display:
+            none;
+
+    }
+
+
+    .solar-system {
+
+        display:
+            none;
+
+    }
+
+
+    .chat-notification {
+
+        backdrop-filter:
+            none;
+
+        -webkit-backdrop-filter:
+            none;
+
+    }
+
+
+    .emoji-panel {
+
+        backdrop-filter:
+            none;
+
+        -webkit-backdrop-filter:
+            none;
 
     }
 
@@ -4498,6 +4612,8 @@ footer {
     outline: none;
     font-family: "Vazirmatn", Tahoma, Arial, sans-serif;
     font-size: 14px;
+    user-select: text;
+    -webkit-user-select: text;
 }
 
 .entry-field input.ltr-input,
@@ -4534,6 +4650,15 @@ footer {
 .entry-join-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 14px 34px rgba(124, 86, 255, 0.5);
+}
+
+@media (max-width: 800px) {
+
+    .identity-modal {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+
 }
 
 
