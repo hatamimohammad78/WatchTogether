@@ -860,7 +860,7 @@ miniChatInput.addEventListener("keydown", (event) => {
 
 
 // =====================================
-// Voice WebRTC
+// Voice WebRTC - نسخه اصلاح شده
 // =====================================
 
 const voiceBtn =
@@ -870,12 +870,28 @@ let localStream = null;
 let peerConnection = null;
 let partnerSocketId = null;
 
+
+// =====================================
+// صف ICE Candidate
+// =====================================
+
+// Candidate ممکن است قبل از ساخته‌شدن PeerConnection
+// یا قبل از setRemoteDescription برسد.
+// در این حالت موقتاً ذخیره می‌شود.
+let pendingIceCandidates = [];
+
+
+// =====================================
+// Remote Audio
+// =====================================
+
 const remoteAudio =
     new Audio();
 
 remoteAudio.autoplay = true;
 remoteAudio.muted = false;
 remoteAudio.volume = 1;
+remoteAudio.playsInline = true;
 
 document.body.appendChild(
     remoteAudio
@@ -884,9 +900,20 @@ document.body.appendChild(
 
 function tryPlayRemoteAudio() {
 
+    if (!remoteAudio.srcObject) {
+        return;
+    }
+
     remoteAudio
         .play()
-        .catch(() => {});
+        .catch((error) => {
+
+            console.log(
+                "Remote audio play waiting for user interaction:",
+                error
+            );
+
+        });
 
 }
 
@@ -898,17 +925,32 @@ document.addEventListener(
 );
 
 
+// =====================================
+// WebRTC Configuration
+// =====================================
+
 const rtcConfig = {
 
     iceServers: [
+
         {
             urls:
                 "stun:stun.l.google.com:19302"
+        },
+
+        {
+            urls:
+                "stun:stun.cloudflare.com:3478"
         }
+
     ]
 
 };
 
+
+// =====================================
+// دریافت Microphone
+// =====================================
 
 async function ensureLocalStream() {
 
@@ -920,18 +962,33 @@ async function ensureLocalStream() {
 
         localStream =
             await navigator.mediaDevices.getUserMedia({
+
                 audio: {
+
                     echoCancellation: true,
+
                     noiseSuppression: true,
+
                     autoGainControl: true
+
                 }
+
             });
+
 
         localStream
             .getAudioTracks()
             .forEach((track) => {
+
                 track.enabled = false;
+
             });
+
+
+        console.log(
+            "Microphone stream ready."
+        );
+
 
         return localStream;
 
@@ -953,14 +1010,96 @@ async function ensureLocalStream() {
 }
 
 
+// =====================================
+// اضافه کردن Candidateهای منتظر
+// =====================================
+
+async function flushPendingIceCandidates() {
+
+    if (
+        !peerConnection ||
+        !peerConnection.remoteDescription
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        pendingIceCandidates.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    const candidates =
+        [...pendingIceCandidates];
+
+    pendingIceCandidates = [];
+
+
+    for (
+        const candidate of candidates
+    ) {
+
+        try {
+
+            await peerConnection.addIceCandidate(
+                candidate
+            );
+
+            console.log(
+                "Queued ICE candidate added successfully."
+            );
+
+        }
+        catch (error) {
+
+            console.log(
+                "Queued ICE candidate error:",
+                error
+            );
+
+        }
+
+    }
+
+}
+
+
+// =====================================
+// ساخت Peer Connection
+// =====================================
+
 function createPeerConnection() {
 
     if (peerConnection) {
-        peerConnection.close();
+
+        try {
+            peerConnection.close();
+        }
+        catch (error) {}
+
     }
 
+
     peerConnection =
-        new RTCPeerConnection(rtcConfig);
+        new RTCPeerConnection(
+            rtcConfig
+        );
+
+
+    console.log(
+        "New RTCPeerConnection created."
+    );
+
+
+    // =================================
+    // ICE Candidate
+    // =================================
 
     peerConnection.onicecandidate =
         (event) => {
@@ -970,11 +1109,22 @@ function createPeerConnection() {
                 partnerSocketId
             ) {
 
+                console.log(
+                    "Sending ICE candidate to:",
+                    partnerSocketId
+                );
+
+
                 socket.emit(
                     "webrtc-ice-candidate",
                     {
-                        to: partnerSocketId,
-                        candidate: event.candidate
+
+                        to:
+                            partnerSocketId,
+
+                        candidate:
+                            event.candidate
+
                     }
                 );
 
@@ -983,10 +1133,22 @@ function createPeerConnection() {
         };
 
 
+    // =================================
+    // Remote Track
+    // =================================
+
     peerConnection.ontrack =
         (event) => {
 
-            if (event.streams && event.streams[0]) {
+            console.log(
+                "Remote audio track received."
+            );
+
+
+            if (
+                event.streams &&
+                event.streams[0]
+            ) {
 
                 remoteAudio.srcObject =
                     event.streams[0];
@@ -998,29 +1160,113 @@ function createPeerConnection() {
         };
 
 
+    // =================================
+    // ICE Connection State
+    // =================================
+
     peerConnection.oniceconnectionstatechange =
         () => {
 
+            if (!peerConnection) {
+                return;
+            }
+
+
+            const state =
+                peerConnection.iceConnectionState;
+
+
             console.log(
                 "ICE connection state:",
-                peerConnection.iceConnectionState
+                state
             );
+
+
+            if (state === "connected") {
+
+                console.log(
+                    "WebRTC ICE connected successfully."
+                );
+
+            }
+
+
+            if (state === "completed") {
+
+                console.log(
+                    "WebRTC ICE connection completed."
+                );
+
+            }
+
+
+            if (state === "failed") {
+
+                console.log(
+                    "WebRTC ICE connection failed."
+                );
+
+            }
+
+
+            if (state === "disconnected") {
+
+                console.log(
+                    "WebRTC ICE temporarily disconnected."
+                );
+
+            }
 
         };
 
 
+    // =================================
+    // Overall Connection State
+    // =================================
+
     peerConnection.onconnectionstatechange =
         () => {
 
+            if (!peerConnection) {
+                return;
+            }
+
+
+            const state =
+                peerConnection.connectionState;
+
+
             console.log(
                 "Peer connection state:",
-                peerConnection.connectionState
+                state
             );
+
+
+            if (state === "connected") {
+
+                console.log(
+                    "🎙️ Voice connection established."
+                );
+
+            }
+
+
+            if (state === "failed") {
+
+                console.log(
+                    "❌ Voice connection failed."
+                );
+
+            }
 
         };
 
 }
 
+
+// =====================================
+// اضافه کردن Trackهای میکروفون
+// =====================================
 
 async function attachLocalTracks() {
 
@@ -1033,6 +1279,7 @@ async function attachLocalTracks() {
 
     }
 
+
     localStream
         .getTracks()
         .forEach((track) => {
@@ -1044,6 +1291,7 @@ async function attachLocalTracks() {
                         (sender) =>
                             sender.track === track
                     );
+
 
             if (!alreadyAdded) {
 
@@ -1063,201 +1311,475 @@ async function attachLocalTracks() {
 // WebRTC Signaling
 // =====================================
 
-socket.on("existing-peer", async (data) => {
 
-    partnerSocketId =
-        data.peerId;
+// =====================================
+// Existing Peer
+// =====================================
 
-    await ensureLocalStream();
+socket.on(
+    "existing-peer",
+    async (data) => {
 
-    createPeerConnection();
+        if (
+            !data ||
+            !data.peerId
+        ) {
 
-    await attachLocalTracks();
+            return;
 
-    try {
+        }
 
-        const offer =
-            await peerConnection.createOffer();
 
-        await peerConnection.setLocalDescription(
-            offer
-        );
+        // اگر Peer جدید است، Candidateهای قدیمی
+        // مربوط به Peer قبلی نباید استفاده شوند.
+        if (
+            partnerSocketId &&
+            partnerSocketId !== data.peerId
+        ) {
 
-        socket.emit(
-            "webrtc-offer",
-            {
-                to: partnerSocketId,
-                offer: offer
-            }
-        );
+            pendingIceCandidates = [];
 
-    }
-    catch (error) {
+        }
+
+
+        partnerSocketId =
+            data.peerId;
+
 
         console.log(
-            "WebRTC offer error:",
-            error
+            "Existing peer:",
+            partnerSocketId
         );
 
-    }
 
-});
+        const stream =
+            await ensureLocalStream();
 
 
-socket.on("webrtc-offer", async (data) => {
+        if (!stream) {
+            return;
+        }
 
-    partnerSocketId =
-        data.from;
 
-    await ensureLocalStream();
-
-    if (!peerConnection) {
         createPeerConnection();
-    }
 
-    try {
-
-        await peerConnection.setRemoteDescription(
-            data.offer
-        );
 
         await attachLocalTracks();
 
-        const answer =
-            await peerConnection.createAnswer();
 
-        await peerConnection.setLocalDescription(
-            answer
-        );
+        try {
 
-        socket.emit(
-            "webrtc-answer",
-            {
-                to: partnerSocketId,
-                answer: answer
-            }
-        );
+            const offer =
+                await peerConnection.createOffer();
+
+
+            await peerConnection.setLocalDescription(
+                offer
+            );
+
+
+            console.log(
+                "Sending WebRTC offer."
+            );
+
+
+            socket.emit(
+                "webrtc-offer",
+                {
+
+                    to:
+                        partnerSocketId,
+
+                    offer:
+                        offer
+
+                }
+            );
+
+        }
+        catch (error) {
+
+            console.log(
+                "WebRTC offer error:",
+                error
+            );
+
+        }
 
     }
-    catch (error) {
+);
+
+
+// =====================================
+// دریافت Offer
+// =====================================
+
+socket.on(
+    "webrtc-offer",
+    async (data) => {
+
+        if (
+            !data ||
+            !data.from ||
+            !data.offer
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            partnerSocketId &&
+            partnerSocketId !== data.from
+        ) {
+
+            pendingIceCandidates = [];
+
+        }
+
+
+        partnerSocketId =
+            data.from;
+
 
         console.log(
-            "WebRTC answer error:",
-            error
+            "Received WebRTC offer from:",
+            partnerSocketId
         );
 
+
+        const stream =
+            await ensureLocalStream();
+
+
+        if (!stream) {
+            return;
+        }
+
+
+        if (!peerConnection) {
+
+            createPeerConnection();
+
+        }
+
+
+        try {
+
+            // بسیار مهم:
+            // ابتدا Remote Description تنظیم می‌شود.
+            await peerConnection.setRemoteDescription(
+                data.offer
+            );
+
+
+            console.log(
+                "Remote offer description set."
+            );
+
+
+            // حالا Candidateهایی که زودتر رسیده‌اند
+            // قابل اضافه شدن هستند.
+            await flushPendingIceCandidates();
+
+
+            await attachLocalTracks();
+
+
+            const answer =
+                await peerConnection.createAnswer();
+
+
+            await peerConnection.setLocalDescription(
+                answer
+            );
+
+
+            console.log(
+                "Sending WebRTC answer."
+            );
+
+
+            socket.emit(
+                "webrtc-answer",
+                {
+
+                    to:
+                        partnerSocketId,
+
+                    answer:
+                        answer
+
+                }
+            );
+
+        }
+        catch (error) {
+
+            console.log(
+                "WebRTC answer error:",
+                error
+            );
+
+        }
+
     }
+);
 
-});
+
+// =====================================
+// دریافت Answer
+// =====================================
+
+socket.on(
+    "webrtc-answer",
+    async (data) => {
+
+        if (
+            !peerConnection ||
+            !data ||
+            !data.answer
+        ) {
+
+            return;
+
+        }
 
 
-socket.on("webrtc-answer", async (data) => {
+        try {
 
-    if (!peerConnection) {
-        return;
+            await peerConnection.setRemoteDescription(
+                data.answer
+            );
+
+
+            console.log(
+                "Remote answer description set."
+            );
+
+
+            // حالا Candidateهای منتظر را اضافه می‌کنیم.
+            await flushPendingIceCandidates();
+
+        }
+        catch (error) {
+
+            console.log(
+                "WebRTC set remote answer error:",
+                error
+            );
+
+        }
+
     }
+);
 
-    try {
 
-        await peerConnection.setRemoteDescription(
-            data.answer
-        );
+// =====================================
+// دریافت ICE Candidate
+// =====================================
 
-    }
-    catch (error) {
+socket.on(
+    "webrtc-ice-candidate",
+    async (data) => {
+
+        if (
+            !data ||
+            !data.candidate
+        ) {
+
+            return;
+
+        }
+
 
         console.log(
-            "WebRTC set remote answer error:",
-            error
+            "Received ICE candidate."
         );
 
+
+        // ---------------------------------
+        // اگر PeerConnection هنوز ساخته نشده
+        // ---------------------------------
+
+        if (!peerConnection) {
+
+            console.log(
+                "PeerConnection not ready. ICE candidate queued."
+            );
+
+
+            pendingIceCandidates.push(
+                data.candidate
+            );
+
+
+            return;
+
+        }
+
+
+        // ---------------------------------
+        // اگر Remote Description هنوز تنظیم نشده
+        // ---------------------------------
+
+        if (
+            !peerConnection.remoteDescription
+        ) {
+
+            console.log(
+                "Remote description not ready. ICE candidate queued."
+            );
+
+
+            pendingIceCandidates.push(
+                data.candidate
+            );
+
+
+            return;
+
+        }
+
+
+        // ---------------------------------
+        // Remote Description آماده است
+        // ---------------------------------
+
+        try {
+
+            await peerConnection.addIceCandidate(
+                data.candidate
+            );
+
+
+            console.log(
+                "ICE candidate added successfully."
+            );
+
+        }
+        catch (error) {
+
+            console.log(
+                "WebRTC ICE candidate error:",
+                error
+            );
+
+        }
+
     }
+);
 
-});
 
-
-socket.on("webrtc-ice-candidate", async (data) => {
-
-    if (
-        !peerConnection ||
-        !data.candidate
-    ) {
-        return;
-    }
-
-    try {
-
-        await peerConnection.addIceCandidate(
-            data.candidate
-        );
-
-    }
-    catch (error) {
-
-        console.log(
-            "WebRTC ICE candidate error:",
-            error
-        );
-
-    }
-
-});
-
+// =====================================
+// بستن Voice Connection
+// =====================================
 
 function closeVoiceConnection() {
 
+    console.log(
+        "Closing voice connection."
+    );
+
+
     if (peerConnection) {
 
-        peerConnection.close();
+        try {
+
+            peerConnection.close();
+
+        }
+        catch (error) {}
 
         peerConnection = null;
 
     }
 
+
     partnerSocketId = null;
+
+
+    // Candidateهای قبلی دیگر معتبر نیستند.
+    pendingIceCandidates = [];
+
 
     remoteAudio.srcObject = null;
 
-    voiceBtn.classList.remove("active");
 
-    selfVoiceIndicator.classList.add("hidden");
+    voiceBtn.classList.remove(
+        "active"
+    );
 
-    partnerVoiceIndicator.classList.add("hidden");
+
+    selfVoiceIndicator.classList.add(
+        "hidden"
+    );
+
+
+    partnerVoiceIndicator.classList.add(
+        "hidden"
+    );
 
 }
 
 
-function startTalking(event) {
+// =====================================
+// شروع صحبت
+// =====================================
+
+async function startTalking(event) {
 
     event.preventDefault();
 
-    if (!localStream) {
 
-        ensureLocalStream();
+    // اگر میکروفون هنوز گرفته نشده،
+    // همین‌جا درخواست می‌کنیم.
+    const stream =
+        await ensureLocalStream();
 
+
+    if (!stream) {
         return;
-
     }
 
-    localStream
+
+    // همان لحظه میکروفون فعال می‌شود.
+    stream
         .getAudioTracks()
         .forEach((track) => {
+
             track.enabled = true;
+
         });
 
-    voiceBtn.classList.add("active");
 
-    selfVoiceIndicator.classList.remove("hidden");
+    voiceBtn.classList.add(
+        "active"
+    );
 
+
+    selfVoiceIndicator.classList.remove(
+        "hidden"
+    );
+
+
+    // برای جلوگیری از مشکل autoplay
+    // در موبایل، در همان تعامل کاربر تلاش می‌کنیم.
     tryPlayRemoteAudio();
+
 
     if (roomId) {
 
         socket.emit(
             "voice-status",
             {
+
                 roomId,
-                speaking: true
+
+                speaking:
+                    true
+
             }
         );
 
@@ -1265,6 +1787,10 @@ function startTalking(event) {
 
 }
 
+
+// =====================================
+// توقف صحبت
+// =====================================
 
 function stopTalking() {
 
@@ -1273,22 +1799,35 @@ function stopTalking() {
         localStream
             .getAudioTracks()
             .forEach((track) => {
+
                 track.enabled = false;
+
             });
 
     }
 
-    voiceBtn.classList.remove("active");
 
-    selfVoiceIndicator.classList.add("hidden");
+    voiceBtn.classList.remove(
+        "active"
+    );
+
+
+    selfVoiceIndicator.classList.add(
+        "hidden"
+    );
+
 
     if (roomId) {
 
         socket.emit(
             "voice-status",
             {
+
                 roomId,
-                speaking: false
+
+                speaking:
+                    false
+
             }
         );
 
@@ -1297,60 +1836,79 @@ function stopTalking() {
 }
 
 
+// =====================================
+// Push To Talk
+// =====================================
+
 voiceBtn.addEventListener(
     "pointerdown",
     startTalking
 );
+
 
 voiceBtn.addEventListener(
     "pointerup",
     stopTalking
 );
 
+
 voiceBtn.addEventListener(
     "pointerleave",
     stopTalking
 );
+
 
 voiceBtn.addEventListener(
     "pointercancel",
     stopTalking
 );
 
+
 voiceBtn.addEventListener(
     "contextmenu",
     (event) => {
+
         event.preventDefault();
+
     }
 );
 
 
-socket.on("voice-status", (data) => {
+// =====================================
+// Voice Status
+// =====================================
 
-    if (
-        data &&
-        data.speaking
-    ) {
+socket.on(
+    "voice-status",
+    (data) => {
 
-        partnerVoiceIndicatorText.textContent =
-            `${data.name} در حال صحبت کردن`;
+        if (
+            data &&
+            data.speaking
+        ) {
 
-        partnerVoiceIndicator.classList.remove(
-            "hidden"
-        );
+            partnerVoiceIndicatorText.textContent =
+                `${data.name} در حال صحبت کردن`;
 
-        tryPlayRemoteAudio();
+
+            partnerVoiceIndicator.classList.remove(
+                "hidden"
+            );
+
+
+            tryPlayRemoteAudio();
+
+        }
+        else {
+
+            partnerVoiceIndicator.classList.add(
+                "hidden"
+            );
+
+        }
 
     }
-    else {
-
-        partnerVoiceIndicator.classList.add(
-            "hidden"
-        );
-
-    }
-
-});
+);
 
 
 // =====================================
