@@ -4,6 +4,7 @@
 <head>
 
     <meta charset="UTF-8">
+
     <link rel="manifest" href="/manifest.json">
 
     <meta
@@ -42,6 +43,1260 @@
         rel="stylesheet"
         href="style.css"
     >
+
+
+    <style>
+
+        /* =====================================
+           منوی سه نقطه - شیشه‌ای و عمودی
+        ====================================== */
+
+        .more-controls-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        #moreControlsBtn {
+            position: relative;
+
+            padding: 0;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            /* اندازه متن اصلی مخفی است */
+            font-size: 0;
+
+            line-height: 1;
+
+            cursor: pointer;
+        }
+
+
+        /* سه نقطه کوچک و دقیق */
+
+        #moreControlsBtn::before {
+
+            content: "⋮";
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            width: 100%;
+            height: 100%;
+
+            font-family: Arial, sans-serif;
+
+            font-size: 18px;
+            font-weight: 700;
+
+            line-height: 1;
+
+            letter-spacing: 0;
+
+            transform:
+                translateY(-1px);
+
+            color:
+                currentColor;
+        }
+
+
+        /* پنل شیشه‌ای عمودی */
+
+        .more-controls-menu {
+
+            position: absolute;
+
+            bottom:
+                calc(100% + 8px);
+
+            right: 0;
+
+            width: auto;
+            min-width: 0;
+
+            display: flex;
+
+            /* عمودی */
+            flex-direction: column;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 5px;
+
+            padding: 6px;
+
+            background:
+                rgba(12, 18, 38, 0.58);
+
+            border:
+                1px solid rgba(255, 255, 255, 0.16);
+
+            border-radius: 14px;
+
+            box-shadow:
+                0 10px 30px rgba(0, 0, 0, 0.35),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+            backdrop-filter:
+                blur(18px)
+                saturate(140%);
+
+            -webkit-backdrop-filter:
+                blur(18px)
+                saturate(140%);
+
+            z-index: 1000;
+
+            transform-origin:
+                bottom right;
+        }
+
+
+        .more-controls-menu.hidden {
+            display: none;
+        }
+
+
+        .more-controls-menu > * {
+            flex-shrink: 0;
+        }
+
+
+        /* =====================================
+           دکمه‌های داخل منو
+        ====================================== */
+
+        .more-controls-menu #speedBtn,
+        .more-controls-menu #subtitleSettingsBtn,
+        .more-controls-menu #chatToggleBtn {
+
+            width: 34px;
+            min-width: 34px;
+
+            height: 34px;
+            min-height: 34px;
+
+            padding: 0;
+
+            border-radius: 10px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 0;
+
+            background:
+                rgba(255, 255, 255, 0.075);
+
+            border:
+                1px solid rgba(255, 255, 255, 0.09);
+
+            color:
+                rgba(255, 255, 255, 0.94);
+
+            font-family: inherit;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            line-height: 1;
+
+            white-space: nowrap;
+
+            cursor: pointer;
+
+            transition:
+                background 0.18s ease,
+                border-color 0.18s ease,
+                transform 0.12s ease,
+                box-shadow 0.18s ease;
+        }
+
+
+        .more-controls-menu #speedBtn:hover,
+        .more-controls-menu #subtitleSettingsBtn:hover,
+        .more-controls-menu #chatToggleBtn:hover {
+
+            background:
+                rgba(255, 255, 255, 0.13);
+
+            border-color:
+                rgba(255, 255, 255, 0.17);
+
+            box-shadow:
+                0 4px 14px rgba(0, 0, 0, 0.18);
+        }
+
+
+        .more-controls-menu #speedBtn:active,
+        .more-controls-menu #subtitleSettingsBtn:active,
+        .more-controls-menu #chatToggleBtn:active {
+
+            transform:
+                scale(0.92);
+        }
+
+
+        /* =====================================
+           سرعت
+           متن توسط app.js تغییر می‌کند
+           مثال: 1× / 1.5× / 2×
+        ====================================== */
+
+        .more-controls-menu .speed-wrapper {
+
+            position: relative;
+
+            display: flex;
+
+            width: auto;
+        }
+
+
+        .more-controls-menu #speedBtn {
+
+            justify-content: center;
+
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+
+        .more-controls-menu #speedBtn::before {
+
+            content: none;
+        }
+
+
+        /* =====================================
+           CC
+        ====================================== */
+
+        .more-controls-menu #subtitleSettingsBtn {
+
+            justify-content: center;
+
+            font-size: 0;
+        }
+
+
+        .more-controls-menu #subtitleSettingsBtn::before {
+
+            content: "CC";
+
+            width: auto;
+            min-width: 0;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 10px;
+            font-weight: 900;
+
+            line-height: 1;
+
+            letter-spacing: -0.3px;
+
+            opacity: 0.95;
+        }
+
+
+        /* =====================================
+           چت
+        ====================================== */
+
+        .more-controls-menu #chatToggleBtn {
+
+            justify-content: center;
+
+            font-size: 0;
+        }
+
+
+        .more-controls-menu #chatToggleBtn::before {
+
+            content: "💬";
+
+            width: auto;
+            min-width: 0;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 14px;
+
+            line-height: 1;
+        }
+
+
+        /* =====================================
+           Reaction مخفی
+        ====================================== */
+
+        .more-controls-menu .reaction-picker-wrapper,
+        .reaction-picker-wrapper {
+
+            display: none !important;
+        }
+
+
+        /* =====================================
+           Player
+        ====================================== */
+
+        .player-wrapper {
+            position: relative;
+        }
+
+
+
+        /* =====================================
+           پنل زیرنویس
+        ====================================== */
+
+        .subtitle-settings-panel {
+
+            position: absolute !important;
+
+            top: 50% !important;
+            left: 50% !important;
+
+            right: auto !important;
+            bottom: auto !important;
+
+            transform:
+                translate(-50%, -50%) !important;
+
+            width:
+                min(300px, calc(100% - 24px));
+
+            max-height:
+                min(76%, 420px);
+
+            overflow-y: auto;
+            overflow-x: hidden;
+
+            padding: 13px !important;
+
+            border-radius:
+                17px !important;
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(13, 20, 43, 0.98),
+                    rgba(7, 12, 28, 0.98)
+                ) !important;
+
+            border:
+                1px solid rgba(255, 255, 255, 0.12) !important;
+
+            box-shadow:
+                0 18px 50px rgba(0, 0, 0, 0.55),
+                inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+
+            backdrop-filter:
+                blur(20px);
+
+            -webkit-backdrop-filter:
+                blur(20px);
+
+            z-index:
+                1200 !important;
+
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+
+        .subtitle-settings-panel::-webkit-scrollbar {
+
+            display: none;
+
+            width: 0;
+            height: 0;
+        }
+
+
+        .subtitle-settings-title {
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 7px;
+
+            margin:
+                0 0 10px;
+
+            padding-bottom:
+                9px;
+
+            color: #fff;
+
+            font-size: 14px;
+            font-weight: 700;
+
+            border-bottom:
+                1px solid rgba(255, 255, 255, 0.08);
+
+            letter-spacing:
+                -0.2px;
+        }
+
+
+        .subtitle-settings-title::before {
+
+            content: "CC";
+
+            width: 25px;
+            height: 22px;
+
+            display: inline-flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 6px;
+
+            background:
+                rgba(255, 255, 255, 0.08);
+
+            border:
+                1px solid rgba(255, 255, 255, 0.10);
+
+            color:
+                rgba(255, 255, 255, 0.92);
+
+            font-size: 9px;
+            font-weight: 900;
+
+            letter-spacing: 0;
+        }
+
+
+        .subtitle-settings-row {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 6px;
+
+            margin-bottom: 7px;
+
+            padding: 9px 10px;
+
+            border-radius: 11px;
+
+            background:
+                rgba(255, 255, 255, 0.035);
+
+            border:
+                1px solid rgba(255, 255, 255, 0.055);
+
+            transition:
+                background 0.18s ease,
+                border-color 0.18s ease;
+        }
+
+
+        .subtitle-settings-row:last-child {
+            margin-bottom: 0;
+        }
+
+
+        .subtitle-settings-row:hover {
+
+            background:
+                rgba(255, 255, 255, 0.055);
+
+            border-color:
+                rgba(255, 255, 255, 0.085);
+        }
+
+
+        .subtitle-settings-row > label {
+
+            display: flex;
+
+            align-items: center;
+            justify-content: space-between;
+
+            color:
+                rgba(255, 255, 255, 0.78);
+
+            font-size: 11px;
+            font-weight: 500;
+
+            line-height: 1.4;
+        }
+
+
+        .subtitle-file-label {
+
+            width: 100%;
+
+            min-height: 32px;
+
+            display: flex !important;
+
+            align-items: center !important;
+            justify-content: center !important;
+
+            padding: 0 9px;
+
+            border-radius: 8px;
+
+            background:
+                rgba(255, 255, 255, 0.07);
+
+            border:
+                1px solid rgba(255, 255, 255, 0.09);
+
+            color:
+                rgba(255, 255, 255, 0.90) !important;
+
+            font-size: 11px !important;
+            font-weight: 500 !important;
+
+            cursor: pointer;
+
+            transition:
+                background 0.18s ease,
+                transform 0.12s ease,
+                border-color 0.18s ease;
+        }
+
+
+        .subtitle-file-label:hover {
+
+            background:
+                rgba(255, 255, 255, 0.11);
+
+            border-color:
+                rgba(255, 255, 255, 0.14);
+        }
+
+
+        .subtitle-file-label:active {
+            transform: scale(0.98);
+        }
+
+
+        .subtitle-remove-btn {
+
+            width: 100%;
+
+            min-height: 30px;
+
+            padding: 0 9px;
+
+            border:
+                1px solid rgba(255, 90, 90, 0.14);
+
+            border-radius: 8px;
+
+            background:
+                rgba(255, 70, 70, 0.055);
+
+            color:
+                rgba(255, 150, 150, 0.92);
+
+            font-family: inherit;
+
+            font-size: 11px;
+            font-weight: 500;
+
+            cursor: pointer;
+
+            transition:
+                background 0.18s ease,
+                border-color 0.18s ease,
+                transform 0.12s ease;
+        }
+
+
+        .subtitle-remove-btn:hover {
+
+            background:
+                rgba(255, 70, 70, 0.10);
+
+            border-color:
+                rgba(255, 90, 90, 0.22);
+        }
+
+
+        .subtitle-remove-btn:active {
+            transform: scale(0.98);
+        }
+
+
+        .subtitle-settings-panel input[type="range"] {
+
+            width: 100%;
+
+            height: 4px;
+
+            margin:
+                2px 0 1px;
+
+            appearance: none;
+            -webkit-appearance: none;
+
+            border-radius: 999px;
+
+            background:
+                rgba(255, 255, 255, 0.12);
+
+            outline: none;
+
+            cursor: pointer;
+        }
+
+
+        .subtitle-settings-panel input[type="range"]::-webkit-slider-thumb {
+
+            appearance: none;
+            -webkit-appearance: none;
+
+            width: 13px;
+            height: 13px;
+
+            border-radius: 50%;
+
+            background: #fff;
+
+            border:
+                2px solid rgba(10, 15, 35, 0.9);
+
+            box-shadow:
+                0 1px 6px rgba(0, 0, 0, 0.35);
+
+            cursor: pointer;
+        }
+
+
+        .subtitle-settings-panel input[type="range"]::-moz-range-thumb {
+
+            width: 13px;
+            height: 13px;
+
+            border-radius: 50%;
+
+            background: #fff;
+
+            border:
+                2px solid rgba(10, 15, 35, 0.9);
+
+            box-shadow:
+                0 1px 6px rgba(0, 0, 0, 0.35);
+
+            cursor: pointer;
+        }
+
+
+        .subtitle-color-swatches {
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            flex-wrap: wrap;
+
+            gap: 7px;
+
+            min-height: 27px;
+        }
+
+
+        .subtitle-color-swatches button {
+
+            width: 24px;
+            height: 24px;
+
+            padding: 0;
+
+            border-radius: 50%;
+
+            border:
+                2px solid rgba(255, 255, 255, 0.20);
+
+            box-shadow:
+                0 2px 6px rgba(0, 0, 0, 0.25);
+
+            cursor: pointer;
+
+            transition:
+                transform 0.15s ease,
+                border-color 0.15s ease;
+        }
+
+
+        .subtitle-color-swatches button:hover {
+
+            transform:
+                scale(1.10);
+
+            border-color:
+                rgba(255, 255, 255, 0.70);
+        }
+
+
+        .subtitle-color-swatches button:active {
+            transform: scale(0.94);
+        }
+
+
+        .subtitle-offset-control {
+
+            width: 100%;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            gap: 7px;
+        }
+
+
+        .subtitle-offset-control button {
+
+            width: 29px;
+            height: 29px;
+
+            padding: 0;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            border:
+                1px solid rgba(255, 255, 255, 0.10);
+
+            border-radius: 8px;
+
+            background:
+                rgba(255, 255, 255, 0.055);
+
+            color: #fff;
+
+            font-family: inherit;
+
+            font-size: 17px;
+            line-height: 1;
+
+            cursor: pointer;
+
+            transition:
+                background 0.16s ease,
+                transform 0.12s ease;
+        }
+
+
+        .subtitle-offset-control button:hover {
+
+            background:
+                rgba(255, 255, 255, 0.10);
+        }
+
+
+        .subtitle-offset-control button:active {
+
+            transform:
+                scale(0.92);
+        }
+
+
+        #subtitleOffsetDisplay {
+
+            min-width: 78px;
+
+            text-align: center;
+
+            color:
+                rgba(255, 255, 255, 0.82);
+
+            font-size: 10.5px;
+            font-weight: 500;
+
+            white-space: nowrap;
+        }
+
+
+
+        /* =====================================
+           پنل سرعت
+        ====================================== */
+
+        .player-wrapper > .speed-menu {
+
+            position: absolute !important;
+
+            top: 50% !important;
+            left: 50% !important;
+
+            right: auto !important;
+            bottom: auto !important;
+
+            transform:
+                translate(-50%, -50%) !important;
+
+            width: 180px !important;
+            min-width: 180px !important;
+
+            max-height: 70%;
+
+            overflow-y: auto;
+
+            padding: 8px !important;
+
+            border-radius: 16px !important;
+
+            background:
+                rgba(8, 13, 30, 0.97) !important;
+
+            border:
+                1px solid rgba(255, 255, 255, 0.13) !important;
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.55) !important;
+
+            backdrop-filter:
+                blur(18px);
+
+            -webkit-backdrop-filter:
+                blur(18px);
+
+            z-index:
+                1300 !important;
+
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+
+        .player-wrapper > .speed-menu::-webkit-scrollbar {
+
+            display: none;
+
+            width: 0;
+            height: 0;
+        }
+
+
+        .player-wrapper > .speed-menu.hidden {
+            display: none !important;
+        }
+
+
+        .player-wrapper > .speed-menu button {
+
+            width: 100%;
+
+            min-height: 38px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: transparent;
+
+            color: #fff;
+
+            font-family: inherit;
+
+            font-size: 13px;
+
+            cursor: pointer;
+
+            transition:
+                background 0.18s ease,
+                transform 0.12s ease;
+        }
+
+
+        .player-wrapper > .speed-menu button:hover {
+
+            background:
+                rgba(255, 255, 255, 0.08);
+        }
+
+
+        .player-wrapper > .speed-menu button:active {
+
+            transform:
+                scale(0.97);
+        }
+
+
+
+        /* =====================================
+           موبایل
+        ====================================== */
+
+        @media (max-width: 700px) {
+
+            .player-controls {
+
+                padding-left: 7px;
+                padding-right: 7px;
+            }
+
+
+            .controls-row {
+                gap: 5px;
+            }
+
+
+            .player-btn {
+
+                min-width: 36px;
+                width: 36px;
+                height: 36px;
+            }
+
+
+            .skip-btn {
+
+                width: 36px;
+                min-width: 36px;
+            }
+
+
+            .volume-wrapper {
+
+                display: flex;
+                align-items: center;
+            }
+
+
+            .volume-wrapper #volumeSlider {
+                display: none;
+            }
+
+
+            .time-display {
+
+                font-size: 11px;
+                white-space: nowrap;
+            }
+
+
+            .spacer {
+                flex: 1;
+            }
+
+
+            .more-controls-wrapper {
+                display: flex;
+            }
+
+
+            /* سه نقطه موبایل */
+
+            #moreControlsBtn::before {
+
+                font-size: 17px;
+
+                transform:
+                    translateY(-1px);
+            }
+
+
+            /* منوی شیشه‌ای موبایل - عمودی */
+
+            .more-controls-menu {
+
+                right: 0;
+
+                bottom:
+                    calc(100% + 7px);
+
+                width: auto;
+                min-width: 0;
+
+                padding: 5px;
+
+                gap: 4px;
+
+                border-radius: 13px;
+
+                flex-direction: column;
+            }
+
+
+            .more-controls-menu #speedBtn,
+            .more-controls-menu #subtitleSettingsBtn,
+            .more-controls-menu #chatToggleBtn {
+
+                width: 32px;
+                min-width: 32px;
+
+                height: 32px;
+                min-height: 32px;
+
+                padding: 0;
+
+                border-radius: 9px;
+            }
+
+
+            .more-controls-menu #speedBtn {
+
+                font-size: 10px;
+            }
+
+
+            .more-controls-menu #subtitleSettingsBtn::before {
+
+                font-size: 9px;
+            }
+
+
+            .more-controls-menu #chatToggleBtn::before {
+
+                font-size: 13px;
+            }
+
+
+            .player-wrapper > .speed-menu {
+
+                width: 180px !important;
+                min-width: 180px !important;
+
+                max-width:
+                    calc(100% - 30px);
+
+                max-height: 70%;
+            }
+
+
+            .subtitle-settings-panel {
+
+                width:
+                    min(295px, calc(100% - 20px));
+
+                max-height: 76%;
+
+                padding: 12px !important;
+
+                border-radius: 15px !important;
+            }
+
+
+            .subtitle-settings-title {
+
+                font-size: 13px;
+
+                margin-bottom: 8px;
+
+                padding-bottom: 8px;
+            }
+
+
+            .subtitle-settings-row {
+
+                gap: 5px;
+
+                margin-bottom: 6px;
+
+                padding: 8px 9px;
+
+                border-radius: 10px;
+            }
+
+
+            .subtitle-settings-row > label {
+
+                font-size: 10.5px;
+            }
+
+
+            .subtitle-file-label {
+
+                min-height: 30px;
+
+                font-size: 10.5px !important;
+            }
+
+
+            .subtitle-remove-btn {
+
+                min-height: 29px;
+
+                font-size: 10.5px;
+            }
+
+
+            .subtitle-color-swatches {
+
+                gap: 6px;
+            }
+
+
+            .subtitle-color-swatches button {
+
+                width: 22px;
+                height: 22px;
+            }
+
+
+            .subtitle-offset-control button {
+
+                width: 27px;
+                height: 27px;
+            }
+
+
+            #subtitleOffsetDisplay {
+
+                min-width: 74px;
+
+                font-size: 10px;
+            }
+
+        }
+
+
+
+        /* =====================================
+           موبایل خیلی کوچک
+        ====================================== */
+
+        @media (max-width: 400px) {
+
+            .controls-row {
+                gap: 3px;
+            }
+
+
+            .player-btn {
+
+                width: 33px;
+                min-width: 33px;
+                height: 33px;
+            }
+
+
+            .skip-btn {
+
+                width: 33px;
+                min-width: 33px;
+            }
+
+
+            .time-display {
+                font-size: 10px;
+            }
+
+
+            /* سه نقطه خیلی کوچک */
+
+            #moreControlsBtn::before {
+
+                font-size: 16px;
+
+                transform:
+                    translateY(-1px);
+            }
+
+
+            .more-controls-menu {
+
+                gap: 3px;
+
+                padding: 4px;
+
+                border-radius: 12px;
+
+                flex-direction: column;
+            }
+
+
+            .more-controls-menu #speedBtn,
+            .more-controls-menu #subtitleSettingsBtn,
+            .more-controls-menu #chatToggleBtn {
+
+                width: 30px;
+                min-width: 30px;
+
+                height: 30px;
+                min-height: 30px;
+
+                border-radius: 8px;
+            }
+
+
+            .more-controls-menu #speedBtn {
+
+                font-size: 10px;
+            }
+
+
+            .more-controls-menu #subtitleSettingsBtn::before {
+
+                font-size: 9px;
+            }
+
+
+            .more-controls-menu #chatToggleBtn::before {
+
+                font-size: 12px;
+            }
+
+
+            .player-wrapper > .speed-menu {
+
+                width: 165px !important;
+                min-width: 165px !important;
+            }
+
+
+            .subtitle-settings-panel {
+
+                width:
+                    min(280px, calc(100% - 18px));
+
+                padding: 10px !important;
+            }
+
+
+            .subtitle-settings-row {
+
+                padding: 7px 8px;
+
+                margin-bottom: 5px;
+            }
+
+
+            .subtitle-settings-title {
+
+                font-size: 12px;
+            }
+
+        }
+
+    </style>
 
 </head>
 
@@ -197,10 +1452,6 @@
     <main class="container">
 
 
-        <!-- =====================================
-             Header
-        ====================================== -->
-
         <header class="hero">
 
             <div
@@ -227,10 +1478,6 @@
 
 
 
-        <!-- =====================================
-             وضعیت اتصال
-        ====================================== -->
-
         <div
             id="status"
             class="status"
@@ -248,10 +1495,6 @@
         </div>
 
 
-
-        <!-- =====================================
-             نوار اتاق
-        ====================================== -->
 
         <div class="room-topbar">
 
@@ -316,19 +1559,11 @@
 
 
 
-        <!-- =====================================
-             فیلم + چت
-        ====================================== -->
-
         <section
             class="watch-area"
             aria-label="تماشای فیلم و گفتگو"
         >
 
-
-            <!-- =====================================
-                 سینما
-            ====================================== -->
 
             <section
                 class="cinema-card"
@@ -368,10 +1603,6 @@
                     ></div>
 
 
-                    <!-- =====================================
-                         پلیر اختصاصی
-                    ====================================== -->
-
                     <div
                         class="player-wrapper"
                         id="playerWrapper"
@@ -387,8 +1618,6 @@
                             aria-label="پخش فیلم"
                         ></video>
 
-
-                        <!-- نشانگرهای صحبت با ویس -->
 
                         <div
                             class="voice-indicators"
@@ -431,7 +1660,6 @@
                         </div>
 
 
-                        <!-- دکمه پلی بزرگ وسط -->
 
                         <button
                             id="centerPlayBtn"
@@ -451,7 +1679,6 @@
                         </button>
 
 
-                        <!-- لایه ری‌اکشن‌های شناور -->
 
                         <div
                             id="reactionsLayer"
@@ -460,7 +1687,6 @@
                         ></div>
 
 
-                        <!-- پنل چت داخل پلیر -->
 
                         <div
                             id="miniChatPanel"
@@ -504,6 +1730,7 @@
                             </div>
 
                         </div>
+
 
 
                         <!-- پنل تنظیمات زیرنویس -->
@@ -637,9 +1864,17 @@
                         </div>
 
 
-                        <!-- =====================================
-                             نوار کنترل سفارشی
-                        ====================================== -->
+
+                        <!-- پنل سرعت -->
+
+                        <div
+                            id="speedMenu"
+                            class="control-panel speed-menu hidden"
+                            role="menu"
+                            aria-label="سرعت پخش"
+                        ></div>
+
+
 
                         <div
                             id="playerControls"
@@ -675,7 +1910,9 @@
                             </div>
 
 
+
                             <div class="controls-row">
+
 
                                 <button
                                     id="rewind15Btn"
@@ -697,6 +1934,7 @@
                                     </span>
 
                                 </button>
+
 
 
                                 <button
@@ -727,6 +1965,7 @@
                                 </button>
 
 
+
                                 <button
                                     id="forward15Btn"
                                     class="player-btn round-btn skip-btn flip"
@@ -739,7 +1978,7 @@
                                         fill="currentColor"
                                         aria-hidden="true"
                                     >
-                                        <path d="M12 5V1L7 6l5 5V7a5 7 0 1 1-5 5H5a7 7 0 1 0 7-7z"></path>
+                                        <path d="M12 5V1L7 6l5 5V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"></path>
                                     </svg>
 
                                     <span class="skip-label">
@@ -747,6 +1986,7 @@
                                     </span>
 
                                 </button>
+
 
 
                                 <div class="volume-wrapper">
@@ -799,6 +2039,7 @@
                                 </div>
 
 
+
                                 <span
                                     id="timeDisplay"
                                     class="time-display"
@@ -808,39 +2049,9 @@
                                 </span>
 
 
+
                                 <div class="spacer"></div>
 
-
-                                <div class="speed-wrapper">
-
-                                    <button
-                                        id="speedBtn"
-                                        class="player-btn speed-btn"
-                                        type="button"
-                                        aria-label="سرعت پخش"
-                                        aria-expanded="false"
-                                    >
-                                        1×
-                                    </button>
-
-                                    <div
-                                        id="speedMenu"
-                                        class="control-panel speed-menu hidden"
-                                        role="menu"
-                                    ></div>
-
-                                </div>
-
-
-                                <button
-                                    id="subtitleSettingsBtn"
-                                    class="player-btn round-btn text-btn"
-                                    type="button"
-                                    aria-label="تنظیمات زیرنویس"
-                                    aria-expanded="false"
-                                >
-                                    CC
-                                </button>
 
 
                                 <button
@@ -853,36 +2064,104 @@
                                 </button>
 
 
-                                <div class="reaction-picker-wrapper">
+
+                                <!-- منوی سه نقطه -->
+
+                                <div class="more-controls-wrapper">
 
                                     <button
-                                        id="reactionBtn"
+                                        id="moreControlsBtn"
                                         class="player-btn round-btn"
                                         type="button"
-                                        aria-label="ری‌اکشن"
+                                        aria-label="گزینه‌های بیشتر"
                                         aria-expanded="false"
                                     >
-                                        😍
+                                        ⋮
                                     </button>
 
+
                                     <div
-                                        id="reactionPicker"
-                                        class="control-panel reaction-picker hidden"
+                                        id="moreControlsMenu"
+                                        class="control-panel more-controls-menu hidden"
                                         role="menu"
-                                    ></div>
+                                    >
+
+                                        <!-- سرعت -->
+
+                                        <div class="speed-wrapper">
+
+                                            <button
+                                                id="speedBtn"
+                                                class="player-btn speed-btn"
+                                                type="button"
+                                                aria-label="سرعت پخش"
+                                                aria-expanded="false"
+                                            >
+                                                1×
+                                            </button>
+
+                                        </div>
+
+
+
+                                        <!-- زیرنویس -->
+
+                                        <button
+                                            id="subtitleSettingsBtn"
+                                            class="player-btn round-btn text-btn"
+                                            type="button"
+                                            aria-label="تنظیمات زیرنویس"
+                                            aria-expanded="false"
+                                        >
+                                            زیرنویس
+                                        </button>
+
+
+
+                                        <!-- Reaction حفظ شده ولی مخفی -->
+
+                                        <div
+                                            class="reaction-picker-wrapper"
+                                            aria-hidden="true"
+                                        >
+
+                                            <button
+                                                id="reactionBtn"
+                                                class="player-btn round-btn"
+                                                type="button"
+                                                aria-label="ری‌اکشن"
+                                                aria-expanded="false"
+                                            >
+                                                😍
+                                            </button>
+
+
+                                            <div
+                                                id="reactionPicker"
+                                                class="control-panel reaction-picker hidden"
+                                                role="menu"
+                                            ></div>
+
+                                        </div>
+
+
+
+                                        <!-- چت -->
+
+                                        <button
+                                            id="chatToggleBtn"
+                                            class="player-btn round-btn"
+                                            type="button"
+                                            aria-label="چت"
+                                            aria-expanded="false"
+                                        >
+                                            چت
+                                        </button>
+
+                                    </div>
 
                                 </div>
 
-
-                                <button
-                                    id="chatToggleBtn"
-                                    class="player-btn round-btn"
-                                    type="button"
-                                    aria-label="چت"
-                                    aria-expanded="false"
-                                >
-                                    💬
-                                </button>
 
 
                                 <button
@@ -902,7 +2181,7 @@
                                         stroke-linejoin="round"
                                         aria-hidden="true"
                                     >
-                                        <path d="M9 3H5a2 2 0 0 0-2 2v4M15 3h4a2 2 0 0 1 2 2v4M9 21H5a2 2 0 0 1-2-2v-4M15 21h4a2 2 0 0 0 2-2v-4"></path>
+                                        <path d="M9 3H5a2 2 0 0 0-2 2v4M15 3h4a2 2 0 0 1 2 2v4M9 21H5a2 2 0 0 1-2-2v-4M15 21h4a2 2 0 0 1 2-2v-4"></path>
                                     </svg>
 
                                     <svg
@@ -920,6 +2199,7 @@
 
                                 </button>
 
+
                             </div>
 
                         </div>
@@ -929,8 +2209,6 @@
                 </div>
 
 
-
-                <!-- انتخاب فیلم -->
 
                 <label
                     class="file-button"
@@ -960,10 +2238,6 @@
             </section>
 
 
-
-            <!-- =====================================
-                 چت
-            ====================================== -->
 
             <section
                 class="chat-card"
@@ -1098,10 +2372,6 @@
 
 
 
-        <!-- =====================================
-             Footer
-        ====================================== -->
-
         <footer>
 
             <div
@@ -1147,19 +2417,175 @@
 
     <script src="app.js"></script>
 
-<script>
-    if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-            navigator.serviceWorker.register("/sw.js")
-                .then(() => {
-                    console.log("Service Worker registered");
-                })
-                .catch((error) => {
-                    console.error("Service Worker registration failed:", error);
-                });
-        });
-    }
-</script>
+
+
+    <!-- =====================================
+         منوی سه نقطه
+    ====================================== -->
+
+    <script>
+
+    (() => {
+
+        const moreBtn =
+            document.getElementById("moreControlsBtn");
+
+        const moreMenu =
+            document.getElementById("moreControlsMenu");
+
+        const speedPanel =
+            document.getElementById("speedMenu");
+
+        const subtitlePanel =
+            document.getElementById("subtitleSettingsPanel");
+
+
+        if (!moreBtn || !moreMenu) {
+
+            console.warn(
+                "More controls elements not found."
+            );
+
+            return;
+        }
+
+
+        /* باز و بسته کردن منو */
+
+        moreBtn.addEventListener(
+            "click",
+            (event) => {
+
+                event.preventDefault();
+
+                event.stopPropagation();
+
+
+                const willOpen =
+                    moreMenu.classList.contains("hidden");
+
+
+                moreMenu.classList.toggle(
+                    "hidden",
+                    !willOpen
+                );
+
+
+                moreBtn.setAttribute(
+                    "aria-expanded",
+                    String(willOpen)
+                );
+
+            }
+        );
+
+
+        /* جلوگیری از بسته شدن منو */
+
+        moreMenu.addEventListener(
+            "click",
+            (event) => {
+
+                event.stopPropagation();
+
+            }
+        );
+
+
+        /* کلیک بیرون */
+
+        document.addEventListener(
+            "click",
+            () => {
+
+                moreMenu.classList.add(
+                    "hidden"
+                );
+
+
+                moreBtn.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+            }
+        );
+
+
+        /* پنل سرعت */
+
+        if (speedPanel) {
+
+            speedPanel.addEventListener(
+                "click",
+                (event) => {
+
+                    event.stopPropagation();
+
+                }
+            );
+
+        }
+
+
+        /* پنل زیرنویس */
+
+        if (subtitlePanel) {
+
+            subtitlePanel.addEventListener(
+                "click",
+                (event) => {
+
+                    event.stopPropagation();
+
+                }
+            );
+
+        }
+
+    })();
+
+    </script>
+
+
+
+    <!-- =====================================
+         Service Worker
+    ====================================== -->
+
+    <script>
+
+        if ("serviceWorker" in navigator) {
+
+            window.addEventListener(
+                "load",
+                () => {
+
+                    navigator.serviceWorker
+                        .register("/sw.js")
+                        .then(() => {
+
+                            console.log(
+                                "Service Worker registered"
+                            );
+
+                        })
+                        .catch((error) => {
+
+                            console.error(
+                                "Service Worker registration failed:",
+                                error
+                            );
+
+                        });
+
+                }
+            );
+
+        }
+
+    </script>
+
 
 </body>
 
