@@ -711,7 +711,6 @@ h1 {
    CARDS
 ===================================== */
 
-.room-card,
 .cinema-card,
 .chat-card {
 
@@ -737,285 +736,6 @@ h1 {
 
         0 25px 80px
         rgba(0, 0, 0, 0.35);
-
-}
-
-
-/* =====================================
-   ROOM CARD
-===================================== */
-
-.room-card {
-
-    padding:
-        22px;
-
-}
-
-
-.section-title {
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    gap:
-        15px;
-
-    margin-bottom:
-        20px;
-
-}
-
-
-.title-icon {
-
-    width:
-        50px;
-
-    height:
-        50px;
-
-    flex-shrink:
-        0;
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    border-radius:
-        15px;
-
-    font-size:
-        23px;
-
-    background:
-        rgba(139, 108, 255, 0.13);
-
-    border:
-        1px solid
-        rgba(139, 108, 255, 0.2);
-
-}
-
-
-.section-title h2 {
-
-    font-size:
-        18px;
-
-    font-weight:
-        700;
-
-    margin-bottom:
-        5px;
-
-}
-
-
-.section-title p {
-
-    color:
-        var(--muted);
-
-    font-size:
-        12px;
-
-}
-
-
-/* =====================================
-   ROOM BOX
-===================================== */
-
-.room-box {
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    gap:
-        12px;
-
-    padding:
-        6px;
-
-    background:
-        rgba(0, 0, 0, 0.28);
-
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.07);
-
-    border-radius:
-        16px;
-
-}
-
-
-.room-box label {
-
-    color:
-        #cbd0df;
-
-    padding:
-        0 12px;
-
-    white-space:
-        nowrap;
-
-    font-size:
-        13px;
-
-    font-weight:
-        500;
-
-}
-
-
-.room-box input {
-
-    flex:
-        1;
-
-    min-width:
-        0;
-
-    background:
-        rgba(255, 255, 255, 0.045);
-
-    color:
-        white;
-
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.08);
-
-    border-radius:
-        11px;
-
-    padding:
-        13px 15px;
-
-    outline:
-        none;
-
-    font-family:
-        "Vazirmatn",
-        Tahoma,
-        Arial,
-        sans-serif;
-
-    font-size:
-        14px;
-
-    direction:
-        ltr;
-
-}
-
-
-.room-box input::placeholder {
-
-    color:
-        #687086;
-
-}
-
-
-.room-box input:focus {
-
-    border-color:
-        rgba(139, 108, 255, 0.7);
-
-    box-shadow:
-
-        0 0 0 3px
-        rgba(139, 108, 255, 0.09);
-
-}
-
-
-.room-box button {
-
-    border:
-        none;
-
-    border-radius:
-        12px;
-
-    padding:
-        13px 21px;
-
-    color:
-        white;
-
-    font-family:
-        "Vazirmatn",
-        Tahoma,
-        Arial,
-        sans-serif;
-
-    font-size:
-        13px;
-
-    font-weight:
-        700;
-
-    cursor:
-        pointer;
-
-    background:
-
-        linear-gradient(
-            135deg,
-            #7458ed,
-            #a05cff
-        );
-
-    box-shadow:
-
-        0 8px 25px
-        rgba(124, 86, 255, 0.28);
-
-    transition:
-        0.2s;
-
-}
-
-
-.room-box button:hover {
-
-    transform:
-        translateY(-2px);
-
-    box-shadow:
-
-        0 12px 32px
-        rgba(124, 86, 255, 0.42);
-
-}
-
-
-.room-box button:disabled {
-
-    opacity:
-        0.5;
-
-    cursor:
-        not-allowed;
-
-    transform:
-        none;
 
 }
 
@@ -1080,6 +800,282 @@ h1 {
     box-shadow:
         0 0 8px
         rgba(150, 160, 180, 0.4);
+
+}
+
+
+/* =====================================
+   نوار جمع‌وجور اتاق
+===================================== */
+
+.room-topbar {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        10px;
+
+    margin-bottom:
+        20px;
+
+    flex-wrap:
+        wrap;
+
+}
+
+
+.room-topbar-left,
+.room-topbar-right {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    flex-wrap:
+        wrap;
+
+}
+
+
+.room-code-label {
+
+    font-size:
+        12px;
+
+    color:
+        #cbd0df;
+
+    background:
+        rgba(10, 13, 23, 0.65);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.08);
+
+    border-radius:
+        10px;
+
+    padding:
+        8px 12px;
+
+}
+
+
+.room-code-label strong {
+
+    color:
+        #c8bcff;
+
+    direction:
+        ltr;
+
+    display:
+        inline-block;
+
+}
+
+
+.topbar-pill-btn {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        6px;
+
+    border:
+        1px solid
+        rgba(139, 108, 255, 0.3);
+
+    border-radius:
+        10px;
+
+    padding:
+        8px 13px;
+
+    font-size:
+        12px;
+
+    font-family:
+        "Vazirmatn",
+        Tahoma,
+        Arial,
+        sans-serif;
+
+    font-weight:
+        600;
+
+    color:
+        white;
+
+    cursor:
+        pointer;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            rgba(139, 108, 255, 0.2),
+            rgba(255, 79, 154, 0.12)
+        );
+
+    transition:
+        background 0.2s ease,
+        transform 0.15s ease;
+
+}
+
+
+.topbar-pill-btn:hover {
+
+    background:
+
+        linear-gradient(
+            135deg,
+            rgba(139, 108, 255, 0.35),
+            rgba(255, 79, 154, 0.22)
+        );
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+.users-count-badge {
+
+    background:
+        rgba(255, 255, 255, 0.15);
+
+    border-radius:
+        20px;
+
+    padding:
+        1px 7px;
+
+    font-size:
+        10px;
+
+}
+
+
+.users-toggle-wrapper {
+
+    position:
+        relative;
+
+}
+
+
+.users-panel {
+
+    position:
+        absolute;
+
+    top:
+        calc(100% + 8px);
+
+    left:
+        0;
+
+    z-index:
+        30;
+
+    width:
+        180px;
+
+    padding:
+        8px;
+
+}
+
+
+.users-panel-item {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    padding:
+        7px 8px;
+
+    border-radius:
+        8px;
+
+    font-size:
+        12px;
+
+    color:
+        #e8e9f2;
+
+}
+
+
+.users-panel-item:hover {
+
+    background:
+        rgba(255, 255, 255, 0.06);
+
+}
+
+
+.users-panel-dot {
+
+    width:
+        7px;
+
+    height:
+        7px;
+
+    border-radius:
+        50%;
+
+    background:
+        #48d597;
+
+    box-shadow:
+        0 0 8px
+        rgba(72, 213, 151, 0.7);
+
+    flex-shrink:
+        0;
+
+}
+
+
+.users-panel-empty {
+
+    font-size:
+        11px;
+
+    color:
+        #71798d;
+
+    text-align:
+        center;
+
+    padding:
+        8px;
 
 }
 
@@ -1286,8 +1282,7 @@ video {
 /* =====================================
    🎮 PLAYER WRAPPER (پلیر اختصاصی)
    توجه: عمداً overflow:hidden ندارد
-   تا پنل‌های شناور (چت/زیرنویس/ری‌اکشن/سرعت)
-   حتی روی صفحه‌های کوچک موبایل بریده نشوند
+   تا پنل‌های شناور بریده نشوند
 ===================================== */
 
 .player-wrapper {
@@ -1314,6 +1309,192 @@ video {
 
     height:
         100vh;
+
+}
+
+
+/* =====================================
+   نشانگرهای صحبت با ویس
+===================================== */
+
+.voice-indicators {
+
+    position:
+        absolute;
+
+    top:
+        14px;
+
+    right:
+        14px;
+
+    z-index:
+        7;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        8px;
+
+    align-items:
+        flex-end;
+
+}
+
+
+.voice-indicator {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    padding:
+        7px 12px;
+
+    border-radius:
+        30px;
+
+    font-size:
+        11px;
+
+    font-weight:
+        600;
+
+    color:
+        white;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            #ff4f6a,
+            #d92d4f
+        );
+
+    box-shadow:
+        0 8px 20px
+        rgba(217, 45, 79, 0.45);
+
+    animation:
+        voiceIndicatorIn 0.25s ease;
+
+}
+
+
+/* نکته مهم: این قانون قبلاً جا افتاده بود
+   و باعث می‌شد نشانگر همیشه روی صفحه بماند */
+
+.voice-indicator.hidden {
+
+    display:
+        none;
+
+}
+
+
+@keyframes voiceIndicatorIn {
+
+    from {
+
+        opacity:
+            0;
+
+        transform:
+            translateY(-6px);
+
+    }
+
+    to {
+
+        opacity:
+            1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+.voice-indicator-wave {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        2px;
+
+    height:
+        12px;
+
+}
+
+
+.voice-indicator-wave span {
+
+    width:
+        3px;
+
+    height:
+        100%;
+
+    background:
+        white;
+
+    border-radius:
+        2px;
+
+    animation:
+        waveBounce 0.9s ease-in-out infinite;
+
+}
+
+
+.voice-indicator-wave span:nth-child(2) {
+
+    animation-delay:
+        0.15s;
+
+}
+
+
+.voice-indicator-wave span:nth-child(3) {
+
+    animation-delay:
+        0.3s;
+
+}
+
+
+@keyframes waveBounce {
+
+    0%,
+    100% {
+
+        transform:
+            scaleY(0.4);
+
+    }
+
+    50% {
+
+        transform:
+            scaleY(1);
+
+    }
 
 }
 
@@ -1428,8 +1609,6 @@ video {
 
 /* =====================================
    REACTIONS LAYER
-   این لایه overflow:hidden مخصوص به خودش را دارد
-   تا ایموجی‌های شناور از گوشه‌های گرد بیرون نزنند
 ===================================== */
 
 .reactions-layer {
@@ -1950,6 +2129,60 @@ video {
     box-shadow:
         0 0 14px
         rgba(139, 108, 255, 0.6);
+
+}
+
+
+/* =====================================
+   دکمه‌های ۱۵ ثانیه جلو/عقب
+===================================== */
+
+.skip-btn {
+
+    position:
+        relative;
+
+}
+
+
+.skip-btn svg {
+
+    width:
+        15px;
+
+    height:
+        15px;
+
+}
+
+
+.skip-btn.flip svg {
+
+    transform:
+        scaleX(-1);
+
+}
+
+
+.skip-label {
+
+    position:
+        absolute;
+
+    bottom:
+        1px;
+
+    font-size:
+        7px;
+
+    font-weight:
+        800;
+
+    color:
+        white;
+
+    pointer-events:
+        none;
 
 }
 
@@ -2636,6 +2869,62 @@ video {
 }
 
 
+.subtitle-remove-btn {
+
+    display:
+        block;
+
+    width:
+        100%;
+
+    text-align:
+        center;
+
+    padding:
+        8px 10px;
+
+    border-radius:
+        10px;
+
+    background:
+        rgba(255, 79, 79, 0.14);
+
+    border:
+        1px solid
+        rgba(255, 79, 79, 0.3);
+
+    color:
+        #ff9c9c;
+
+    font-size:
+        11px;
+
+    font-weight:
+        600;
+
+    font-family:
+        "Vazirmatn",
+        Tahoma,
+        Arial,
+        sans-serif;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.2s ease;
+
+}
+
+
+.subtitle-remove-btn:hover {
+
+    background:
+        rgba(255, 79, 79, 0.24);
+
+}
+
+
 .subtitle-color-swatches {
 
     display:
@@ -3060,7 +3349,7 @@ video {
         auto;
 
     padding:
-        18px 5px;
+        20px 6px;
 
     display:
         flex;
@@ -3069,7 +3358,7 @@ video {
         column;
 
     gap:
-        10px;
+        13px;
 
     scroll-behavior:
         smooth;
@@ -3186,7 +3475,7 @@ video {
         88%;
 
     padding:
-        9px 11px;
+        10px 12px;
 
     border-radius:
         14px;
@@ -3264,6 +3553,46 @@ video {
 
     border-bottom-left-radius:
         5px;
+
+}
+
+
+/* =====================================
+   پیام سیستمی (ورود / خروج به اتاق)
+===================================== */
+
+.chat-message.system {
+
+    align-self:
+        center;
+
+    max-width:
+        94%;
+
+    background:
+        rgba(139, 108, 255, 0.08);
+
+    border:
+        none;
+
+    border-right:
+        3px solid
+        rgba(139, 108, 255, 0.6);
+
+    padding:
+        8px 12px;
+
+    color:
+        #a8adc4;
+
+    font-size:
+        10px;
+
+    text-align:
+        center;
+
+    border-radius:
+        8px;
 
 }
 
@@ -3495,183 +3824,6 @@ video {
 
 
 /* =====================================
-   USERS
-===================================== */
-
-.users {
-
-    display:
-        grid;
-
-    grid-template-columns:
-        1fr 60px 1fr;
-
-    align-items:
-        center;
-
-    gap:
-        12px;
-
-    margin-top:
-        20px;
-
-}
-
-
-.user-card {
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    gap:
-        13px;
-
-    padding:
-        15px 17px;
-
-    background:
-        rgba(10, 13, 23, 0.72);
-
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.07);
-
-    border-radius:
-        17px;
-
-    backdrop-filter:
-        blur(12px);
-
-}
-
-
-.user-avatar {
-
-    width:
-        43px;
-
-    height:
-        43px;
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    flex-shrink:
-        0;
-
-    border-radius:
-        13px;
-
-    font-size:
-        21px;
-
-    background:
-        rgba(139, 108, 255, 0.12);
-
-    border:
-        1px solid
-        rgba(139, 108, 255, 0.18);
-
-}
-
-
-.user-info {
-
-    display:
-        flex;
-
-    flex-direction:
-        column;
-
-    gap:
-        4px;
-
-    flex:
-        1;
-
-}
-
-
-.user-role {
-
-    color:
-        #777f95;
-
-    font-size:
-        10px;
-
-}
-
-
-.user-info strong {
-
-    color:
-        #ffffff;
-
-    font-size:
-        15px;
-
-    font-weight:
-        700;
-
-}
-
-
-.connection {
-
-    font-size:
-        13px;
-
-}
-
-
-.connection-symbol {
-
-    display:
-        flex;
-
-    justify-content:
-        center;
-
-    align-items:
-        center;
-
-    width:
-        46px;
-
-    height:
-        46px;
-
-    margin:
-        auto;
-
-    border-radius:
-        50%;
-
-    background:
-        rgba(255, 79, 154, 0.09);
-
-    border:
-        1px solid
-        rgba(255, 79, 154, 0.18);
-
-    box-shadow:
-        0 0 25px
-        rgba(255, 79, 154, 0.08);
-
-}
-
-
-/* =====================================
    FOOTER
 ===================================== */
 
@@ -3843,65 +3995,30 @@ footer {
     }
 
 
-    .room-card {
-
-        padding:
-            15px;
-
-        border-radius:
-            19px;
-
-    }
-
-
-    .room-box {
-
-        flex-direction:
-            column;
-
-        align-items:
-            stretch;
-
-        padding:
-            8px;
-
-    }
-
-
-    .room-box label {
-
-        padding:
-            5px 7px 0;
-
-    }
-
-
-    .room-box input {
-
-        width:
-            100%;
-
-        height:
-            47px;
-
-    }
-
-
-    .room-box button {
-
-        width:
-            100%;
-
-        height:
-            47px;
-
-    }
-
-
     .status {
 
         font-size:
             12px;
+
+    }
+
+
+    .room-topbar {
+
+        margin-bottom:
+            15px;
+
+    }
+
+
+    .room-code-label,
+    .topbar-pill-btn {
+
+        font-size:
+            11px;
+
+        padding:
+            7px 10px;
 
     }
 
@@ -3963,8 +4080,7 @@ footer {
     }
 
 
-    .film-icon,
-    .title-icon {
+    .film-icon {
 
         width:
             43px;
@@ -4104,6 +4220,28 @@ footer {
     }
 
 
+    .voice-indicators {
+
+        top:
+            8px;
+
+        right:
+            8px;
+
+    }
+
+
+    .voice-indicator {
+
+        font-size:
+            10px;
+
+        padding:
+            6px 10px;
+
+    }
+
+
     .file-button {
 
         width:
@@ -4193,39 +4331,6 @@ footer {
     }
 
 
-    .users {
-
-        grid-template-columns:
-            1fr;
-
-        gap:
-            9px;
-
-    }
-
-
-    .connection-symbol {
-
-        width:
-            38px;
-
-        height:
-            38px;
-
-        margin:
-            -3px auto;
-
-    }
-
-
-    .user-card {
-
-        padding:
-            13px 14px;
-
-    }
-
-
     footer {
 
         margin-top:
@@ -4261,7 +4366,6 @@ footer {
     }
 
 
-    .room-card,
     .cinema-card,
     .chat-card {
 
@@ -4299,8 +4403,7 @@ footer {
 
 }
 /* =========================================================
-   IDENTITY SELECTION — محمد / هستی
-   اضافه شده بدون حذف استایل‌های قبلی
+   مودال ورود (نام + کد اتاق)
 ========================================================= */
 
 .identity-modal {
@@ -4331,7 +4434,7 @@ footer {
 }
 
 .identity-box {
-    width: min(460px, 100%);
+    width: min(400px, 100%);
     padding: 35px 30px;
     text-align: center;
     border-radius: 28px;
@@ -4364,7 +4467,7 @@ footer {
 
 .identity-box h2 {
     margin: 0 0 8px;
-    font-size: 28px;
+    font-size: 24px;
 }
 
 .identity-box p {
@@ -4373,59 +4476,64 @@ footer {
     font-size: 13px;
 }
 
-.identity-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
+.entry-field {
+    text-align: right;
+    margin-bottom: 15px;
 }
 
-.identity-btn {
-    border: none;
-    border-radius: 20px;
-    padding: 20px 15px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    cursor: pointer;
-    font-family: "Vazirmatn", Tahoma, Arial, sans-serif;
-    font-size: 18px;
-    font-weight: 700;
+.entry-field label {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+
+.entry-field input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
     color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 13px 15px;
+    outline: none;
+    font-family: "Vazirmatn", Tahoma, Arial, sans-serif;
+    font-size: 14px;
+}
+
+.entry-field input.ltr-input,
+.entry-field input#entryRoomInput {
+    direction: ltr;
+}
+
+.entry-field input:focus {
+    border-color: rgba(139, 108, 255, 0.7);
+    box-shadow: 0 0 0 3px rgba(139, 108, 255, 0.09);
+}
+
+.entry-join-btn {
+    width: 100%;
+    margin-top: 8px;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    color: white;
+    font-family: "Vazirmatn", Tahoma, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    background:
+        linear-gradient(
+            135deg,
+            #7458ed,
+            #a05cff
+        );
+    box-shadow: 0 10px 28px rgba(124, 86, 255, 0.35);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.identity-btn:hover {
-    transform: translateY(-4px);
-}
-
-.identity-btn:active {
-    transform: translateY(0) scale(0.97);
-}
-
-.identity-btn.mohammad {
-    background:
-        linear-gradient(
-            145deg,
-            rgba(45, 110, 180, 0.85),
-            rgba(20, 55, 110, 0.95)
-        );
-    box-shadow: 0 10px 30px rgba(30, 100, 200, 0.2);
-}
-
-.identity-btn.hasti {
-    background:
-        linear-gradient(
-            145deg,
-            rgba(180, 75, 135, 0.85),
-            rgba(100, 30, 75, 0.95)
-        );
-    box-shadow: 0 10px 30px rgba(200, 70, 150, 0.2);
-}
-
-.identity-avatar {
-    font-size: 35px;
+.entry-join-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 34px rgba(124, 86, 255, 0.5);
 }
 
 
@@ -4517,50 +4625,10 @@ footer {
 
 
 /* =========================================================
-   CHANGE IDENTITY BUTTON
-========================================================= */
-
-.change-identity-btn {
-    cursor: pointer;
-    margin-right: auto;
-    margin-left: 0;
-    padding: 7px 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: rgba(255, 255, 255, 0.06);
-    color: inherit;
-    font-family: "Vazirmatn", Tahoma, Arial, sans-serif;
-    font-size: 10px;
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease;
-}
-
-.change-identity-btn:hover {
-    background: rgba(255, 255, 255, 0.12);
-    transform: translateY(-1px);
-}
-
-
-/* =========================================================
-   MOBILE — هویت و نوتیفیکیشن
+   MOBILE — نوتیفیکیشن
 ========================================================= */
 
 @media (max-width: 800px) {
-
-    .identity-box {
-        padding: 28px 20px;
-        border-radius: 23px;
-    }
-
-    .identity-buttons {
-        grid-template-columns: 1fr;
-    }
-
-    .identity-btn {
-        flex-direction: row;
-        padding: 15px;
-    }
 
     .chat-notifications {
         top: auto;
@@ -4586,7 +4654,7 @@ footer {
 @media (max-width: 450px) {
 
     .identity-box h2 {
-        font-size: 24px;
+        font-size: 21px;
     }
 
     .identity-box p {

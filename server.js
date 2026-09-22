@@ -24,6 +24,58 @@ app.use(
 
 
 // =====================================
+// محاسبه لیست کاربران آنلاین یک اتاق
+// =====================================
+
+function getRoomUsers(roomId) {
+
+    const room =
+        io.sockets.adapter.rooms.get(
+            roomId
+        );
+
+
+    if (!room) {
+
+        return {
+            count: 0,
+            users: []
+        };
+
+    }
+
+
+    const users =
+        [...room].map((id) => {
+
+            const memberSocket =
+                io.sockets.sockets.get(id);
+
+
+            const name =
+                (memberSocket &&
+                    memberSocket.data &&
+                    memberSocket.data.name) ||
+                "کاربر";
+
+
+            return {
+                id: id,
+                name: name
+            };
+
+        });
+
+
+    return {
+        count: users.length,
+        users: users
+    };
+
+}
+
+
+// =====================================
 // Connection
 // =====================================
 
@@ -81,23 +133,28 @@ io.on(
                 );
 
 
-                const room =
-                    io.sockets.adapter.rooms.get(
-                        roomId
-                    );
+                const roomInfo =
+                    getRoomUsers(roomId);
 
 
-                const users =
-                    room
-                        ? room.size
-                        : 0;
-
-
-                // ارسال تعداد کاربران
+                // ارسال لیست به‌روز کاربران
 
                 io.to(roomId).emit(
-                    "users-count",
-                    users
+                    "room-users",
+                    roomInfo
+                );
+
+
+                // پیام سیستمی ورود در چت
+
+                io.to(roomId).emit(
+                    "system-message",
+                    {
+
+                        text:
+                            `${name} وارد اتاق شد`
+
+                    }
                 );
 
 
@@ -109,6 +166,12 @@ io.on(
                 // اگر از قبل نفر دیگری در اتاق باشد
                 // به تازه‌واردشده اطلاع می‌دهیم تا او
                 // شروع‌کننده اتصال صوتی (WebRTC) باشد
+
+                const room =
+                    io.sockets.adapter.rooms.get(
+                        roomId
+                    );
+
 
                 const otherIds =
                     room
@@ -192,6 +255,44 @@ io.on(
 
                             emoji:
                                 data.emoji
+
+                        }
+                    );
+
+            }
+        );
+
+
+        // =====================================
+        // وضعیت صحبت‌کردن با ویس
+        // =====================================
+
+        socket.on(
+            "voice-status",
+            (data) => {
+
+                if (
+                    !data ||
+                    !data.roomId
+                ) {
+
+                    return;
+
+                }
+
+
+                socket
+                    .to(data.roomId)
+                    .emit(
+                        "voice-status",
+                        {
+
+                            name:
+                                socket.data.name ||
+                                "پارتنر",
+
+                            speaking:
+                                Boolean(data.speaking)
 
                         }
                     );
@@ -425,6 +526,10 @@ io.on(
                     socket.data.roomId;
 
 
+                const name =
+                    socket.data.name;
+
+
                 console.log(
                     "User disconnected:",
                     socket.id
@@ -433,22 +538,29 @@ io.on(
 
                 if (roomId) {
 
-                    const room =
-                        io.sockets.adapter.rooms.get(
-                            roomId
-                        );
-
-
-                    const users =
-                        room
-                            ? room.size
-                            : 0;
+                    const roomInfo =
+                        getRoomUsers(roomId);
 
 
                     io.to(roomId).emit(
-                        "users-count",
-                        users
+                        "room-users",
+                        roomInfo
                     );
+
+
+                    if (name) {
+
+                        io.to(roomId).emit(
+                            "system-message",
+                            {
+
+                                text:
+                                    `${name} از اتاق خارج شد`
+
+                            }
+                        );
+
+                    }
 
                 }
 

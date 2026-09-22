@@ -11,20 +11,45 @@ const video =
 const fileInput =
     document.getElementById("fileInput");
 
-const roomInput =
-    document.getElementById("roomInput");
-
-const joinBtn =
-    document.getElementById("joinBtn");
-
 const status =
     document.getElementById("status");
 
-const meStatus =
-    document.getElementById("meStatus");
 
-const partnerStatus =
-    document.getElementById("partnerStatus");
+// =====================================
+// مودال ورود (نام + کد اتاق)
+// =====================================
+
+const entryModal =
+    document.getElementById("entryModal");
+
+const entryNameInput =
+    document.getElementById("entryNameInput");
+
+const entryRoomInput =
+    document.getElementById("entryRoomInput");
+
+const entryJoinBtn =
+    document.getElementById("entryJoinBtn");
+
+
+// =====================================
+// نوار جمع‌وجور اتاق
+// =====================================
+
+const roomCodeDisplay =
+    document.getElementById("roomCodeDisplay");
+
+const shareRoomBtn =
+    document.getElementById("shareRoomBtn");
+
+const usersToggleBtn =
+    document.getElementById("usersToggleBtn");
+
+const usersCountBadge =
+    document.getElementById("usersCountBadge");
+
+const usersPanel =
+    document.getElementById("usersPanel");
 
 
 // =====================================
@@ -55,31 +80,6 @@ const chatIdentity =
 
 
 // =====================================
-// Identity
-// =====================================
-
-const identityModal =
-    document.getElementById(
-        "identityModal"
-    );
-
-const mohammadBtn =
-    document.getElementById(
-        "mohammadBtn"
-    );
-
-const hastiBtn =
-    document.getElementById(
-        "hastiBtn"
-    );
-
-const changeIdentityBtn =
-    document.getElementById(
-        "changeIdentityBtn"
-    );
-
-
-// =====================================
 // Emoji Picker (چت)
 // =====================================
 
@@ -96,6 +96,9 @@ const emojiPanel =
 
 const subtitleInput =
     document.getElementById("subtitleInput");
+
+const subtitleRemoveBtn =
+    document.getElementById("subtitleRemoveBtn");
 
 let subtitleUrl = null;
 
@@ -124,6 +127,12 @@ const playPauseIconPlay =
 
 const playPauseIconPause =
     playPauseBtn.querySelector(".icon-pause");
+
+const rewind15Btn =
+    document.getElementById("rewind15Btn");
+
+const forward15Btn =
+    document.getElementById("forward15Btn");
 
 const progressBarWrap =
     document.getElementById("progressBarWrap");
@@ -163,6 +172,20 @@ const compressIcon =
 
 const playerControls =
     document.getElementById("playerControls");
+
+
+// =====================================
+// نشانگرهای صحبت با ویس
+// =====================================
+
+const selfVoiceIndicator =
+    document.getElementById("selfVoiceIndicator");
+
+const partnerVoiceIndicator =
+    document.getElementById("partnerVoiceIndicator");
+
+const partnerVoiceIndicatorText =
+    document.getElementById("partnerVoiceIndicatorText");
 
 
 // =====================================
@@ -375,6 +398,18 @@ document.addEventListener(
         ) {
 
             emojiPanel.classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        if (
+            !usersPanel.contains(event.target) &&
+            event.target !== usersToggleBtn
+        ) {
+
+            usersPanel.classList.add(
                 "hidden"
             );
 
@@ -867,6 +902,55 @@ updateSubtitleStyleTag();
 
 
 // =====================================
+// حذف زیرنویس
+// =====================================
+
+subtitleRemoveBtn.addEventListener(
+    "click",
+    () => {
+
+        if (subtitleUrl) {
+
+            URL.revokeObjectURL(
+                subtitleUrl
+            );
+
+
+            subtitleUrl = null;
+
+        }
+
+
+        if (subtitleTrackElement) {
+
+            subtitleTrackElement.remove();
+
+
+            subtitleTrackElement = null;
+
+        }
+
+
+        originalCueTimes = [];
+
+        subtitleOffsetSeconds = 0;
+
+
+        updateSubtitleOffsetDisplay();
+
+
+        subtitleInput.value =
+            "";
+
+
+        status.textContent =
+            "زیرنویس حذف شد 🗑️";
+
+    }
+);
+
+
+// =====================================
 // پنل چت داخل پلیر (Mini Chat)
 // =====================================
 
@@ -980,7 +1064,7 @@ function sendChatFrom(inputElement) {
     if (!myName) {
 
         alert(
-            "اول هویت خودت را انتخاب کن."
+            "اول نام خودت را وارد کن."
         );
 
         return;
@@ -1083,8 +1167,40 @@ const remoteAudio =
 remoteAudio.autoplay =
     true;
 
+remoteAudio.muted =
+    false;
+
+remoteAudio.volume =
+    1;
+
 document.body.appendChild(
     remoteAudio
+);
+
+
+// تلاش برای پخش صدای طرف مقابل
+// (در صورت بلاک شدن توسط سیاست
+// autoplay مرورگر، بی‌سروصدا رد میشه
+// و دوباره از جاهای دیگه امتحان می‌کنیم)
+
+function tryPlayRemoteAudio() {
+
+    remoteAudio
+        .play()
+        .catch(() => {
+
+            // نادیده گرفتن خطای autoplay
+            // (بعداً با تعامل کاربر دوباره امتحان میشه)
+
+        });
+
+}
+
+
+document.addEventListener(
+    "click",
+    tryPlayRemoteAudio,
+    { once: true }
 );
 
 
@@ -1113,7 +1229,11 @@ async function ensureLocalStream() {
 
         localStream =
             await navigator.mediaDevices.getUserMedia({
-                audio: true
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true
+                }
             });
 
 
@@ -1186,13 +1306,32 @@ function createPeerConnection() {
                 event.streams[0];
 
 
-            remoteAudio
-                .play()
-                .catch(() => {
+            tryPlayRemoteAudio();
 
-                    // نادیده گرفتن خطای autoplay
+        };
 
-                });
+
+    // برای عیب‌یابی: وضعیت اتصال را
+    // در کنسول مرورگر نشان می‌دهد
+
+    peerConnection.oniceconnectionstatechange =
+        () => {
+
+            console.log(
+                "ICE connection state:",
+                peerConnection.iceConnectionState
+            );
+
+        };
+
+
+    peerConnection.onconnectionstatechange =
+        () => {
+
+            console.log(
+                "Peer connection state:",
+                peerConnection.connectionState
+            );
 
         };
 
@@ -1308,14 +1447,19 @@ socket.on(
         }
 
 
-        await attachLocalTracks();
-
-
         try {
+
+            // ترتیب مهم است: اول پیشنهاد طرف مقابل
+            // را ثبت می‌کنیم، بعد ترک صوتی خودمان را
+            // اضافه می‌کنیم — این ترتیب با مرورگرهای
+            // بیشتری سازگار است
 
             await peerConnection.setRemoteDescription(
                 data.offer
             );
+
+
+            await attachLocalTracks();
 
 
             const answer =
@@ -1438,6 +1582,16 @@ function closeVoiceConnection() {
         "active"
     );
 
+
+    selfVoiceIndicator.classList.add(
+        "hidden"
+    );
+
+
+    partnerVoiceIndicator.classList.add(
+        "hidden"
+    );
+
 }
 
 
@@ -1468,6 +1622,35 @@ function startTalking(event) {
         "active"
     );
 
+
+    selfVoiceIndicator.classList.remove(
+        "hidden"
+    );
+
+
+    // یک تلاش دوباره برای پخش صدای طرف مقابل
+    // (چون فشردن دکمه یک تعامل مستقیم کاربر است،
+    // این نقطه بهترین جا برای دور زدن قفل
+    // autoplay مرورگر است)
+
+    tryPlayRemoteAudio();
+
+
+    if (roomId) {
+
+        socket.emit(
+            "voice-status",
+            {
+
+                roomId: roomId,
+
+                speaking: true
+
+            }
+        );
+
+    }
+
 }
 
 
@@ -1489,6 +1672,27 @@ function stopTalking() {
     voiceBtn.classList.remove(
         "active"
     );
+
+
+    selfVoiceIndicator.classList.add(
+        "hidden"
+    );
+
+
+    if (roomId) {
+
+        socket.emit(
+            "voice-status",
+            {
+
+                roomId: roomId,
+
+                speaking: false
+
+            }
+        );
+
+    }
 
 }
 
@@ -1527,6 +1731,39 @@ voiceBtn.addEventListener(
 );
 
 
+socket.on(
+    "voice-status",
+    (data) => {
+
+        if (
+            data &&
+            data.speaking
+        ) {
+
+            partnerVoiceIndicatorText.textContent =
+                `${data.name} در حال صحبت کردن`;
+
+
+            partnerVoiceIndicator.classList.remove(
+                "hidden"
+            );
+
+
+            tryPlayRemoteAudio();
+
+        }
+        else {
+
+            partnerVoiceIndicator.classList.add(
+                "hidden"
+            );
+
+        }
+
+    }
+);
+
+
 // =====================================
 // Variables
 // =====================================
@@ -1551,112 +1788,309 @@ let isDraggingProgress = false;
 
 
 // =====================================
-// انتخاب هویت
+// ورود به اتاق (نام + کد اتاق)
 // =====================================
 
-function selectIdentity(name) {
+function enterRoom() {
 
-    myName = name;
-
-    // ذخیره هویت در مرورگر
-    localStorage.setItem(
-        "watchTogetherName",
-        name
-    );
-
-    chatIdentity.textContent =
-        `شما: ${name}`;
-
-    identityModal.classList.add(
-        "hidden"
-    );
-
-    status.textContent =
-        `سلام ${name} ❤️ حالا وارد اتاق شو`;
-
-}
+    const name =
+        entryNameInput.value.trim();
 
 
-// =====================================
-// دکمه محمد
-// =====================================
+    const room =
+        entryRoomInput.value.trim();
 
-mohammadBtn.addEventListener(
-    "click",
-    () => {
 
-        selectIdentity("محمد");
+    if (!name) {
+
+        alert(
+            "لطفاً نام خود را وارد کنید."
+        );
+
+        return;
 
     }
-);
 
 
-// =====================================
-// دکمه هستی
-// =====================================
+    if (!room) {
 
-hastiBtn.addEventListener(
-    "click",
-    () => {
+        alert(
+            "لطفاً کد اتاق را وارد کنید."
+        );
 
-        selectIdentity("هستی");
+        return;
 
     }
-);
 
 
-// =====================================
-// بازیابی هویت قبلی
-// =====================================
+    myName =
+        name;
 
-const savedName =
-    localStorage.getItem(
-        "watchTogetherName"
-    );
 
-if (
-    savedName === "محمد" ||
-    savedName === "هستی"
-) {
+    roomId =
+        room;
 
-    myName = savedName;
 
     chatIdentity.textContent =
         `شما: ${myName}`;
 
-    identityModal.classList.add(
+
+    roomCodeDisplay.textContent =
+        roomId;
+
+
+    entryModal.classList.add(
         "hidden"
     );
 
+
+    // اولین تعامل تضمینی کاربر با صفحه —
+    // فرصت خوبی برای دور زدن قفل autoplay
+
+    tryPlayRemoteAudio();
+
+
+    socket.emit(
+        "join-room",
+        {
+
+            roomId: roomId,
+
+            name: myName
+
+        }
+    );
+
+
     status.textContent =
-        `سلام ${myName} ❤️ حالا وارد اتاق شو`;
+        `شما با نام ${myName} وارد اتاق ${roomId} شدید ❤️`;
+
+
+    chatInput.disabled =
+        false;
 
 }
 
 
-// =====================================
-// تغییر هویت
-// =====================================
-
-changeIdentityBtn.addEventListener(
+entryJoinBtn.addEventListener(
     "click",
-    () => {
+    enterRoom
+);
 
-        localStorage.removeItem(
-            "watchTogetherName"
-        );
 
-        myName = null;
+entryRoomInput.addEventListener(
+    "keydown",
+    (event) => {
 
-        chatIdentity.textContent =
-            "—";
+        if (event.key === "Enter") {
 
-        identityModal.classList.remove(
+            event.preventDefault();
+
+            enterRoom();
+
+        }
+
+    }
+);
+
+
+entryNameInput.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (event.key === "Enter") {
+
+            event.preventDefault();
+
+            entryRoomInput.focus();
+
+        }
+
+    }
+);
+
+
+// =====================================
+// اشتراک‌گذاری کد اتاق
+// =====================================
+
+shareRoomBtn.addEventListener(
+    "click",
+    async () => {
+
+        if (!roomId) {
+
+            return;
+
+        }
+
+
+        try {
+
+            await navigator.clipboard.writeText(
+                roomId
+            );
+
+
+            status.textContent =
+                "کد اتاق کپی شد ✅";
+
+        }
+        catch (error) {
+
+            console.log(
+                "Clipboard error:",
+                error
+            );
+
+        }
+
+    }
+);
+
+
+// =====================================
+// پنل کاربران آنلاین
+// =====================================
+
+function renderUsersPanel(users) {
+
+    if (
+        !users ||
+        users.length === 0
+    ) {
+
+        usersPanel.innerHTML =
+            `<div class="users-panel-empty">کسی آنلاین نیست</div>`;
+
+        return;
+
+    }
+
+
+    usersPanel.innerHTML =
+        users
+            .map((user) => `
+
+                <div class="users-panel-item">
+
+                    <span class="users-panel-dot"></span>
+
+                    <span>
+                        ${escapeHTML(user.name)}
+                        ${user.id === socket.id ? " (شما)" : ""}
+                    </span>
+
+                </div>
+
+            `)
+            .join("");
+
+}
+
+
+usersToggleBtn.addEventListener(
+    "click",
+    (event) => {
+
+        event.stopPropagation();
+
+
+        usersPanel.classList.toggle(
             "hidden"
         );
 
-        status.textContent =
-            "لطفاً هویت خود را انتخاب کنید";
+    }
+);
+
+
+// =====================================
+// دریافت لیست کاربران اتاق
+// =====================================
+
+socket.on(
+    "room-users",
+    (data) => {
+
+        usersCountBadge.textContent =
+            data.count;
+
+
+        renderUsersPanel(
+            data.users
+        );
+
+
+        if (data.count >= 2) {
+
+            status.textContent =
+                "هر دو نفر داخل اتاق هستید ❤️";
+
+        }
+        else {
+
+            status.textContent =
+                "منتظر ورود پارتنر...";
+
+
+            closeVoiceConnection();
+
+        }
+
+    }
+);
+
+
+// =====================================
+// پیام‌های سیستمی (ورود / خروج)
+// =====================================
+
+function addSystemChatMessage(text) {
+
+    if (chatEmpty) {
+
+        chatEmpty.remove();
+
+    }
+
+
+    const el =
+        document.createElement("div");
+
+
+    el.className =
+        "chat-message system";
+
+
+    el.textContent =
+        text;
+
+
+    chatMessages.appendChild(
+        el
+    );
+
+
+    chatMessages.scrollTop =
+        chatMessages.scrollHeight;
+
+}
+
+
+socket.on(
+    "system-message",
+    (data) => {
+
+        if (
+            data &&
+            data.text
+        ) {
+
+            addSystemChatMessage(
+                data.text
+            );
+
+        }
 
     }
 );
@@ -1914,112 +2348,6 @@ function captureOriginalCueTimes() {
 
 
 // =====================================
-// ورود به اتاق
-// =====================================
-
-joinBtn.addEventListener(
-    "click",
-    () => {
-
-        if (!myName) {
-
-            identityModal.classList.remove(
-                "hidden"
-            );
-
-            return;
-
-        }
-
-
-        const room =
-            roomInput.value.trim();
-
-
-        if (!room) {
-
-            alert(
-                "لطفاً کد اتاق را وارد کنید."
-            );
-
-            return;
-
-        }
-
-
-        roomId =
-            room;
-
-
-        socket.emit(
-            "join-room",
-            {
-                roomId: roomId,
-                name: myName
-            }
-        );
-
-
-        status.textContent =
-            `شما با نام ${myName} وارد اتاق ${roomId} شدید ❤️`;
-
-
-        meStatus.textContent =
-            "🟢";
-
-
-        roomInput.disabled =
-            true;
-
-
-        joinBtn.disabled =
-            true;
-
-
-        chatInput.disabled =
-            false;
-
-    }
-);
-
-
-// =====================================
-// تعداد کاربران
-// =====================================
-
-socket.on(
-    "users-count",
-    (count) => {
-
-        if (count >= 2) {
-
-            partnerStatus.textContent =
-                "🟢";
-
-
-            status.textContent =
-                "هر دو نفر داخل اتاق هستند ❤️";
-
-        }
-        else {
-
-            partnerStatus.textContent =
-                "⚪";
-
-
-            status.textContent =
-                "منتظر ورود پارتنر...";
-
-
-            closeVoiceConnection();
-
-        }
-
-    }
-);
-
-
-// =====================================
 // PLAY / PAUSE (پلیر اختصاصی)
 // =====================================
 
@@ -2061,6 +2389,48 @@ centerPlayBtn.addEventListener(
 video.addEventListener(
     "click",
     togglePlayPause
+);
+
+
+// =====================================
+// ۱۵ ثانیه جلو / عقب
+// =====================================
+
+rewind15Btn.addEventListener(
+    "click",
+    () => {
+
+        if (!video.src) return;
+
+
+        video.currentTime =
+            Math.max(
+                0,
+                video.currentTime - 15
+            );
+
+    }
+);
+
+
+forward15Btn.addEventListener(
+    "click",
+    () => {
+
+        if (!video.src) return;
+
+
+        const maxTime =
+            video.duration || Infinity;
+
+
+        video.currentTime =
+            Math.min(
+                maxTime,
+                video.currentTime + 15
+            );
+
+    }
 );
 
 

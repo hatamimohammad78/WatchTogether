@@ -29,50 +29,67 @@
 
 
     <!-- =====================================
-         مودال انتخاب هویت (محمد / هستی)
+         مودال ورود (نام + کد اتاق)
     ====================================== -->
 
-    <div id="identityModal" class="identity-modal">
+    <div id="entryModal" class="identity-modal">
 
         <div class="identity-box">
 
             <div class="identity-icon">
-                💫
+                🎬
             </div>
 
             <h2>
-                شما کی هستید؟
+                به جهان هستی خوش آمدید
             </h2>
 
             <p>
-                لطفاً هویت خود را انتخاب کنید
+                نام خود و کد اتاق را وارد کنید
             </p>
 
-            <div class="identity-buttons">
 
-                <button
-                    id="mohammadBtn"
-                    class="identity-btn mohammad"
-                    type="button"
-                >
-                    <span class="identity-avatar">
-                        👨🏻‍🚀
-                    </span>
-                    محمد
-                </button>
+            <div class="entry-field">
 
-                <button
-                    id="hastiBtn"
-                    class="identity-btn hasti"
-                    type="button"
+                <label for="entryNameInput">
+                    نام شما
+                </label>
+
+                <input
+                    type="text"
+                    id="entryNameInput"
+                    placeholder="مثلاً محمد"
+                    maxlength="20"
+                    autocomplete="off"
                 >
-                    <span class="identity-avatar">
-                        👩🏻‍🚀
-                    </span>
-                    هستی
-                </button>
 
             </div>
+
+
+            <div class="entry-field">
+
+                <label for="entryRoomInput">
+                    کد اتاق
+                </label>
+
+                <input
+                    type="text"
+                    id="entryRoomInput"
+                    class="ltr-input"
+                    placeholder="مثلاً 123"
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <button
+                id="entryJoinBtn"
+                class="entry-join-btn"
+                type="button"
+            >
+                ورود به اتاق 🚀
+            </button>
 
         </div>
 
@@ -161,65 +178,6 @@
 
 
         <!-- =====================================
-             اتاق
-        ====================================== -->
-
-        <section class="room-card">
-
-            <div class="section-title">
-
-                <span class="title-icon">
-                    🛰️
-                </span>
-
-                <div>
-
-                    <h2>
-                        ورود به جهان مشترک
-                    </h2>
-
-                    <p>
-                        کد اتاق خود را وارد کنید
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <div class="room-box">
-
-                <label for="roomInput">
-                    کد اتاق
-                </label>
-
-                <input
-                    type="text"
-                    id="roomInput"
-                    placeholder="مثلاً ABC123"
-                    autocomplete="off"
-                >
-
-                <button
-                    id="joinBtn"
-                    type="button"
-                >
-
-                    ورود به اتاق
-
-                    <span>
-                        🚀
-                    </span>
-
-                </button>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- =====================================
              وضعیت
         ====================================== -->
 
@@ -231,6 +189,63 @@
             <span class="status-dot"></span>
 
             هنوز وارد اتاق نشده‌اید
+
+        </div>
+
+
+
+        <!-- =====================================
+             نوار جمع‌وجور اتاق
+        ====================================== -->
+
+        <div class="room-topbar">
+
+            <div class="room-topbar-left">
+
+                <span class="room-code-label">
+
+                    🎟️ اتاق:
+                    <strong id="roomCodeDisplay">—</strong>
+
+                </span>
+
+                <button
+                    id="shareRoomBtn"
+                    class="topbar-pill-btn"
+                    type="button"
+                >
+                    🔗 اشتراک‌گذاری
+                </button>
+
+            </div>
+
+
+            <div class="room-topbar-right">
+
+                <div class="users-toggle-wrapper">
+
+                    <button
+                        id="usersToggleBtn"
+                        class="topbar-pill-btn"
+                        type="button"
+                    >
+                        👥 کاربران
+                        <span
+                            id="usersCountBadge"
+                            class="users-count-badge"
+                        >
+                            0
+                        </span>
+                    </button>
+
+                    <div
+                        id="usersPanel"
+                        class="control-panel users-panel hidden"
+                    ></div>
+
+                </div>
+
+            </div>
 
         </div>
 
@@ -289,6 +304,46 @@
                             id="video"
                             preload="metadata"
                         ></video>
+
+
+                        <!-- نشانگرهای صحبت با ویس -->
+
+                        <div class="voice-indicators">
+
+                            <div
+                                id="selfVoiceIndicator"
+                                class="voice-indicator hidden"
+                            >
+
+                                <span class="voice-indicator-wave">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </span>
+
+                                <span>
+                                    شما در حال صحبت کردن
+                                </span>
+
+                            </div>
+
+
+                            <div
+                                id="partnerVoiceIndicator"
+                                class="voice-indicator hidden"
+                            >
+
+                                <span class="voice-indicator-wave">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </span>
+
+                                <span id="partnerVoiceIndicatorText"></span>
+
+                            </div>
+
+                        </div>
 
 
                         <!-- دکمه پلی بزرگ وسط -->
@@ -384,6 +439,19 @@
                                     accept=".vtt,.srt"
                                     hidden
                                 >
+
+                            </div>
+
+
+                            <div class="subtitle-settings-row">
+
+                                <button
+                                    id="subtitleRemoveBtn"
+                                    type="button"
+                                    class="subtitle-remove-btn"
+                                >
+                                    🗑️ حذف زیرنویس
+                                </button>
 
                             </div>
 
@@ -504,6 +572,24 @@
                             <div class="controls-row">
 
                                 <button
+                                    id="rewind15Btn"
+                                    class="player-btn round-btn skip-btn"
+                                    type="button"
+                                    aria-label="۱۵ ثانیه عقب"
+                                >
+
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 5V1L7 6l5 5V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"></path>
+                                    </svg>
+
+                                    <span class="skip-label">
+                                        15
+                                    </span>
+
+                                </button>
+
+
+                                <button
                                     id="playPauseBtn"
                                     class="player-btn round-btn"
                                     type="button"
@@ -517,6 +603,24 @@
                                     <svg class="icon-pause hidden-icon" viewBox="0 0 24 24" fill="currentColor">
                                         <path d="M6 5h4v14H6zM14 5h4v14h-4z"></path>
                                     </svg>
+
+                                </button>
+
+
+                                <button
+                                    id="forward15Btn"
+                                    class="player-btn round-btn skip-btn flip"
+                                    type="button"
+                                    aria-label="۱۵ ثانیه جلو"
+                                >
+
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 5V1L7 6l5 5V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"></path>
+                                    </svg>
+
+                                    <span class="skip-label">
+                                        15
+                                    </span>
 
                                 </button>
 
@@ -702,7 +806,7 @@
                         </h2>
 
                         <p>
-                            محمد ❤️ هستی
+                            چت زنده
                         </p>
 
                     </div>
@@ -713,14 +817,6 @@
                     >
                         —
                     </span>
-
-                    <button
-                        id="changeIdentityBtn"
-                        class="change-identity-btn"
-                        type="button"
-                    >
-                        تغییر هویت
-                    </button>
 
                     <div class="chat-online">
 
@@ -806,80 +902,6 @@
                 </div>
 
             </section>
-
-
-        </section>
-
-
-
-        <!-- =====================================
-             کاربران
-        ====================================== -->
-
-        <section class="users">
-
-
-            <div class="user-card">
-
-                <div class="user-avatar">
-                    👨🏻‍🚀
-                </div>
-
-                <div class="user-info">
-
-                    <span class="user-role">
-                        تماشاگر
-                    </span>
-
-                    <strong>
-                        محمد
-                    </strong>
-
-                </div>
-
-                <span
-                    id="meStatus"
-                    class="connection"
-                >
-                    ⚪
-                </span>
-
-            </div>
-
-
-
-            <div class="connection-symbol">
-                ❤️
-            </div>
-
-
-
-            <div class="user-card">
-
-                <div class="user-avatar">
-                    👩🏻‍🚀
-                </div>
-
-                <div class="user-info">
-
-                    <span class="user-role">
-                        همراه
-                    </span>
-
-                    <strong>
-                        هستی
-                    </strong>
-
-                </div>
-
-                <span
-                    id="partnerStatus"
-                    class="connection"
-                >
-                    ⚪
-                </span>
-
-            </div>
 
 
         </section>
