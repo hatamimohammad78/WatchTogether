@@ -10,6 +10,26 @@
         content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     >
 
+    <meta
+        name="theme-color"
+        content="#070b18"
+    >
+
+    <meta
+        name="mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-capable"
+        content="yes"
+    >
+
+    <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+    >
+
     <title>جهان هستی 🎬</title>
 
     <link
@@ -29,18 +49,27 @@
 
 
     <!-- =====================================
-         مودال ورود (نام + کد اتاق)
+         مودال ورود
     ====================================== -->
 
-    <div id="entryModal" class="identity-modal">
+    <div
+        id="entryModal"
+        class="identity-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="entryModalTitle"
+    >
 
         <div class="identity-box">
 
-            <div class="identity-icon">
+            <div
+                class="identity-icon"
+                aria-hidden="true"
+            >
                 🎬
             </div>
 
-            <h2>
+            <h2 id="entryModalTitle">
                 به جهان هستی خوش آمدید
             </h2>
 
@@ -60,7 +89,10 @@
                     id="entryNameInput"
                     placeholder="مثلاً محمد"
                     maxlength="20"
-                    autocomplete="off"
+                    minlength="1"
+                    autocomplete="name"
+                    autocapitalize="words"
+                    spellcheck="false"
                 >
 
             </div>
@@ -77,7 +109,10 @@
                     id="entryRoomInput"
                     class="ltr-input"
                     placeholder="مثلاً 123"
+                    maxlength="30"
                     autocomplete="off"
+                    autocapitalize="characters"
+                    spellcheck="false"
                 >
 
             </div>
@@ -101,7 +136,10 @@
          پس‌زمینه فضایی
     ====================================== -->
 
-    <div class="space-background">
+    <div
+        class="space-background"
+        aria-hidden="true"
+    >
 
         <div class="stars stars-1"></div>
         <div class="stars stars-2"></div>
@@ -142,7 +180,12 @@
          نوتیفیکیشن‌های چت
     ====================================== -->
 
-    <div id="chatNotifications" class="chat-notifications"></div>
+    <div
+        id="chatNotifications"
+        class="chat-notifications"
+        aria-live="polite"
+        aria-atomic="false"
+    ></div>
 
 
 
@@ -159,7 +202,10 @@
 
         <header class="hero">
 
-            <div class="logo-icon">
+            <div
+                class="logo-icon"
+                aria-hidden="true"
+            >
                 🎬
             </div>
 
@@ -171,22 +217,30 @@
                 جایی که سینما و جهان هستی به هم می‌رسند
             </p>
 
-            <div class="hero-line"></div>
+            <div
+                class="hero-line"
+                aria-hidden="true"
+            ></div>
 
         </header>
 
 
 
         <!-- =====================================
-             وضعیت
+             وضعیت اتصال
         ====================================== -->
 
         <div
             id="status"
             class="status"
+            role="status"
+            aria-live="polite"
         >
 
-            <span class="status-dot"></span>
+            <span
+                class="status-dot"
+                aria-hidden="true"
+            ></span>
 
             هنوز وارد اتاق نشده‌اید
 
@@ -195,7 +249,7 @@
 
 
         <!-- =====================================
-             نوار جمع‌وجور اتاق
+             نوار اتاق
         ====================================== -->
 
         <div class="room-topbar">
@@ -213,6 +267,7 @@
                     id="shareRoomBtn"
                     class="topbar-pill-btn"
                     type="button"
+                    aria-label="اشتراک‌گذاری کد اتاق"
                 >
                     🔗 اشتراک‌گذاری
                 </button>
@@ -228,19 +283,28 @@
                         id="usersToggleBtn"
                         class="topbar-pill-btn"
                         type="button"
+                        aria-label="نمایش کاربران اتاق"
+                        aria-expanded="false"
+                        aria-controls="usersPanel"
                     >
+
                         👥 کاربران
+
                         <span
                             id="usersCountBadge"
                             class="users-count-badge"
+                            aria-label="تعداد کاربران"
                         >
                             0
                         </span>
+
                     </button>
 
                     <div
                         id="usersPanel"
                         class="control-panel users-panel hidden"
+                        role="dialog"
+                        aria-label="کاربران اتاق"
                     ></div>
 
                 </div>
@@ -255,18 +319,27 @@
              فیلم + چت
         ====================================== -->
 
-        <section class="watch-area">
+        <section
+            class="watch-area"
+            aria-label="تماشای فیلم و گفتگو"
+        >
 
 
             <!-- =====================================
                  سینما
             ====================================== -->
 
-            <section class="cinema-card">
+            <section
+                class="cinema-card"
+                aria-label="پخش فیلم"
+            >
 
                 <div class="cinema-header">
 
-                    <div class="film-icon">
+                    <div
+                        class="film-icon"
+                        aria-hidden="true"
+                    >
                         🎞️
                     </div>
 
@@ -288,7 +361,10 @@
 
                 <div class="movie-frame">
 
-                    <div class="movie-glow"></div>
+                    <div
+                        class="movie-glow"
+                        aria-hidden="true"
+                    ></div>
 
 
                     <!-- =====================================
@@ -303,12 +379,20 @@
                         <video
                             id="video"
                             preload="metadata"
+                            playsinline
+                            webkit-playsinline
+                            disablepictureinpicture
+                            controlslist="nodownload noplaybackrate"
+                            aria-label="پخش فیلم"
                         ></video>
 
 
                         <!-- نشانگرهای صحبت با ویس -->
 
-                        <div class="voice-indicators">
+                        <div
+                            class="voice-indicators"
+                            aria-live="polite"
+                        >
 
                             <div
                                 id="selfVoiceIndicator"
@@ -355,7 +439,11 @@
                             aria-label="پخش"
                         >
 
-                            <svg viewBox="0 0 24 24" fill="currentColor">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                aria-hidden="true"
+                            >
                                 <path d="M8 5v14l11-7z"></path>
                             </svg>
 
@@ -367,6 +455,7 @@
                         <div
                             id="reactionsLayer"
                             class="reactions-layer"
+                            aria-hidden="true"
                         ></div>
 
 
@@ -375,11 +464,14 @@
                         <div
                             id="miniChatPanel"
                             class="control-panel mini-chat-panel hidden"
+                            role="dialog"
+                            aria-label="چت سریع"
                         >
 
                             <div
                                 id="miniChatMessages"
                                 class="mini-chat-messages"
+                                aria-live="polite"
                             >
 
                                 <div class="mini-chat-empty">
@@ -397,12 +489,13 @@
                                     placeholder="پیام..."
                                     autocomplete="off"
                                     maxlength="500"
+                                    enterkeyhint="send"
                                 >
 
                                 <button
                                     id="miniChatSendBtn"
                                     type="button"
-                                    aria-label="ارسال"
+                                    aria-label="ارسال پیام"
                                 >
                                     ➤
                                 </button>
@@ -417,6 +510,8 @@
                         <div
                             id="subtitleSettingsPanel"
                             class="control-panel subtitle-settings-panel hidden"
+                            role="dialog"
+                            aria-label="تنظیمات زیرنویس"
                         >
 
                             <div class="subtitle-settings-title">
@@ -436,7 +531,7 @@
                                 <input
                                     type="file"
                                     id="subtitleInput"
-                                    accept=".vtt,.srt"
+                                    accept=".vtt,.srt,text/vtt,application/x-subrip"
                                     hidden
                                 >
 
@@ -458,7 +553,7 @@
 
                             <div class="subtitle-settings-row">
 
-                                <label>
+                                <label for="subtitleFontSizeSlider">
                                     اندازه فونت
                                 </label>
 
@@ -490,7 +585,7 @@
 
                             <div class="subtitle-settings-row">
 
-                                <label>
+                                <label for="subtitleBgOpacitySlider">
                                     شفافیت پس‌زمینه
                                 </label>
 
@@ -517,6 +612,7 @@
                                     <button
                                         id="subtitleOffsetMinusBtn"
                                         type="button"
+                                        aria-label="نیم ثانیه عقب بردن زیرنویس"
                                     >
                                         −
                                     </button>
@@ -528,6 +624,7 @@
                                     <button
                                         id="subtitleOffsetPlusBtn"
                                         type="button"
+                                        aria-label="نیم ثانیه جلو بردن زیرنویس"
                                     >
                                         +
                                     </button>
@@ -539,7 +636,9 @@
                         </div>
 
 
-                        <!-- نوار کنترل سفارشی -->
+                        <!-- =====================================
+                             نوار کنترل سفارشی
+                        ====================================== -->
 
                         <div
                             id="playerControls"
@@ -549,6 +648,12 @@
                             <div
                                 id="progressBarWrap"
                                 class="progress-bar-wrap"
+                                role="slider"
+                                aria-label="موقعیت فیلم"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                                aria-valuenow="0"
+                                tabindex="0"
                             >
 
                                 <div
@@ -578,7 +683,11 @@
                                     aria-label="۱۵ ثانیه عقب"
                                 >
 
-                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="currentColor"
+                                        aria-hidden="true"
+                                    >
                                         <path d="M12 5V1L7 6l5 5V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"></path>
                                     </svg>
 
@@ -596,11 +705,21 @@
                                     aria-label="پخش / توقف"
                                 >
 
-                                    <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor">
+                                    <svg
+                                        class="icon-play"
+                                        viewBox="0 0 24 24"
+                                        fill="currentColor"
+                                        aria-hidden="true"
+                                    >
                                         <path d="M8 5v14l11-7z"></path>
                                     </svg>
 
-                                    <svg class="icon-pause hidden-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <svg
+                                        class="icon-pause hidden-icon"
+                                        viewBox="0 0 24 24"
+                                        fill="currentColor"
+                                        aria-hidden="true"
+                                    >
                                         <path d="M6 5h4v14H6zM14 5h4v14h-4z"></path>
                                     </svg>
 
@@ -614,8 +733,12 @@
                                     aria-label="۱۵ ثانیه جلو"
                                 >
 
-                                    <svg viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 5V1L7 6l5 5V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"></path>
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="currentColor"
+                                        aria-hidden="true"
+                                    >
+                                        <path d="M12 5V1L7 6l5 5V7a5 7 0 1 1-5 5H5a7 7 0 1 0 7-7z"></path>
                                     </svg>
 
                                     <span class="skip-label">
@@ -634,14 +757,30 @@
                                         aria-label="صدا"
                                     >
 
-                                        <svg class="icon-vol-on" viewBox="0 0 24 24" fill="currentColor">
+                                        <svg
+                                            class="icon-vol-on"
+                                            viewBox="0 0 24 24"
+                                            fill="currentColor"
+                                            aria-hidden="true"
+                                        >
                                             <path d="M5 9v6h4l5 5V4l-5 5H5z"></path>
                                             <path d="M16.5 12c0-1.77-1-3.29-2.5-4.03v8.06c1.5-.74 2.5-2.26 2.5-4.03z"></path>
                                         </svg>
 
-                                        <svg class="icon-vol-off hidden-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <svg
+                                            class="icon-vol-off hidden-icon"
+                                            viewBox="0 0 24 24"
+                                            fill="currentColor"
+                                            aria-hidden="true"
+                                        >
                                             <path d="M5 9v6h4l5 5V4l-5 5H5z"></path>
-                                            <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 9l6 6M22 9l-6 6"></path>
+                                            <path
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                                stroke-linecap="round"
+                                                d="M16 9l6 6M22 9l-6 6"
+                                            ></path>
                                         </svg>
 
                                     </button>
@@ -653,6 +792,7 @@
                                         max="1"
                                         step="0.05"
                                         value="1"
+                                        aria-label="میزان صدا"
                                     >
 
                                 </div>
@@ -661,6 +801,7 @@
                                 <span
                                     id="timeDisplay"
                                     class="time-display"
+                                    aria-live="off"
                                 >
                                     00:00 / 00:00
                                 </span>
@@ -676,6 +817,7 @@
                                         class="player-btn speed-btn"
                                         type="button"
                                         aria-label="سرعت پخش"
+                                        aria-expanded="false"
                                     >
                                         1×
                                     </button>
@@ -683,6 +825,7 @@
                                     <div
                                         id="speedMenu"
                                         class="control-panel speed-menu hidden"
+                                        role="menu"
                                     ></div>
 
                                 </div>
@@ -693,6 +836,7 @@
                                     class="player-btn round-btn text-btn"
                                     type="button"
                                     aria-label="تنظیمات زیرنویس"
+                                    aria-expanded="false"
                                 >
                                     CC
                                 </button>
@@ -702,7 +846,7 @@
                                     id="voiceBtn"
                                     class="player-btn round-btn"
                                     type="button"
-                                    aria-label="ویس (نگه دارید)"
+                                    aria-label="ویس، برای صحبت نگه دارید"
                                 >
                                     🎙️
                                 </button>
@@ -715,6 +859,7 @@
                                         class="player-btn round-btn"
                                         type="button"
                                         aria-label="ری‌اکشن"
+                                        aria-expanded="false"
                                     >
                                         😍
                                     </button>
@@ -722,6 +867,7 @@
                                     <div
                                         id="reactionPicker"
                                         class="control-panel reaction-picker hidden"
+                                        role="menu"
                                     ></div>
 
                                 </div>
@@ -732,6 +878,7 @@
                                     class="player-btn round-btn"
                                     type="button"
                                     aria-label="چت"
+                                    aria-expanded="false"
                                 >
                                     💬
                                 </button>
@@ -744,11 +891,29 @@
                                     aria-label="تمام صفحه"
                                 >
 
-                                    <svg class="icon-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <svg
+                                        class="icon-expand"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true"
+                                    >
                                         <path d="M9 3H5a2 2 0 0 0-2 2v4M15 3h4a2 2 0 0 1 2 2v4M9 21H5a2 2 0 0 1-2-2v-4M15 21h4a2 2 0 0 0 2-2v-4"></path>
                                     </svg>
 
-                                    <svg class="icon-compress hidden-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <svg
+                                        class="icon-compress hidden-icon"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true"
+                                    >
                                         <path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"></path>
                                     </svg>
 
@@ -764,9 +929,17 @@
 
 
 
-                <label class="file-button">
+                <!-- انتخاب فیلم -->
 
-                    <span class="file-icon">
+                <label
+                    class="file-button"
+                    for="fileInput"
+                >
+
+                    <span
+                        class="file-icon"
+                        aria-hidden="true"
+                    >
                         🎬
                     </span>
 
@@ -791,11 +964,17 @@
                  چت
             ====================================== -->
 
-            <section class="chat-card">
+            <section
+                class="chat-card"
+                aria-label="گفتگوی زنده"
+            >
 
                 <div class="chat-header">
 
-                    <div class="chat-icon">
+                    <div
+                        class="chat-icon"
+                        aria-hidden="true"
+                    >
                         💬
                     </div>
 
@@ -820,7 +999,9 @@
 
                     <div class="chat-online">
 
-                        <span></span>
+                        <span
+                            aria-hidden="true"
+                        ></span>
 
                         آنلاین
 
@@ -833,6 +1014,8 @@
                 <div
                     id="chatMessages"
                     class="chat-messages"
+                    aria-live="polite"
+                    aria-relevant="additions"
                 >
 
                     <div
@@ -840,7 +1023,10 @@
                         class="chat-empty"
                     >
 
-                        <div class="empty-icon">
+                        <div
+                            class="empty-icon"
+                            aria-hidden="true"
+                        >
                             💫
                         </div>
 
@@ -865,7 +1051,8 @@
                         <button
                             id="emojiBtn"
                             type="button"
-                            aria-label="ایموجی"
+                            aria-label="انتخاب ایموجی"
+                            aria-expanded="false"
                         >
                             😊
                         </button>
@@ -873,6 +1060,7 @@
                         <div
                             id="emojiPanel"
                             class="emoji-panel hidden"
+                            role="menu"
                         ></div>
 
                     </div>
@@ -883,6 +1071,7 @@
                         placeholder="پیام خود را بنویسید..."
                         autocomplete="off"
                         maxlength="500"
+                        enterkeyhint="send"
                         disabled
                     >
 
@@ -914,7 +1103,10 @@
 
         <footer>
 
-            <div class="footer-line"></div>
+            <div
+                class="footer-line"
+                aria-hidden="true"
+            ></div>
 
             <div class="couple">
 
@@ -922,7 +1114,10 @@
                     محمد
                 </span>
 
-                <span class="heart">
+                <span
+                    class="heart"
+                    aria-hidden="true"
+                >
                     ♥
                 </span>
 

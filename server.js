@@ -3,37 +3,61 @@ const http = require("http");
 const { Server } = require("socket.io");
 const path = require("path");
 
-
 const app = express();
 
-const server =
-    http.createServer(app);
+const server = http.createServer(app);
 
-const io =
-    new Server(server);
-
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    },
+    transports: ["websocket", "polling"]
+});
 
 app.use(
     express.static(
-        path.join(
-            __dirname,
-            "public"
-        )
+        path.join(__dirname, "public")
     )
 );
 
 
 // =====================================
-// محاسبه لیست کاربران آنلاین یک اتاق
+// ابزارهای کمکی
+// =====================================
+
+function cleanText(value, maxLength = 100) {
+
+    if (typeof value !== "string") {
+        return "";
+    }
+
+    return value
+        .trim()
+        .slice(0, maxLength);
+
+}
+
+
+function isValidRoom(socket, roomId) {
+
+    return (
+        socket.data &&
+        socket.data.roomId &&
+        socket.data.roomId === roomId
+    );
+
+}
+
+
+// =====================================
+// محاسبه کاربران آنلاین اتاق
 // =====================================
 
 function getRoomUsers(roomId) {
 
     const room =
-        io.sockets.adapter.rooms.get(
-            roomId
-        );
-
+        io.sockets.adapter.rooms.get(roomId);
 
     if (!room) {
 
@@ -44,32 +68,26 @@ function getRoomUsers(roomId) {
 
     }
 
-
     const users =
         [...room].map((id) => {
 
             const memberSocket =
                 io.sockets.sockets.get(id);
 
-
             const name =
-                (memberSocket &&
-                    memberSocket.data &&
-                    memberSocket.data.name) ||
+                memberSocket?.data?.name ||
                 "کاربر";
 
-
             return {
-                id: id,
-                name: name
+                id,
+                name
             };
 
         });
 
-
     return {
         count: users.length,
-        users: users
+        users
     };
 
 }
@@ -97,36 +115,39 @@ io.on(
             "join-room",
             (data) => {
 
-                if (
-                    !data ||
-                    !data.roomId ||
-                    !data.name
-                ) {
-
+                if (!data) {
                     return;
+                }
+
+                const roomId =
+                    cleanText(data.roomId, 50);
+
+                const name =
+                    cleanText(data.name, 40);
+
+                if (!roomId || !name) {
+                    return;
+                }
+
+
+                // اگر قبلاً داخل اتاق دیگری است،
+                // ابتدا از آن خارج شود
+
+                if (socket.data.roomId) {
+
+                    socket.leave(
+                        socket.data.roomId
+                    );
 
                 }
 
 
-                const roomId =
-                    data.roomId;
-
-
-                const name =
-                    data.name;
-
-
-                // ذخیره اطلاعات کاربر
-
                 socket.data.roomId =
                     roomId;
-
 
                 socket.data.name =
                     name;
 
-
-                // ورود به اتاق
 
                 socket.join(
                     roomId
@@ -137,7 +158,7 @@ io.on(
                     getRoomUsers(roomId);
 
 
-                // ارسال لیست به‌روز کاربران
+                // لیست کاربران
 
                 io.to(roomId).emit(
                     "room-users",
@@ -145,15 +166,13 @@ io.on(
                 );
 
 
-                // پیام سیستمی ورود در چت
+                // پیام ورود
 
                 io.to(roomId).emit(
                     "system-message",
                     {
-
                         text:
                             `${name} وارد اتاق شد`
-
                     }
                 );
 
@@ -163,33 +182,34 @@ io.on(
                 );
 
 
-                // اگر از قبل نفر دیگری در اتاق باشد
-                // به تازه‌واردشده اطلاع می‌دهیم تا او
-                // شروع‌کننده اتصال صوتی (WebRTC) باشد
+                // =====================================
+                // پیدا کردن نفر قبلی
+                // =====================================
 
                 const room =
                     io.sockets.adapter.rooms.get(
                         roomId
                     );
 
-
                 const otherIds =
                     room
                         ? [...room].filter(
-                            (id) => id !== socket.id
+                            (id) =>
+                                id !== socket.id
                         )
                         : [];
 
+
+                // فقط اولین نفر قبلی
+                // برای WebRTC
 
                 if (otherIds.length > 0) {
 
                     socket.emit(
                         "existing-peer",
                         {
-
                             peerId:
                                 otherIds[0]
-
                         }
                     );
 
@@ -207,55 +227,51 @@ io.on(
             "video-action",
             (data) => {
 
-                if (
-                    !data ||
-                    !data.roomId
-                ) {
-
+                if (!data) {
                     return;
+                }
 
+                const roomId =
+                    cleanText(data.roomId, 50);
+
+                if (
+                    !roomId ||
+                    !isValidRoom(socket, roomId)
+                ) {
+                    return;
+                }
+
+
+                const type =
+                    data.type;
+
+                if (
+                    type !== "play" &&
+                    type !== "pause" &&
+                    type !== "seek"
+                ) {
+                    return;
+                }
+
+
+                const time =
+                    Number(data.time);
+
+                if (
+                    !Number.isFinite(time) ||
+                    time < 0
+                ) {
+                    return;
                 }
 
 
                 socket
-                    .to(data.roomId)
+                    .to(roomId)
                     .emit(
                         "video-action",
-                        data
-                    );
-
-            }
-        );
-
-
-        // =====================================
-        // ری‌اکشن روی پلیر
-        // =====================================
-
-        socket.on(
-            "video-reaction",
-            (data) => {
-
-                if (
-                    !data ||
-                    !data.roomId ||
-                    !data.emoji
-                ) {
-
-                    return;
-
-                }
-
-
-                socket
-                    .to(data.roomId)
-                    .emit(
-                        "video-reaction",
                         {
-
-                            emoji:
-                                data.emoji
-
+                            type,
+                            time
                         }
                     );
 
@@ -264,36 +280,81 @@ io.on(
 
 
         // =====================================
-        // وضعیت صحبت‌کردن با ویس
+        // ری‌اکشن
+        // =====================================
+
+        socket.on(
+            "video-reaction",
+            (data) => {
+
+                if (!data) {
+                    return;
+                }
+
+                const roomId =
+                    cleanText(data.roomId, 50);
+
+                const emoji =
+                    cleanText(data.emoji, 10);
+
+                if (
+                    !roomId ||
+                    !emoji ||
+                    !isValidRoom(socket, roomId)
+                ) {
+                    return;
+                }
+
+
+                socket
+                    .to(roomId)
+                    .emit(
+                        "video-reaction",
+                        {
+                            emoji
+                        }
+                    );
+
+            }
+        );
+
+
+        // =====================================
+        // وضعیت ویس
         // =====================================
 
         socket.on(
             "voice-status",
             (data) => {
 
-                if (
-                    !data ||
-                    !data.roomId
-                ) {
-
+                if (!data) {
                     return;
+                }
 
+                const roomId =
+                    cleanText(data.roomId, 50);
+
+                if (
+                    !roomId ||
+                    !isValidRoom(socket, roomId)
+                ) {
+                    return;
                 }
 
 
                 socket
-                    .to(data.roomId)
+                    .to(roomId)
                     .emit(
                         "voice-status",
                         {
-
                             name:
                                 socket.data.name ||
                                 "پارتنر",
 
                             speaking:
-                                Boolean(data.speaking)
-
+                                Boolean(
+                                    data.speaking
+                                )
                         }
                     );
 
@@ -309,18 +370,23 @@ io.on(
             "request-sync",
             (data) => {
 
-                if (
-                    !data ||
-                    !data.roomId
-                ) {
-
+                if (!data) {
                     return;
+                }
 
+                const roomId =
+                    cleanText(data.roomId, 50);
+
+                if (
+                    !roomId ||
+                    !isValidRoom(socket, roomId)
+                ) {
+                    return;
                 }
 
 
                 socket
-                    .to(data.roomId)
+                    .to(roomId)
                     .emit(
                         "sync-request"
                     );
@@ -337,28 +403,42 @@ io.on(
             "sync-response",
             (data) => {
 
-                if (
-                    !data ||
-                    !data.roomId
-                ) {
-
+                if (!data) {
                     return;
+                }
 
+                const roomId =
+                    cleanText(data.roomId, 50);
+
+                if (
+                    !roomId ||
+                    !isValidRoom(socket, roomId)
+                ) {
+                    return;
+                }
+
+
+                const time =
+                    Number(data.time);
+
+                if (
+                    !Number.isFinite(time) ||
+                    time < 0
+                ) {
+                    return;
                 }
 
 
                 socket
-                    .to(data.roomId)
+                    .to(roomId)
                     .emit(
                         "sync-response",
                         {
-
-                            time:
-                                data.time,
-
+                            time,
                             playing:
-                                data.playing
-
+                                Boolean(
+                                    data.playing
+                                )
                         }
                     );
 
@@ -374,38 +454,44 @@ io.on(
             "chat-message",
             (data) => {
 
-                if (
-                    !data ||
-                    !data.roomId ||
-                    !data.message
-                ) {
-
+                if (!data) {
                     return;
+                }
 
+
+                const roomId =
+                    cleanText(data.roomId, 50);
+
+                const message =
+                    cleanText(data.message, 1000);
+
+
+                if (
+                    !roomId ||
+                    !message ||
+                    !isValidRoom(socket, roomId)
+                ) {
+                    return;
                 }
 
 
                 const senderName =
                     socket.data.name ||
-                    data.name ||
                     "مهمان";
 
 
                 socket
-                    .to(data.roomId)
+                    .to(roomId)
                     .emit(
                         "chat-message",
                         {
-
                             name:
                                 senderName,
 
-                            message:
-                                data.message,
+                            message,
 
                             time:
-                                data.time
-
+                                data.time || ""
                         }
                     );
 
@@ -414,8 +500,7 @@ io.on(
 
 
         // =====================================
-        // WebRTC Signaling (ویس)
-        // فقط بین دو نفر داخل اتاق رد و بدل می‌شود
+        // WebRTC Offer
         // =====================================
 
         socket.on(
@@ -427,28 +512,51 @@ io.on(
                     !data.to ||
                     !data.offer
                 ) {
-
                     return;
+                }
 
+
+                const targetSocket =
+                    io.sockets.sockets.get(
+                        data.to
+                    );
+
+
+                if (!targetSocket) {
+                    return;
+                }
+
+
+                // فقط اگر هر دو نفر
+                // در یک اتاق باشند
+
+                if (
+                    !socket.data.roomId ||
+                    targetSocket.data.roomId !==
+                        socket.data.roomId
+                ) {
+                    return;
                 }
 
 
                 io.to(data.to).emit(
                     "webrtc-offer",
                     {
-
                         from:
                             socket.id,
 
                         offer:
                             data.offer
-
                     }
                 );
 
             }
         );
 
+
+        // =====================================
+        // WebRTC Answer
+        // =====================================
 
         socket.on(
             "webrtc-answer",
@@ -459,28 +567,48 @@ io.on(
                     !data.to ||
                     !data.answer
                 ) {
-
                     return;
+                }
 
+
+                const targetSocket =
+                    io.sockets.sockets.get(
+                        data.to
+                    );
+
+
+                if (!targetSocket) {
+                    return;
+                }
+
+
+                if (
+                    !socket.data.roomId ||
+                    targetSocket.data.roomId !==
+                        socket.data.roomId
+                ) {
+                    return;
                 }
 
 
                 io.to(data.to).emit(
                     "webrtc-answer",
                     {
-
                         from:
                             socket.id,
 
                         answer:
                             data.answer
-
                     }
                 );
 
             }
         );
 
+
+        // =====================================
+        // WebRTC ICE Candidate
+        // =====================================
 
         socket.on(
             "webrtc-ice-candidate",
@@ -491,22 +619,38 @@ io.on(
                     !data.to ||
                     !data.candidate
                 ) {
-
                     return;
+                }
 
+
+                const targetSocket =
+                    io.sockets.sockets.get(
+                        data.to
+                    );
+
+
+                if (!targetSocket) {
+                    return;
+                }
+
+
+                if (
+                    !socket.data.roomId ||
+                    targetSocket.data.roomId !==
+                        socket.data.roomId
+                ) {
+                    return;
                 }
 
 
                 io.to(data.to).emit(
                     "webrtc-ice-candidate",
                     {
-
                         from:
                             socket.id,
 
                         candidate:
                             data.candidate
-
                     }
                 );
 
@@ -525,7 +669,6 @@ io.on(
                 const roomId =
                     socket.data.roomId;
 
-
                 const name =
                     socket.data.name;
 
@@ -536,31 +679,34 @@ io.on(
                 );
 
 
-                if (roomId) {
+                if (!roomId) {
+                    return;
+                }
 
-                    const roomInfo =
-                        getRoomUsers(roomId);
 
+                // بعد از disconnect،
+                // Socket.IO دیگر این socket
+                // را داخل room نمی‌داند
+
+                const roomInfo =
+                    getRoomUsers(roomId);
+
+
+                io.to(roomId).emit(
+                    "room-users",
+                    roomInfo
+                );
+
+
+                if (name) {
 
                     io.to(roomId).emit(
-                        "room-users",
-                        roomInfo
+                        "system-message",
+                        {
+                            text:
+                                `${name} از اتاق خارج شد`
+                        }
                     );
-
-
-                    if (name) {
-
-                        io.to(roomId).emit(
-                            "system-message",
-                            {
-
-                                text:
-                                    `${name} از اتاق خارج شد`
-
-                            }
-                        );
-
-                    }
 
                 }
 
