@@ -2956,34 +2956,6 @@ updateVolumeIcon();
 // تمام صفحه (Fullscreen)
 // =====================================
 
-function isIOSDevice() {
-
-    const userAgent =
-        navigator.userAgent;
-
-
-    const isIOSByAgent =
-        /iPad|iPhone|iPod/.test(
-            userAgent
-        );
-
-
-    // آیپدهای جدید خودشان را
-    // به‌عنوان مک معرفی می‌کنند
-
-    const isModernIPad =
-        navigator.platform === "MacIntel" &&
-        navigator.maxTouchPoints > 1;
-
-
-    return (
-        isIOSByAgent ||
-        isModernIPad
-    );
-
-}
-
-
 function isCurrentlyFullscreen() {
 
     return Boolean(
@@ -3023,35 +2995,6 @@ function updateFullscreenIcon() {
 fullscreenBtn.addEventListener(
     "click",
     () => {
-
-        // Safari آیفون اجازه تمام‌صفحه شدن
-        // یک div دلخواه را نمی‌دهد؛ فقط خود
-        // ویدیو را با متد اختصاصی اپل
-        // می‌توان تمام‌صفحه کرد
-
-        if (
-            isIOSDevice() &&
-            video.webkitEnterFullscreen
-        ) {
-
-            try {
-
-                video.webkitEnterFullscreen();
-
-            }
-            catch (error) {
-
-                console.log(
-                    "iOS fullscreen error:",
-                    error
-                );
-
-            }
-
-            return;
-
-        }
-
 
         if (!isCurrentlyFullscreen()) {
 
@@ -3094,15 +3037,6 @@ document.addEventListener(
 
 document.addEventListener(
     "webkitfullscreenchange",
-    updateFullscreenIcon
-);
-
-
-// بازگشت آیکون بعد از خروج از
-// تمام‌صفحه اختصاصی iOS
-
-video.addEventListener(
-    "webkitendfullscreen",
     updateFullscreenIcon
 );
 
