@@ -32,7 +32,7 @@
         content="black-translucent"
     >
 
-    <title>جهان هستی 🎬</title>
+    <title>جهان هستی</title>
 
     <link
         href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap"
@@ -58,113 +58,64 @@
             justify-content: center;
         }
 
-
         #moreControlsBtn {
             position: relative;
-
             padding: 0;
-
             display: flex;
             align-items: center;
             justify-content: center;
-
-            /* اندازه متن اصلی مخفی است */
             font-size: 0;
-
             line-height: 1;
-
             cursor: pointer;
         }
 
-
-        /* سه نقطه کوچک و دقیق */
-
         #moreControlsBtn::before {
-
             content: "⋮";
-
             display: flex;
-
             align-items: center;
             justify-content: center;
-
             width: 100%;
             height: 100%;
-
             font-family: Arial, sans-serif;
-
             font-size: 18px;
             font-weight: 700;
-
             line-height: 1;
-
             letter-spacing: 0;
-
-            transform:
-                translateY(-1px);
-
-            color:
-                currentColor;
+            transform: translateY(-1px);
+            color: currentColor;
         }
 
-
-        /* پنل شیشه‌ای عمودی */
-
         .more-controls-menu {
-
             position: absolute;
-
-            bottom:
-                calc(100% + 8px);
-
+            bottom: calc(100% + 8px);
             right: 0;
-
             width: auto;
             min-width: 0;
-
             display: flex;
-
-            /* عمودی */
             flex-direction: column;
-
             align-items: center;
             justify-content: center;
-
             gap: 5px;
-
             padding: 6px;
-
-            background:
-                rgba(12, 18, 38, 0.58);
-
-            border:
-                1px solid rgba(255, 255, 255, 0.16);
-
+            background: rgba(12, 18, 38, 0.58);
+            border: 1px solid rgba(255, 255, 255, 0.16);
             border-radius: 14px;
-
             box-shadow:
                 0 10px 30px rgba(0, 0, 0, 0.35),
                 inset 0 1px 0 rgba(255, 255, 255, 0.08);
-
             backdrop-filter:
                 blur(18px)
                 saturate(140%);
-
             -webkit-backdrop-filter:
                 blur(18px)
                 saturate(140%);
-
             z-index: 1000;
-
-            transform-origin:
-                bottom right;
+            transform-origin: bottom right;
         }
-
 
         .more-controls-menu.hidden {
             display: none;
         }
-
 
         .more-controls-menu > * {
             flex-shrink: 0;
@@ -178,44 +129,25 @@
         .more-controls-menu #speedBtn,
         .more-controls-menu #subtitleSettingsBtn,
         .more-controls-menu #chatToggleBtn {
-
             width: 34px;
             min-width: 34px;
-
             height: 34px;
             min-height: 34px;
-
             padding: 0;
-
             border-radius: 10px;
-
             display: flex;
-
             align-items: center;
             justify-content: center;
-
             gap: 0;
-
-            background:
-                rgba(255, 255, 255, 0.075);
-
-            border:
-                1px solid rgba(255, 255, 255, 0.09);
-
-            color:
-                rgba(255, 255, 255, 0.94);
-
+            background: rgba(255, 255, 255, 0.075);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            color: rgba(255, 255, 255, 0.94);
             font-family: inherit;
-
             font-size: 11px;
             font-weight: 700;
-
             line-height: 1;
-
             white-space: nowrap;
-
             cursor: pointer;
-
             transition:
                 background 0.18s ease,
                 border-color 0.18s ease,
@@ -223,58 +155,38 @@
                 box-shadow 0.18s ease;
         }
 
-
         .more-controls-menu #speedBtn:hover,
         .more-controls-menu #subtitleSettingsBtn:hover,
         .more-controls-menu #chatToggleBtn:hover {
-
-            background:
-                rgba(255, 255, 255, 0.13);
-
-            border-color:
-                rgba(255, 255, 255, 0.17);
-
-            box-shadow:
-                0 4px 14px rgba(0, 0, 0, 0.18);
+            background: rgba(255, 255, 255, 0.13);
+            border-color: rgba(255, 255, 255, 0.17);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
         }
-
 
         .more-controls-menu #speedBtn:active,
         .more-controls-menu #subtitleSettingsBtn:active,
         .more-controls-menu #chatToggleBtn:active {
-
-            transform:
-                scale(0.92);
+            transform: scale(0.92);
         }
 
 
         /* =====================================
            سرعت
-           متن توسط app.js تغییر می‌کند
-           مثال: 1× / 1.5× / 2×
         ====================================== */
 
         .more-controls-menu .speed-wrapper {
-
             position: relative;
-
             display: flex;
-
             width: auto;
         }
 
-
         .more-controls-menu #speedBtn {
-
             justify-content: center;
-
             font-size: 11px;
             font-weight: 700;
         }
 
-
         .more-controls-menu #speedBtn::before {
-
             content: none;
         }
 
@@ -284,32 +196,21 @@
         ====================================== */
 
         .more-controls-menu #subtitleSettingsBtn {
-
             justify-content: center;
-
             font-size: 0;
         }
 
-
         .more-controls-menu #subtitleSettingsBtn::before {
-
             content: "CC";
-
             width: auto;
             min-width: 0;
-
             display: flex;
-
             align-items: center;
             justify-content: center;
-
             font-size: 10px;
             font-weight: 900;
-
             line-height: 1;
-
             letter-spacing: -0.3px;
-
             opacity: 0.95;
         }
 
@@ -319,27 +220,18 @@
         ====================================== */
 
         .more-controls-menu #chatToggleBtn {
-
             justify-content: center;
-
             font-size: 0;
         }
 
-
         .more-controls-menu #chatToggleBtn::before {
-
             content: "💬";
-
             width: auto;
             min-width: 0;
-
             display: flex;
-
             align-items: center;
             justify-content: center;
-
             font-size: 14px;
-
             line-height: 1;
         }
 
@@ -350,7 +242,6 @@
 
         .more-controls-menu .reaction-picker-wrapper,
         .reaction-picker-wrapper {
-
             display: none !important;
         }
 
@@ -364,13 +255,11 @@
         }
 
 
-
         /* =====================================
            پنل زیرنویس
         ====================================== */
 
         .subtitle-settings-panel {
-
             position: absolute !important;
 
             top: 50% !important;
@@ -379,22 +268,18 @@
             right: auto !important;
             bottom: auto !important;
 
-            transform:
-                translate(-50%, -50%) !important;
+            transform: translate(-50%, -50%) !important;
 
-            width:
-                min(300px, calc(100% - 24px));
+            width: min(300px, calc(100% - 24px));
 
-            max-height:
-                min(76%, 420px);
+            max-height: min(76%, 420px);
 
             overflow-y: auto;
             overflow-x: hidden;
 
             padding: 13px !important;
 
-            border-radius:
-                17px !important;
+            border-radius: 17px !important;
 
             background:
                 linear-gradient(
@@ -403,86 +288,62 @@
                     rgba(7, 12, 28, 0.98)
                 ) !important;
 
-            border:
-                1px solid rgba(255, 255, 255, 0.12) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
 
             box-shadow:
                 0 18px 50px rgba(0, 0, 0, 0.55),
                 inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
 
-            backdrop-filter:
-                blur(20px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
 
-            -webkit-backdrop-filter:
-                blur(20px);
-
-            z-index:
-                1200 !important;
+            z-index: 1200 !important;
 
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
 
-
         .subtitle-settings-panel::-webkit-scrollbar {
-
             display: none;
-
             width: 0;
             height: 0;
         }
 
-
         .subtitle-settings-title {
-
             display: flex;
-
             align-items: center;
             justify-content: center;
-
             gap: 7px;
 
-            margin:
-                0 0 10px;
-
-            padding-bottom:
-                9px;
+            margin: 0 0 10px;
+            padding-bottom: 9px;
 
             color: #fff;
 
             font-size: 14px;
             font-weight: 700;
 
-            border-bottom:
-                1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 
-            letter-spacing:
-                -0.2px;
+            letter-spacing: -0.2px;
         }
 
-
         .subtitle-settings-title::before {
-
             content: "CC";
 
             width: 25px;
             height: 22px;
 
             display: inline-flex;
-
             align-items: center;
             justify-content: center;
 
             border-radius: 6px;
 
-            background:
-                rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.10);
 
-            border:
-                1px solid rgba(255, 255, 255, 0.10);
-
-            color:
-                rgba(255, 255, 255, 0.92);
+            color: rgba(255, 255, 255, 0.92);
 
             font-size: 9px;
             font-weight: 900;
@@ -490,73 +351,50 @@
             letter-spacing: 0;
         }
 
-
         .subtitle-settings-row {
-
             display: flex;
-
             flex-direction: column;
-
             gap: 6px;
 
             margin-bottom: 7px;
-
             padding: 9px 10px;
 
             border-radius: 11px;
 
-            background:
-                rgba(255, 255, 255, 0.035);
-
-            border:
-                1px solid rgba(255, 255, 255, 0.055);
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.055);
 
             transition:
                 background 0.18s ease,
                 border-color 0.18s ease;
         }
 
-
         .subtitle-settings-row:last-child {
             margin-bottom: 0;
         }
 
-
         .subtitle-settings-row:hover {
-
-            background:
-                rgba(255, 255, 255, 0.055);
-
-            border-color:
-                rgba(255, 255, 255, 0.085);
+            background: rgba(255, 255, 255, 0.055);
+            border-color: rgba(255, 255, 255, 0.085);
         }
 
-
         .subtitle-settings-row > label {
-
             display: flex;
-
             align-items: center;
             justify-content: space-between;
 
-            color:
-                rgba(255, 255, 255, 0.78);
+            color: rgba(255, 255, 255, 0.78);
 
             font-size: 11px;
             font-weight: 500;
-
             line-height: 1.4;
         }
 
-
         .subtitle-file-label {
-
             width: 100%;
-
             min-height: 32px;
 
             display: flex !important;
-
             align-items: center !important;
             justify-content: center !important;
 
@@ -564,14 +402,10 @@
 
             border-radius: 8px;
 
-            background:
-                rgba(255, 255, 255, 0.07);
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.09);
 
-            border:
-                1px solid rgba(255, 255, 255, 0.09);
-
-            color:
-                rgba(255, 255, 255, 0.90) !important;
+            color: rgba(255, 255, 255, 0.90) !important;
 
             font-size: 11px !important;
             font-weight: 500 !important;
@@ -584,43 +418,29 @@
                 border-color 0.18s ease;
         }
 
-
         .subtitle-file-label:hover {
-
-            background:
-                rgba(255, 255, 255, 0.11);
-
-            border-color:
-                rgba(255, 255, 255, 0.14);
+            background: rgba(255, 255, 255, 0.11);
+            border-color: rgba(255, 255, 255, 0.14);
         }
-
 
         .subtitle-file-label:active {
             transform: scale(0.98);
         }
 
-
         .subtitle-remove-btn {
-
             width: 100%;
-
             min-height: 30px;
 
             padding: 0 9px;
 
-            border:
-                1px solid rgba(255, 90, 90, 0.14);
-
+            border: 1px solid rgba(255, 90, 90, 0.14);
             border-radius: 8px;
 
-            background:
-                rgba(255, 70, 70, 0.055);
+            background: rgba(255, 70, 70, 0.055);
 
-            color:
-                rgba(255, 150, 150, 0.92);
+            color: rgba(255, 150, 150, 0.92);
 
             font-family: inherit;
-
             font-size: 11px;
             font-weight: 500;
 
@@ -632,47 +452,33 @@
                 transform 0.12s ease;
         }
 
-
         .subtitle-remove-btn:hover {
-
-            background:
-                rgba(255, 70, 70, 0.10);
-
-            border-color:
-                rgba(255, 90, 90, 0.22);
+            background: rgba(255, 70, 70, 0.10);
+            border-color: rgba(255, 90, 90, 0.22);
         }
-
 
         .subtitle-remove-btn:active {
             transform: scale(0.98);
         }
 
-
         .subtitle-settings-panel input[type="range"] {
-
             width: 100%;
-
             height: 4px;
 
-            margin:
-                2px 0 1px;
+            margin: 2px 0 1px;
 
             appearance: none;
             -webkit-appearance: none;
 
             border-radius: 999px;
 
-            background:
-                rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.12);
 
             outline: none;
-
             cursor: pointer;
         }
 
-
         .subtitle-settings-panel input[type="range"]::-webkit-slider-thumb {
-
             appearance: none;
             -webkit-appearance: none;
 
@@ -683,18 +489,14 @@
 
             background: #fff;
 
-            border:
-                2px solid rgba(10, 15, 35, 0.9);
+            border: 2px solid rgba(10, 15, 35, 0.9);
 
-            box-shadow:
-                0 1px 6px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
 
             cursor: pointer;
         }
 
-
         .subtitle-settings-panel input[type="range"]::-moz-range-thumb {
-
             width: 13px;
             height: 13px;
 
@@ -702,20 +504,15 @@
 
             background: #fff;
 
-            border:
-                2px solid rgba(10, 15, 35, 0.9);
+            border: 2px solid rgba(10, 15, 35, 0.9);
 
-            box-shadow:
-                0 1px 6px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
 
             cursor: pointer;
         }
 
-
         .subtitle-color-swatches {
-
             display: flex;
-
             align-items: center;
             justify-content: center;
 
@@ -726,9 +523,7 @@
             min-height: 27px;
         }
 
-
         .subtitle-color-swatches button {
-
             width: 24px;
             height: 24px;
 
@@ -736,11 +531,9 @@
 
             border-radius: 50%;
 
-            border:
-                2px solid rgba(255, 255, 255, 0.20);
+            border: 2px solid rgba(255, 255, 255, 0.20);
 
-            box-shadow:
-                0 2px 6px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 
             cursor: pointer;
 
@@ -749,24 +542,16 @@
                 border-color 0.15s ease;
         }
 
-
         .subtitle-color-swatches button:hover {
-
-            transform:
-                scale(1.10);
-
-            border-color:
-                rgba(255, 255, 255, 0.70);
+            transform: scale(1.10);
+            border-color: rgba(255, 255, 255, 0.70);
         }
-
 
         .subtitle-color-swatches button:active {
             transform: scale(0.94);
         }
 
-
         .subtitle-offset-control {
-
             width: 100%;
 
             display: flex;
@@ -777,9 +562,7 @@
             gap: 7px;
         }
 
-
         .subtitle-offset-control button {
-
             width: 29px;
             height: 29px;
 
@@ -790,13 +573,11 @@
             align-items: center;
             justify-content: center;
 
-            border:
-                1px solid rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.10);
 
             border-radius: 8px;
 
-            background:
-                rgba(255, 255, 255, 0.055);
+            background: rgba(255, 255, 255, 0.055);
 
             color: #fff;
 
@@ -812,29 +593,20 @@
                 transform 0.12s ease;
         }
 
-
         .subtitle-offset-control button:hover {
-
-            background:
-                rgba(255, 255, 255, 0.10);
+            background: rgba(255, 255, 255, 0.10);
         }
-
 
         .subtitle-offset-control button:active {
-
-            transform:
-                scale(0.92);
+            transform: scale(0.92);
         }
 
-
         #subtitleOffsetDisplay {
-
             min-width: 78px;
 
             text-align: center;
 
-            color:
-                rgba(255, 255, 255, 0.82);
+            color: rgba(255, 255, 255, 0.82);
 
             font-size: 10.5px;
             font-weight: 500;
@@ -843,13 +615,11 @@
         }
 
 
-
         /* =====================================
            پنل سرعت
         ====================================== */
 
         .player-wrapper > .speed-menu {
-
             position: absolute !important;
 
             top: 50% !important;
@@ -858,8 +628,7 @@
             right: auto !important;
             bottom: auto !important;
 
-            transform:
-                translate(-50%, -50%) !important;
+            transform: translate(-50%, -50%) !important;
 
             width: 180px !important;
             min-width: 180px !important;
@@ -872,91 +641,42 @@
 
             border-radius: 16px !important;
 
-            background:
-                rgba(8, 13, 30, 0.97) !important;
+            background: rgba(8, 13, 30, 0.97) !important;
 
-            border:
-                1px solid rgba(255, 255, 255, 0.13) !important;
+            border: 1px solid rgba(255, 255, 255, 0.13) !important;
 
-            box-shadow:
-                0 20px 60px rgba(0, 0, 0, 0.55) !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55) !important;
 
-            backdrop-filter:
-                blur(18px);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
 
-            -webkit-backdrop-filter:
-                blur(18px);
-
-            z-index:
-                1300 !important;
+            z-index: 1300 !important;
 
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
 
-
         .player-wrapper > .speed-menu::-webkit-scrollbar {
-
             display: none;
-
             width: 0;
             height: 0;
         }
-
-        /* =====================================
-   اسکرول مخفی چت‌ها
-====================================== */
-
-/* چت اصلی */
-.chat-messages {
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.chat-messages::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    height: 0;
-}
-
-
-/* چت داخل پلیر */
-.mini-chat-messages {
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.mini-chat-messages::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    height: 0;
-}
 
         .player-wrapper > .speed-menu.hidden {
             display: none !important;
         }
 
-
         .player-wrapper > .speed-menu button {
-
             width: 100%;
-
             min-height: 38px;
 
             border: none;
-
             border-radius: 9px;
 
             background: transparent;
-
             color: #fff;
 
             font-family: inherit;
-
             font-size: 13px;
 
             cursor: pointer;
@@ -966,20 +686,13 @@
                 transform 0.12s ease;
         }
 
-
         .player-wrapper > .speed-menu button:hover {
-
-            background:
-                rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.08);
         }
-
 
         .player-wrapper > .speed-menu button:active {
-
-            transform:
-                scale(0.97);
+            transform: scale(0.97);
         }
-
 
 
         /* =====================================
@@ -989,86 +702,60 @@
         @media (max-width: 700px) {
 
             .player-controls {
-
                 padding-left: 7px;
                 padding-right: 7px;
             }
-
 
             .controls-row {
                 gap: 5px;
             }
 
-
             .player-btn {
-
                 min-width: 36px;
                 width: 36px;
                 height: 36px;
             }
 
-
             .skip-btn {
-
                 width: 36px;
                 min-width: 36px;
             }
 
-
             .volume-wrapper {
-
                 display: flex;
                 align-items: center;
             }
-
 
             .volume-wrapper #volumeSlider {
                 display: none;
             }
 
-
             .time-display {
-
                 font-size: 11px;
                 white-space: nowrap;
             }
-
 
             .spacer {
                 flex: 1;
             }
 
-
             .more-controls-wrapper {
                 display: flex;
             }
 
-
-            /* سه نقطه موبایل */
-
             #moreControlsBtn::before {
-
                 font-size: 17px;
-
-                transform:
-                    translateY(-1px);
+                transform: translateY(-1px);
             }
 
-
-            /* منوی شیشه‌ای موبایل - عمودی */
-
             .more-controls-menu {
-
                 right: 0;
-
-                bottom:
-                    calc(100% + 7px);
+                bottom: calc(100% + 7px);
 
                 width: auto;
                 min-width: 0;
 
                 padding: 5px;
-
                 gap: 4px;
 
                 border-radius: 13px;
@@ -1076,11 +763,9 @@
                 flex-direction: column;
             }
 
-
             .more-controls-menu #speedBtn,
             .more-controls-menu #subtitleSettingsBtn,
             .more-controls-menu #chatToggleBtn {
-
                 width: 32px;
                 min-width: 32px;
 
@@ -1092,123 +777,80 @@
                 border-radius: 9px;
             }
 
-
             .more-controls-menu #speedBtn {
-
                 font-size: 10px;
             }
 
-
             .more-controls-menu #subtitleSettingsBtn::before {
-
                 font-size: 9px;
             }
 
-
             .more-controls-menu #chatToggleBtn::before {
-
                 font-size: 13px;
             }
 
-
             .player-wrapper > .speed-menu {
-
                 width: 180px !important;
                 min-width: 180px !important;
 
-                max-width:
-                    calc(100% - 30px);
-
+                max-width: calc(100% - 30px);
                 max-height: 70%;
             }
 
-
             .subtitle-settings-panel {
-
-                width:
-                    min(295px, calc(100% - 20px));
-
+                width: min(295px, calc(100% - 20px));
                 max-height: 76%;
-
                 padding: 12px !important;
-
                 border-radius: 15px !important;
             }
 
-
             .subtitle-settings-title {
-
                 font-size: 13px;
-
                 margin-bottom: 8px;
-
                 padding-bottom: 8px;
             }
 
-
             .subtitle-settings-row {
-
                 gap: 5px;
-
                 margin-bottom: 6px;
-
                 padding: 8px 9px;
-
                 border-radius: 10px;
             }
 
-
             .subtitle-settings-row > label {
-
                 font-size: 10.5px;
             }
 
-
             .subtitle-file-label {
-
                 min-height: 30px;
-
                 font-size: 10.5px !important;
             }
 
-
             .subtitle-remove-btn {
-
                 min-height: 29px;
-
                 font-size: 10.5px;
             }
 
-
             .subtitle-color-swatches {
-
                 gap: 6px;
             }
 
-
             .subtitle-color-swatches button {
-
                 width: 22px;
                 height: 22px;
             }
 
-
             .subtitle-offset-control button {
-
                 width: 27px;
                 height: 27px;
             }
 
-
             #subtitleOffsetDisplay {
-
                 min-width: 74px;
-
                 font-size: 10px;
             }
 
         }
-
 
 
         /* =====================================
@@ -1221,54 +863,36 @@
                 gap: 3px;
             }
 
-
             .player-btn {
-
                 width: 33px;
                 min-width: 33px;
                 height: 33px;
             }
 
-
             .skip-btn {
-
                 width: 33px;
                 min-width: 33px;
             }
-
 
             .time-display {
                 font-size: 10px;
             }
 
-
-            /* سه نقطه خیلی کوچک */
-
             #moreControlsBtn::before {
-
                 font-size: 16px;
-
-                transform:
-                    translateY(-1px);
+                transform: translateY(-1px);
             }
-
 
             .more-controls-menu {
-
                 gap: 3px;
-
                 padding: 4px;
-
                 border-radius: 12px;
-
                 flex-direction: column;
             }
-
 
             .more-controls-menu #speedBtn,
             .more-controls-menu #subtitleSettingsBtn,
             .more-controls-menu #chatToggleBtn {
-
                 width: 30px;
                 min-width: 30px;
 
@@ -1278,51 +902,34 @@
                 border-radius: 8px;
             }
 
-
             .more-controls-menu #speedBtn {
-
                 font-size: 10px;
             }
 
-
             .more-controls-menu #subtitleSettingsBtn::before {
-
                 font-size: 9px;
             }
 
-
             .more-controls-menu #chatToggleBtn::before {
-
                 font-size: 12px;
             }
 
-
             .player-wrapper > .speed-menu {
-
                 width: 165px !important;
                 min-width: 165px !important;
             }
 
-
             .subtitle-settings-panel {
-
-                width:
-                    min(280px, calc(100% - 18px));
-
+                width: min(280px, calc(100% - 18px));
                 padding: 10px !important;
             }
 
-
             .subtitle-settings-row {
-
                 padding: 7px 8px;
-
                 margin-bottom: 5px;
             }
 
-
             .subtitle-settings-title {
-
                 font-size: 12px;
             }
 
@@ -1354,7 +961,11 @@
                 class="identity-icon"
                 aria-hidden="true"
             >
-                🎬
+                <img
+                    src="/logo.png"
+                    alt="لوگوی جهان هستی"
+                    draggable="false"
+                >
             </div>
 
             <h2 id="entryModalTitle">
@@ -1364,7 +975,6 @@
             <p>
                 نام خود و کد اتاق را وارد کنید
             </p>
-
 
             <div class="entry-field">
 
@@ -1385,7 +995,6 @@
 
             </div>
 
-
             <div class="entry-field">
 
                 <label for="entryRoomInput">
@@ -1404,7 +1013,6 @@
                 >
 
             </div>
-
 
             <button
                 id="entryJoinBtn"
@@ -1432,7 +1040,6 @@
         <div class="stars stars-1"></div>
         <div class="stars stars-2"></div>
         <div class="stars stars-3"></div>
-
 
         <div class="solar-system">
 
@@ -1483,23 +1090,35 @@
 
     <main class="container">
 
-
         <header class="hero">
+
+            <!-- لوگوی اختصاصی سایت -->
 
             <div
                 class="logo-icon"
-                aria-hidden="true"
+                aria-label="لوگوی جهان هستی"
             >
-                🎬
+
+                <img
+                    src="/logo.png"
+                    alt="لوگوی جهان هستی"
+                    width="54"
+                    height="54"
+                    draggable="false"
+                >
+
             </div>
+
 
             <h1>
                 جهان هستی
             </h1>
 
+
             <p class="subtitle">
                 جایی که سینما و جهان هستی به هم می‌رسند
             </p>
+
 
             <div
                 class="hero-line"
@@ -1595,7 +1214,6 @@
             class="watch-area"
             aria-label="تماشای فیلم و گفتگو"
         >
-
 
             <section
                 class="cinema-card"
@@ -1765,8 +1383,6 @@
 
 
 
-                        <!-- پنل تنظیمات زیرنویس -->
-
                         <div
                             id="subtitleSettingsPanel"
                             class="control-panel subtitle-settings-panel hidden"
@@ -1897,8 +1513,6 @@
 
 
 
-                        <!-- پنل سرعت -->
-
                         <div
                             id="speedMenu"
                             class="control-panel speed-menu hidden"
@@ -1944,7 +1558,6 @@
 
 
                             <div class="controls-row">
-
 
                                 <button
                                     id="rewind15Btn"
@@ -2097,8 +1710,6 @@
 
 
 
-                                <!-- منوی سه نقطه -->
-
                                 <div class="more-controls-wrapper">
 
                                     <button
@@ -2118,8 +1729,6 @@
                                         role="menu"
                                     >
 
-                                        <!-- سرعت -->
-
                                         <div class="speed-wrapper">
 
                                             <button
@@ -2135,9 +1744,6 @@
                                         </div>
 
 
-
-                                        <!-- زیرنویس -->
-
                                         <button
                                             id="subtitleSettingsBtn"
                                             class="player-btn round-btn text-btn"
@@ -2148,9 +1754,6 @@
                                             زیرنویس
                                         </button>
 
-
-
-                                        <!-- Reaction حفظ شده ولی مخفی -->
 
                                         <div
                                             class="reaction-picker-wrapper"
@@ -2176,9 +1779,6 @@
 
                                         </div>
 
-
-
-                                        <!-- چت -->
 
                                         <button
                                             id="chatToggleBtn"
@@ -2230,7 +1830,6 @@
                                     </svg>
 
                                 </button>
-
 
                             </div>
 
@@ -2306,9 +1905,7 @@
 
                     <div class="chat-online">
 
-                        <span
-                            aria-hidden="true"
-                        ></span>
+                        <span aria-hidden="true"></span>
 
                         آنلاین
 
@@ -2399,7 +1996,6 @@
 
             </section>
 
-
         </section>
 
 
@@ -2482,8 +2078,6 @@
         }
 
 
-        /* باز و بسته کردن منو */
-
         moreBtn.addEventListener(
             "click",
             (event) => {
@@ -2512,8 +2106,6 @@
         );
 
 
-        /* جلوگیری از بسته شدن منو */
-
         moreMenu.addEventListener(
             "click",
             (event) => {
@@ -2523,8 +2115,6 @@
             }
         );
 
-
-        /* کلیک بیرون */
 
         document.addEventListener(
             "click",
@@ -2544,8 +2134,6 @@
         );
 
 
-        /* پنل سرعت */
-
         if (speedPanel) {
 
             speedPanel.addEventListener(
@@ -2559,8 +2147,6 @@
 
         }
 
-
-        /* پنل زیرنویس */
 
         if (subtitlePanel) {
 
