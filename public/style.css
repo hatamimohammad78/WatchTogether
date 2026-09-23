@@ -310,7 +310,7 @@ video {
 .logo-icon {
     width: auto;
     height: auto;
-    margin: 0 auto -90px;
+    margin: 0 auto 0px;
     display: flex;
     align-items: center;
     justify-content: center;
