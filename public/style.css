@@ -1738,6 +1738,9 @@ video {
     height: 100%;
     padding: 18px;
     overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
 }
 
 .chat-card::before {
@@ -1856,6 +1859,9 @@ video {
 
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+
+    flex: 1;
+    min-height: 0;
 }
 
 .chat-messages::-webkit-scrollbar {
@@ -2038,6 +2044,8 @@ video {
         rgba(255, 255, 255, 0.07);
 
     border-radius: 15px;
+
+    flex-shrink: 0;
 }
 
 .chat-input-box input {
@@ -2111,6 +2119,8 @@ video {
     margin-top: 6px;
     color: #4e566a;
     font-size: 8px;
+
+    flex-shrink: 0;
 }
 
 
