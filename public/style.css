@@ -1860,12 +1860,12 @@ video {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
 
-    flex: 1;
-    min-height: 0;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 .chat-messages::-webkit-scrollbar {
-    width: 5px;
+    display: none;
 }
 
 .chat-messages::-webkit-scrollbar-track {
