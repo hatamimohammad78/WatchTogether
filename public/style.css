@@ -310,7 +310,7 @@ video {
 .logo-icon {
     width: auto;
     height: auto;
-    margin: 0 auto -20px;
+    margin: 0 auto -90px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2633,8 +2633,8 @@ footer {
     }
 
     .logo-icon img {
-        width: 200px;
-        height: 200px;
+        width: 44px;
+        height: 44px;
     }
 
     h1 {
@@ -3047,5 +3047,111 @@ footer {
                     env(safe-area-inset-right)
                 );
         }
+    }
+}
+
+
+
+/* =====================================
+   CONNECTION STATUS
+   (قطع و وصل شدن اینترنت)
+===================================== */
+
+.connection-banner {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 8;
+
+    width: max-content;
+    max-width: calc(100% - 28px);
+
+    padding: 8px 16px;
+    border-radius: 30px;
+
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.7;
+    text-align: center;
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e8a23a,
+            #c9741a
+        );
+
+    box-shadow:
+        0 8px 20px
+        rgba(201, 116, 26, 0.45);
+
+    pointer-events: none;
+
+    animation:
+        connectionBannerIn 0.25s ease;
+}
+
+.connection-banner.success {
+    background:
+        linear-gradient(
+            135deg,
+            #2fbf86,
+            #1f9a68
+        );
+
+    box-shadow:
+        0 8px 20px
+        rgba(31, 154, 104, 0.45);
+}
+
+.connection-banner.hidden {
+    display: none;
+}
+
+@keyframes connectionBannerIn {
+    from {
+        opacity: 0;
+        transform:
+            translateX(-50%)
+            translateY(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateX(-50%)
+            translateY(0);
+    }
+}
+
+.chat-message.system.warning {
+    background: rgba(232, 162, 58, 0.10);
+    border-right-color: rgba(232, 162, 58, 0.85);
+    color: #f1d9a6;
+}
+
+.chat-message.system.success {
+    background: rgba(72, 213, 151, 0.09);
+    border-right-color: rgba(72, 213, 151, 0.8);
+    color: #b9ecd4;
+}
+
+.users-panel-item.offline {
+    opacity: 0.65;
+}
+
+.users-panel-item.offline .users-panel-dot {
+    background: #e8a23a;
+    box-shadow: 0 0 8px rgba(232, 162, 58, 0.7);
+}
+
+@media (max-width: 800px) {
+
+    .connection-banner {
+        top: 8px;
+        padding: 6px 12px;
+        font-size: 10px;
     }
 }

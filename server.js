@@ -12,7 +12,11 @@ const io = new Server(server, {
         origin: "*",
         methods: ["GET", "POST"]
     },
-    transports: ["websocket", "polling"]
+    transports: ["websocket", "polling"],
+
+    // تشخیص سریع‌تر قطع شدن اینترنت (حدود ۲۰ ثانیه)
+    pingInterval: 10000,
+    pingTimeout: 10000
 });
 
 app.use(
@@ -51,44 +55,123 @@ function isValidRoom(socket, roomId) {
 
 
 // =====================================
-// محاسبه کاربران آنلاین اتاق
+// کاربران اتاق (با مهلت بازگشت بعد از قطع اینترنت)
 // =====================================
+
+// وقتی اینترنت کاربر قطع می‌شود، فوراً از اتاق حذف نمی‌شود.
+// تا این مدت منتظر می‌مانیم که دوباره وصل شود.
+// (با متغیر محیطی RECONNECT_GRACE_MS هم قابل تغییر است)
+const RECONNECT_GRACE_MS =
+    Number(process.env.RECONNECT_GRACE_MS) ||
+    2 * 60 * 1000;
+
+
+// roomId -> Map( clientId -> { name, socketId, online, timer } )
+//
+// clientId شناسه ثابت مرورگر است.
+// بعد از قطع و وصل شدن اینترنت، socket.id عوض می‌شود
+// ولی clientId همان می‌ماند، پس می‌دانیم همان کاربر برگشته است.
+const roomParticipants = new Map();
+
 
 function getRoomUsers(roomId) {
 
-    const room =
-        io.sockets.adapter.rooms.get(roomId);
+    const participants =
+        roomParticipants.get(roomId);
 
-    if (!room) {
+    if (!participants) {
 
         return {
             count: 0,
+            onlineCount: 0,
             users: []
         };
 
     }
 
     const users =
-        [...room].map((id) => {
-
-            const memberSocket =
-                io.sockets.sockets.get(id);
-
-            const name =
-                memberSocket?.data?.name ||
-                "کاربر";
+        [...participants.values()].map((participant) => {
 
             return {
-                id,
-                name
+
+                id:
+                    participant.socketId,
+
+                name:
+                    participant.name ||
+                    "کاربر",
+
+                online:
+                    participant.online
+
             };
 
         });
 
     return {
-        count: users.length,
+
+        count:
+            users.length,
+
+        onlineCount:
+            users.filter(
+                (user) => user.online
+            ).length,
+
         users
+
     };
+
+}
+
+
+// حذف کامل کاربر از اتاق
+// (بعد از پایان مهلت بازگشت، یا وقتی عمداً اتاق را عوض می‌کند)
+
+function removeParticipant(roomId, clientId) {
+
+    const participants =
+        roomParticipants.get(roomId);
+
+    if (!participants) {
+        return;
+    }
+
+    const participant =
+        participants.get(clientId);
+
+    if (!participant) {
+        return;
+    }
+
+    clearTimeout(
+        participant.timer
+    );
+
+    participants.delete(
+        clientId
+    );
+
+    if (participants.size === 0) {
+
+        roomParticipants.delete(
+            roomId
+        );
+
+    }
+
+    io.to(roomId).emit(
+        "room-users",
+        getRoomUsers(roomId)
+    );
+
+    io.to(roomId).emit(
+        "system-message",
+        {
+            text:
+                `${participant.name} از اتاق خارج شد`
+        }
+    );
 
 }
 
@@ -125,18 +208,103 @@ io.on(
                 const name =
                     cleanText(data.name, 40);
 
-                if (!roomId || !name) {
+                // شناسه ثابت مرورگر.
+                // بعد از قطع و وصل شدن اینترنت، socket.id عوض می‌شود
+                // ولی clientId همان می‌ماند.
+                const clientId =
+                    cleanText(data.clientId, 64);
+
+                if (
+                    !roomId ||
+                    !name ||
+                    !clientId
+                ) {
                     return;
                 }
 
 
-                // اگر قبلاً داخل اتاق دیگری است،
-                // ابتدا از آن خارج شود
+                // اگر قبلاً داخل اتاق دیگری بوده،
+                // ابتدا از آن اتاق خارج شود
 
-                if (socket.data.roomId) {
+                if (
+                    socket.data.roomId &&
+                    socket.data.roomId !== roomId
+                ) {
+
+                    const previousRoomId =
+                        socket.data.roomId;
+
+                    const previousClientId =
+                        socket.data.clientId;
 
                     socket.leave(
-                        socket.data.roomId
+                        previousRoomId
+                    );
+
+                    removeParticipant(
+                        previousRoomId,
+                        previousClientId
+                    );
+
+                }
+
+
+                // =====================================
+                // ثبت کاربر در اتاق
+                // =====================================
+
+                let participants =
+                    roomParticipants.get(roomId);
+
+                if (!participants) {
+
+                    participants =
+                        new Map();
+
+                    roomParticipants.set(
+                        roomId,
+                        participants
+                    );
+
+                }
+
+                const existingParticipant =
+                    participants.get(clientId);
+
+                // اگر این کاربر قبلاً در همین اتاق بوده،
+                // یعنی بعد از قطع شدن اینترنت برگشته است
+                const isReconnect =
+                    Boolean(existingParticipant);
+
+                if (existingParticipant) {
+
+                    clearTimeout(
+                        existingParticipant.timer
+                    );
+
+                    existingParticipant.timer =
+                        null;
+
+                    existingParticipant.name =
+                        name;
+
+                    existingParticipant.socketId =
+                        socket.id;
+
+                    existingParticipant.online =
+                        true;
+
+                }
+                else {
+
+                    participants.set(
+                        clientId,
+                        {
+                            name,
+                            socketId: socket.id,
+                            online: true,
+                            timer: null
+                        }
                     );
 
                 }
@@ -148,68 +316,92 @@ io.on(
                 socket.data.name =
                     name;
 
+                socket.data.clientId =
+                    clientId;
+
 
                 socket.join(
                     roomId
                 );
 
 
-                const roomInfo =
-                    getRoomUsers(roomId);
-
-
                 // لیست کاربران
 
                 io.to(roomId).emit(
                     "room-users",
-                    roomInfo
+                    getRoomUsers(roomId)
                 );
 
 
-                // پیام ورود
+                // پیام ورود / وصل شدن دوباره
 
-                io.to(roomId).emit(
-                    "system-message",
-                    {
-                        text:
-                            `${name} وارد اتاق شد`
-                    }
-                );
+                if (isReconnect) {
+
+                    socket.to(roomId).emit(
+                        "system-message",
+                        {
+                            type: "success",
+                            text:
+                                `✅ اینترنت ${name} دوباره وصل شد`
+                        }
+                    );
+
+                }
+                else {
+
+                    io.to(roomId).emit(
+                        "system-message",
+                        {
+                            text:
+                                `${name} وارد اتاق شد`
+                        }
+                    );
+
+                }
 
 
                 console.log(
-                    `${name} (${socket.id}) joined room ${roomId}`
+                    `${name} (${socket.id}) ${isReconnect ? "rejoined" : "joined"} room ${roomId}`
                 );
 
 
                 // =====================================
-                // پیدا کردن نفر قبلی
+                // پیدا کردن نفر قبلی (فقط کسی که آنلاین است)
                 // =====================================
 
-                const room =
-                    io.sockets.adapter.rooms.get(
-                        roomId
-                    );
+                let otherPeerId = null;
 
-                const otherIds =
-                    room
-                        ? [...room].filter(
-                            (id) =>
-                                id !== socket.id
-                        )
-                        : [];
+                for (
+                    const [otherClientId, other]
+                    of participants
+                ) {
+
+                    if (
+                        otherClientId !== clientId &&
+                        other.online &&
+                        other.socketId
+                    ) {
+
+                        otherPeerId =
+                            other.socketId;
+
+                        break;
+
+                    }
+
+                }
 
 
                 // فقط اولین نفر قبلی
                 // برای WebRTC
 
-                if (otherIds.length > 0) {
+                if (otherPeerId) {
 
                     socket.emit(
                         "existing-peer",
                         {
                             peerId:
-                                otherIds[0]
+                                otherPeerId
                         }
                     );
 
@@ -664,10 +856,13 @@ io.on(
 
         socket.on(
             "disconnect",
-            () => {
+            (reason) => {
 
                 const roomId =
                     socket.data.roomId;
+
+                const clientId =
+                    socket.data.clientId;
 
                 const name =
                     socket.data.name;
@@ -675,40 +870,91 @@ io.on(
 
                 console.log(
                     "User disconnected:",
-                    socket.id
+                    socket.id,
+                    reason
                 );
 
 
-                if (!roomId) {
+                if (
+                    !roomId ||
+                    !clientId
+                ) {
                     return;
                 }
 
 
-                // بعد از disconnect،
-                // Socket.IO دیگر این socket
-                // را داخل room نمی‌داند
+                const participants =
+                    roomParticipants.get(roomId);
 
-                const roomInfo =
-                    getRoomUsers(roomId);
+                const participant =
+                    participants
+                        ? participants.get(clientId)
+                        : null;
+
+
+                // اگر کاربر قبلاً با Socket جدید برگشته،
+                // این disconnect مربوط به Socket قدیمی است
+                // و نباید کاربر را آفلاین کند.
+
+                if (
+                    !participant ||
+                    participant.socketId !== socket.id
+                ) {
+                    return;
+                }
+
+
+                // کاربر از اتاق حذف نمی‌شود؛
+                // فقط آفلاین می‌شود و تا پایان مهلت منتظر برگشتنش می‌مانیم.
+
+                participant.online =
+                    false;
+
+                clearTimeout(
+                    participant.timer
+                );
+
+                participant.timer =
+                    setTimeout(
+                        () => {
+
+                            const current =
+                                roomParticipants
+                                    .get(roomId)
+                                    ?.get(clientId);
+
+                            // اگر در این فاصله برگشته باشد، حذف نمی‌شود
+                            if (
+                                current &&
+                                !current.online
+                            ) {
+
+                                removeParticipant(
+                                    roomId,
+                                    clientId
+                                );
+
+                            }
+
+                        },
+                        RECONNECT_GRACE_MS
+                    );
 
 
                 io.to(roomId).emit(
                     "room-users",
-                    roomInfo
+                    getRoomUsers(roomId)
                 );
 
 
-                if (name) {
-
-                    io.to(roomId).emit(
-                        "system-message",
-                        {
-                            text:
-                                `${name} از اتاق خارج شد`
-                        }
-                    );
-
-                }
+                io.to(roomId).emit(
+                    "system-message",
+                    {
+                        type: "warning",
+                        text:
+                            `⚠️ اینترنت ${name} قطع شد`
+                    }
+                );
 
             }
         );

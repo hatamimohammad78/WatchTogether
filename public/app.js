@@ -189,6 +189,68 @@ let videoUrl = null;
 let roomId = null;
 let myName = null;
 
+// شناسه ثابت این تب؛ بعد از قطع و وصل شدن اینترنت هم همان می‌ماند
+// تا سرور بفهمد همان کاربر برگشته است (socket.id بعد از قطعی عوض می‌شود).
+const myClientId =
+    getOrCreateClientId();
+
+// وضعیت اینترنت خودِ ما
+let connectionLostNotified = false; // اینترنت قطع است و هشدارش را داده‌ایم
+let needsRejoin = false;            // Socket بعد از ورود به اتاق قطع شده و باید دوباره وارد اتاق شود
+
+
+function generateClientId() {
+
+    if (
+        window.crypto &&
+        typeof window.crypto.randomUUID === "function"
+    ) {
+
+        return window.crypto.randomUUID();
+
+    }
+
+    return (
+        "c-" +
+        Date.now().toString(36) +
+        "-" +
+        Math.random().toString(36).slice(2, 12)
+    );
+
+}
+
+
+function getOrCreateClientId() {
+
+    try {
+
+        let id =
+            sessionStorage.getItem(
+                "jahanClientId"
+            );
+
+        if (!id) {
+
+            id = generateClientId();
+
+            sessionStorage.setItem(
+                "jahanClientId",
+                id
+            );
+
+        }
+
+        return id;
+
+    }
+    catch (error) {
+
+        return generateClientId();
+
+    }
+
+}
+
 let chatHistory = [];
 
 let isDraggingProgress = false;
@@ -796,6 +858,23 @@ function sendChatFrom(inputElement) {
     if (!myName) {
         alert("اول نام خودت را وارد کن.");
         return;
+    }
+
+    // وقتی اینترنت قطع است پیام ارسال نمی‌شود.
+    // متن داخل کادر می‌ماند تا بعد از وصل شدن دوباره بفرستی.
+    if (
+        !socket.connected ||
+        connectionLostNotified
+    ) {
+
+        showConnectionBanner(
+            "⚠️ اینترنت قطع است؛ پیام ارسال نشد",
+            "warning",
+            connectionLostNotified ? 0 : 4000
+        );
+
+        return;
+
     }
 
     const messageData = {
@@ -1429,9 +1508,15 @@ socket.on(
         }
 
 
+        // اگر Peer عوض شده (مثلاً پارتنر بعد از قطع اینترنت با Socket جدید برگشته)
+        // PeerConnection قدیمی دیگر قابل استفاده نیست.
+        const isNewPeer =
+            partnerSocketId !== data.from;
+
+
         if (
             partnerSocketId &&
-            partnerSocketId !== data.from
+            isNewPeer
         ) {
 
             pendingIceCandidates = [];
@@ -1458,7 +1543,10 @@ socket.on(
         }
 
 
-        if (!peerConnection) {
+        if (
+            isNewPeer ||
+            !peerConnection
+        ) {
 
             createPeerConnection();
 
@@ -1915,6 +2003,20 @@ socket.on(
 // ورود به اتاق
 // =====================================
 
+function emitJoinRoom() {
+
+    socket.emit(
+        "join-room",
+        {
+            roomId,
+            name: myName,
+            clientId: myClientId
+        }
+    );
+
+}
+
+
 function enterRoom() {
 
     const name =
@@ -1958,13 +2060,7 @@ function enterRoom() {
 
     tryPlayRemoteAudio();
 
-    socket.emit(
-        "join-room",
-        {
-            roomId,
-            name: myName
-        }
-    );
+    emitJoinRoom();
 
     status.textContent =
         `شما با نام ${myName} وارد اتاق ${roomId} شدید ❤️`;
@@ -2068,11 +2164,12 @@ function renderUsersPanel(users) {
     usersPanel.innerHTML =
         users
             .map((user) => `
-                <div class="users-panel-item">
+                <div class="users-panel-item ${user.online === false ? "offline" : ""}">
                     <span class="users-panel-dot"></span>
                     <span>
                         ${escapeHTML(user.name)}
                         ${user.id === socket.id ? " (شما)" : ""}
+                        ${user.online === false ? " (اینترنت قطع)" : ""}
                     </span>
                 </div>
             `)
@@ -2095,29 +2192,39 @@ usersToggleBtn.addEventListener(
 );
 
 
+// آخرین وضعیت اتاق (برای شمارنده و متن وضعیت)
+let roomOnlineCount = 0;
+let roomTotalCount = 0;
+
+
 socket.on("room-users", (data) => {
 
+    if (!data) {
+        return;
+    }
+
+    roomTotalCount =
+        Number(data.count) || 0;
+
+    roomOnlineCount =
+        Number(data.onlineCount) || 0;
+
     usersCountBadge.textContent =
-        data.count;
+        roomOnlineCount;
 
     renderUsersPanel(
         data.users
     );
 
-    if (data.count >= 2) {
-
-        status.textContent =
-            "هر دو نفر داخل اتاق هستید ❤️";
-
-    }
-    else {
-
-        status.textContent =
-            "منتظر ورود پارتنر...";
+    // اگر پارتنر آنلاین نیست، ارتباط ویس قبلی بسته می‌شود
+    // تا بعد از برگشتنش از نو برقرار شود
+    if (roomOnlineCount < 2) {
 
         closeVoiceConnection();
 
     }
+
+    refreshRoomStatus();
 
 });
 
@@ -2126,7 +2233,7 @@ socket.on("room-users", (data) => {
 // پیام سیستمی
 // =====================================
 
-function addSystemChatMessage(text) {
+function addSystemChatMessage(text, variant) {
 
     if (chatEmpty) {
         chatEmpty.remove();
@@ -2136,7 +2243,9 @@ function addSystemChatMessage(text) {
         document.createElement("div");
 
     el.className =
-        "chat-message system";
+        (variant === "warning" || variant === "success")
+            ? `chat-message system ${variant}`
+            : "chat-message system";
 
     el.textContent =
         text;
@@ -2157,8 +2266,30 @@ socket.on("system-message", (data) => {
     ) {
 
         addSystemChatMessage(
-            data.text
+            data.text,
+            data.type
         );
+
+        // هشدار قطع/وصل شدن اینترنت پارتنر روی خود پلیر هم نمایش داده می‌شود
+        // (داخل حالت تمام‌صفحه هم دیده می‌شود)
+        if (data.type === "warning") {
+
+            showConnectionBanner(
+                data.text,
+                "warning",
+                6000
+            );
+
+        }
+        else if (data.type === "success") {
+
+            showConnectionBanner(
+                data.text,
+                "success",
+                3500
+            );
+
+        }
 
     }
 
@@ -2786,41 +2917,257 @@ socket.on(
 
 
 // =====================================
-// درخواست Sync بعد از ورود نفر جدید
+// قطع و وصل شدن اینترنت
 // =====================================
 
+// با قطع شدن اینترنت، کاربر از اتاق خارج نمی‌شود.
+// سرور او را چند دقیقه داخل اتاق نگه می‌دارد و بعد از وصل شدن
+// اینترنت، خودکار دوباره وارد همان اتاق می‌شود.
+
+const connectionBanner =
+    document.getElementById("connectionBanner");
+
+let connectionBannerTimeout = null;
+
+
+function showConnectionBanner(text, type, autoHideMs) {
+
+    if (!connectionBanner) {
+        return;
+    }
+
+    clearTimeout(
+        connectionBannerTimeout
+    );
+
+    connectionBanner.textContent =
+        text;
+
+    connectionBanner.classList.toggle(
+        "success",
+        type === "success"
+    );
+
+    connectionBanner.classList.remove(
+        "hidden"
+    );
+
+    if (autoHideMs) {
+
+        connectionBannerTimeout =
+            setTimeout(
+                hideConnectionBanner,
+                autoHideMs
+            );
+
+    }
+
+}
+
+
+function hideConnectionBanner() {
+
+    if (!connectionBanner) {
+        return;
+    }
+
+    clearTimeout(
+        connectionBannerTimeout
+    );
+
+    connectionBanner.classList.add(
+        "hidden"
+    );
+
+}
+
+
+function refreshRoomStatus() {
+
+    if (!roomId) {
+        return;
+    }
+
+    if (connectionLostNotified) {
+
+        status.textContent =
+            "اینترنت شما قطع است ⚠️ در حال اتصال مجدد...";
+
+        return;
+
+    }
+
+    if (roomOnlineCount >= 2) {
+
+        status.textContent =
+            "هر دو نفر داخل اتاق هستید ❤️";
+
+    }
+    else if (roomTotalCount >= 2) {
+
+        status.textContent =
+            "اینترنت پارتنر قطع شده؛ منتظر برگشتنش هستیم...";
+
+    }
+    else {
+
+        status.textContent =
+            "منتظر ورود پارتنر...";
+
+    }
+
+}
+
+
+function handleConnectionLost() {
+
+    // قبل از ورود به اتاق، یا وقتی قبلاً هشدار داده‌ایم، کاری نمی‌کنیم
+    if (
+        !roomId ||
+        connectionLostNotified
+    ) {
+        return;
+    }
+
+    connectionLostNotified = true;
+
+
+    // میکروفون خاموش و ارتباط ویس بسته می‌شود؛
+    // بعد از وصل شدن اینترنت از نو برقرار می‌شود.
+    if (localStream) {
+
+        localStream
+            .getAudioTracks()
+            .forEach((track) => {
+
+                track.enabled = false;
+
+            });
+
+    }
+
+    closeVoiceConnection();
+
+
+    addSystemChatMessage(
+        "⚠️ اینترنت شما قطع شد. هنوز داخل اتاق هستید و تلاش برای اتصال مجدد ادامه دارد.",
+        "warning"
+    );
+
+    showConnectionBanner(
+        "⚠️ اینترنت شما قطع شد؛ در حال اتصال مجدد...",
+        "warning"
+    );
+
+    refreshRoomStatus();
+
+}
+
+
+function handleConnectionRestored() {
+
+    if (!connectionLostNotified) {
+        return;
+    }
+
+    connectionLostNotified = false;
+
+
+    addSystemChatMessage(
+        "✅ اینترنت شما وصل شد.",
+        "success"
+    );
+
+    showConnectionBanner(
+        "✅ اینترنت وصل شد",
+        "success",
+        3500
+    );
+
+    refreshRoomStatus();
+
+}
+
+
 socket.on(
-    "room-users",
-    (data) => {
+    "disconnect",
+    (reason) => {
 
-        usersCountBadge.textContent =
-            data.count;
-
-        renderUsersPanel(
-            data.users
+        console.log(
+            "Socket disconnected:",
+            reason
         );
 
+        if (!roomId) {
+            return;
+        }
 
-        if (data.count >= 2) {
+        // بعد از وصل شدن دوباره، باید دوباره وارد اتاق شویم
+        needsRejoin = true;
 
-            status.textContent =
-                "هر دو نفر داخل اتاق هستید ❤️";
+        // اگر سرور عمداً قطع کرده باشد،
+        // Socket.IO خودش دوباره وصل نمی‌شود
+        if (reason === "io server disconnect") {
+
+            socket.connect();
+
+        }
+
+        handleConnectionLost();
+
+    }
+);
 
 
-            // فقط کسی که از قبل داخل اتاق بوده
-            // باید پاسخ Sync بدهد.
-            //
-            // سرور sync-request را برای نفرات دیگر
-            // ارسال می‌کند، بنابراین اینجا فقط
-            // درخواست را ارسال نمی‌کنیم.
+socket.on(
+    "connect",
+    () => {
+
+        if (!needsRejoin) {
+            return;
+        }
+
+        needsRejoin = false;
+
+        // Socket جدید است و سرور او را داخل اتاق نمی‌شناسد
+        emitJoinRoom();
+
+        // وضعیت فعلی فیلم را از پارتنر می‌گیریم
+        socket.emit(
+            "request-sync",
+            {
+                roomId
+            }
+        );
+
+        handleConnectionRestored();
+
+    }
+);
+
+
+// مرورگر معمولاً زودتر از Socket.IO متوجه قطع شدن اینترنت می‌شود
+
+window.addEventListener(
+    "offline",
+    handleConnectionLost
+);
+
+
+window.addEventListener(
+    "online",
+    () => {
+
+        if (socket.connected) {
+
+            // Socket هیچ‌وقت قطع نشده بود، پس هنوز داخل اتاق هستیم
+            handleConnectionRestored();
 
         }
         else {
 
-            status.textContent =
-                "منتظر ورود پارتنر...";
-
-            closeVoiceConnection();
+            // سریع‌تر برای اتصال مجدد تلاش کن
+            socket.connect();
 
         }
 
