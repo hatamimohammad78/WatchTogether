@@ -864,7 +864,7 @@ function sendChatFrom(inputElement) {
     // متن داخل کادر می‌ماند تا بعد از وصل شدن دوباره بفرستی.
     if (
         !socket.connected ||
-        connectionLostNotified
+        connectionDown
     ) {
 
         showConnectionBanner(
@@ -2923,11 +2923,43 @@ socket.on(
 // با قطع شدن اینترنت، کاربر از اتاق خارج نمی‌شود.
 // سرور او را چند دقیقه داخل اتاق نگه می‌دارد و بعد از وصل شدن
 // اینترنت، خودکار دوباره وارد همان اتاق می‌شود.
+//
+// وقتی نت ضعیف است و مدام قطع و وصل می‌شود:
+//
+//   • «قطع شد» فقط یک‌بار نمایش داده می‌شود
+//     (و فقط اگر قطعی از چند ثانیه بیشتر شده باشد)
+//
+//   • «وصل شد» فقط وقتی نمایش داده می‌شود که اتصال
+//     چند ثانیه کامل بدون قطعی پایدار مانده باشد
+//
+// زمان‌ها قابل تغییرند:
+//   window.JAHAN_NET_CONFIG = { lostNoticeDelayMs: 3000, stableDelayMs: 8000 }
+
+const NET_CONFIG =
+    Object.assign(
+        {
+            // قطعی باید حداقل این‌قدر (میلی‌ثانیه) طول بکشد تا «قطع شد» نمایش داده شود
+            lostNoticeDelayMs: 3000,
+
+            // اتصال باید این‌قدر بدون قطعی بماند تا «وصل شد» نمایش داده شود
+            stableDelayMs: 8000
+        },
+        window.JAHAN_NET_CONFIG || {}
+    );
 
 const connectionBanner =
     document.getElementById("connectionBanner");
 
 let connectionBannerTimeout = null;
+
+// الان اینترنت (یا Socket) قطع است؟
+let connectionDown = false;
+
+let lostNoticeTimer = null;
+let stableTimer = null;
+
+// بعد از پایدار شدن اتصال، وضعیت فیلم از پارتنر گرفته شود
+let needsResync = false;
 
 
 function showConnectionBanner(text, type, autoHideMs) {
@@ -2991,7 +3023,9 @@ function refreshRoomStatus() {
     if (connectionLostNotified) {
 
         status.textContent =
-            "اینترنت شما قطع است ⚠️ در حال اتصال مجدد...";
+            connectionDown
+                ? "اینترنت شما قطع است ⚠️ در حال اتصال مجدد..."
+                : "اتصال ناپایدار است ⚠️ در حال بررسی پایداری...";
 
         return;
 
@@ -3021,15 +3055,19 @@ function refreshRoomStatus() {
 
 function handleConnectionLost() {
 
-    // قبل از ورود به اتاق، یا وقتی قبلاً هشدار داده‌ایم، کاری نمی‌کنیم
-    if (
-        !roomId ||
-        connectionLostNotified
-    ) {
+    // قبل از ورود به اتاق، کاری نمی‌کنیم
+    if (!roomId) {
         return;
     }
 
-    connectionLostNotified = true;
+    connectionDown = true;
+
+    // اگر داشتیم منتظر پایدار شدن اتصال بودیم، لغو می‌شود
+    clearTimeout(
+        stableTimer
+    );
+
+    stableTimer = null;
 
 
     // میکروفون خاموش و ارتباط ویس بسته می‌شود؛
@@ -3049,6 +3087,49 @@ function handleConnectionLost() {
     closeVoiceConnection();
 
 
+    // قبلاً «قطع شد» را اعلام کرده‌ایم:
+    // پیام تکراری نمی‌دهیم، فقط بنر و وضعیت به‌روز می‌شود.
+    if (connectionLostNotified) {
+
+        showConnectionBanner(
+            "⚠️ اینترنت شما قطع شد؛ در حال اتصال مجدد...",
+            "warning"
+        );
+
+        refreshRoomStatus();
+
+        return;
+
+    }
+
+
+    // قطعی‌های خیلی کوتاه اصلاً اعلام نمی‌شوند
+    if (!lostNoticeTimer) {
+
+        lostNoticeTimer =
+            setTimeout(
+                announceLost,
+                NET_CONFIG.lostNoticeDelayMs
+            );
+
+    }
+
+}
+
+
+function announceLost() {
+
+    lostNoticeTimer = null;
+
+    if (
+        !connectionDown ||
+        connectionLostNotified
+    ) {
+        return;
+    }
+
+    connectionLostNotified = true;
+
     addSystemChatMessage(
         "⚠️ اینترنت شما قطع شد. هنوز داخل اتاق هستید و تلاش برای اتصال مجدد ادامه دارد.",
         "warning"
@@ -3064,25 +3145,88 @@ function handleConnectionLost() {
 }
 
 
-function handleConnectionRestored() {
+function handleConnectionBack() {
 
-    if (!connectionLostNotified) {
+    connectionDown = false;
+
+    // اگر «قطع شد» هنوز اعلام نشده بود، دیگر لازم نیست اعلام شود
+    clearTimeout(
+        lostNoticeTimer
+    );
+
+    lostNoticeTimer = null;
+
+    needsResync = true;
+
+    // «وصل شد» را فوراً نمی‌گوییم؛
+    // اول باید ببینیم اتصال پایدار می‌ماند یا نه.
+    if (connectionLostNotified) {
+
+        showConnectionBanner(
+            "⚠️ اتصال ناپایدار است؛ در حال بررسی...",
+            "warning"
+        );
+
+    }
+
+    refreshRoomStatus();
+
+    clearTimeout(
+        stableTimer
+    );
+
+    stableTimer =
+        setTimeout(
+            announceStable,
+            NET_CONFIG.stableDelayMs
+        );
+
+}
+
+
+function announceStable() {
+
+    stableTimer = null;
+
+    // اگر در این فاصله دوباره قطع شده، چیزی اعلام نمی‌شود
+    if (connectionDown) {
         return;
     }
 
-    connectionLostNotified = false;
+    // وضعیت فعلی فیلم را از پارتنر می‌گیریم
+    if (needsResync) {
 
+        needsResync = false;
 
-    addSystemChatMessage(
-        "✅ اینترنت شما وصل شد.",
-        "success"
-    );
+        if (roomId) {
 
-    showConnectionBanner(
-        "✅ اینترنت وصل شد",
-        "success",
-        3500
-    );
+            socket.emit(
+                "request-sync",
+                {
+                    roomId
+                }
+            );
+
+        }
+
+    }
+
+    if (connectionLostNotified) {
+
+        connectionLostNotified = false;
+
+        addSystemChatMessage(
+            "✅ اینترنت شما وصل شد.",
+            "success"
+        );
+
+        showConnectionBanner(
+            "✅ اینترنت وصل شد",
+            "success",
+            3500
+        );
+
+    }
 
     refreshRoomStatus();
 
@@ -3132,15 +3276,7 @@ socket.on(
         // Socket جدید است و سرور او را داخل اتاق نمی‌شناسد
         emitJoinRoom();
 
-        // وضعیت فعلی فیلم را از پارتنر می‌گیریم
-        socket.emit(
-            "request-sync",
-            {
-                roomId
-            }
-        );
-
-        handleConnectionRestored();
+        handleConnectionBack();
 
     }
 );
@@ -3161,7 +3297,11 @@ window.addEventListener(
         if (socket.connected) {
 
             // Socket هیچ‌وقت قطع نشده بود، پس هنوز داخل اتاق هستیم
-            handleConnectionRestored();
+            if (connectionDown) {
+
+                handleConnectionBack();
+
+            }
 
         }
         else {

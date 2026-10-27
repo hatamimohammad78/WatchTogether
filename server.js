@@ -66,6 +66,26 @@ const RECONNECT_GRACE_MS =
     2 * 60 * 1000;
 
 
+// =====================================
+// جلوگیری از پیام‌های پشت‌سرهم «قطع شد / وصل شد»
+// وقتی نت ضعیف است و مدام قطع و وصل می‌شود
+// =====================================
+
+// قطعی باید حداقل این‌قدر طول بکشد تا برای پارتنر «قطع شد» نمایش داده شود.
+// قطعی‌های کوتاه‌تر اصلاً نمایش داده نمی‌شوند.
+// (با متغیر محیطی OFFLINE_NOTICE_DELAY_MS قابل تغییر است)
+const OFFLINE_NOTICE_DELAY_MS =
+    Number(process.env.OFFLINE_NOTICE_DELAY_MS) ||
+    5000;
+
+// بعد از «قطع شد»، اتصال باید این‌قدر بدون قطعی بماند
+// تا «دوباره وصل شد» نمایش داده شود.
+// (با متغیر محیطی ONLINE_STABLE_MS قابل تغییر است)
+const ONLINE_STABLE_MS =
+    Number(process.env.ONLINE_STABLE_MS) ||
+    8000;
+
+
 // roomId -> Map( clientId -> { name, socketId, online, timer } )
 //
 // clientId شناسه ثابت مرورگر است.
@@ -102,7 +122,8 @@ function getRoomUsers(roomId) {
                     "کاربر",
 
                 online:
-                    participant.online
+                    participant.online &&
+                    !participant.warned
 
             };
 
@@ -144,9 +165,9 @@ function removeParticipant(roomId, clientId) {
         return;
     }
 
-    clearTimeout(
-        participant.timer
-    );
+    clearTimeout(participant.timer);
+    clearTimeout(participant.noticeTimer);
+    clearTimeout(participant.stableTimer);
 
     participants.delete(
         clientId
@@ -285,6 +306,22 @@ io.on(
                     existingParticipant.timer =
                         null;
 
+                    // اگر هنوز «قطع شد» اعلام نشده بود، لغو می‌شود
+                    // (قطعی کوتاه بوده و نباید چیزی نمایش داده شود)
+                    clearTimeout(
+                        existingParticipant.noticeTimer
+                    );
+
+                    existingParticipant.noticeTimer =
+                        null;
+
+                    clearTimeout(
+                        existingParticipant.stableTimer
+                    );
+
+                    existingParticipant.stableTimer =
+                        null;
+
                     existingParticipant.name =
                         name;
 
@@ -293,6 +330,52 @@ io.on(
 
                     existingParticipant.online =
                         true;
+
+                    // اگر قبلاً «قطع شد» اعلام شده، «دوباره وصل شد» فقط وقتی
+                    // اعلام می‌شود که اتصال مدتی بدون قطعی پایدار مانده باشد.
+                    if (existingParticipant.warned) {
+
+                        const stableParticipant =
+                            existingParticipant;
+
+                        stableParticipant.stableTimer =
+                            setTimeout(
+                                () => {
+
+                                    stableParticipant.stableTimer =
+                                        null;
+
+                                    if (
+                                        !stableParticipant.online ||
+                                        !stableParticipant.warned
+                                    ) {
+                                        return;
+                                    }
+
+                                    stableParticipant.warned =
+                                        false;
+
+                                    io.to(roomId).emit(
+                                        "room-users",
+                                        getRoomUsers(roomId)
+                                    );
+
+                                    io.to(roomId)
+                                        .except(stableParticipant.socketId)
+                                        .emit(
+                                            "system-message",
+                                            {
+                                                type: "success",
+                                                text:
+                                                    `✅ اینترنت ${stableParticipant.name} دوباره وصل شد`
+                                            }
+                                        );
+
+                                },
+                                ONLINE_STABLE_MS
+                            );
+
+                    }
 
                 }
                 else {
@@ -303,7 +386,10 @@ io.on(
                             name,
                             socketId: socket.id,
                             online: true,
-                            timer: null
+                            timer: null,
+                            noticeTimer: null,
+                            stableTimer: null,
+                            warned: false
                         }
                     );
 
@@ -333,21 +419,10 @@ io.on(
                 );
 
 
-                // پیام ورود / وصل شدن دوباره
+                // پیام ورود (فقط برای ورود واقعی)
+                // پیام برگشت بعد از قطعی، جداگانه و بعد از پایدار شدن اتصال می‌آید.
 
-                if (isReconnect) {
-
-                    socket.to(roomId).emit(
-                        "system-message",
-                        {
-                            type: "success",
-                            text:
-                                `✅ اینترنت ${name} دوباره وصل شد`
-                        }
-                    );
-
-                }
-                else {
+                if (!isReconnect) {
 
                     io.to(roomId).emit(
                         "system-message",
@@ -941,20 +1016,57 @@ io.on(
                     );
 
 
-                io.to(roomId).emit(
-                    "room-users",
-                    getRoomUsers(roomId)
+                // «قطع شد» فوراً اعلام نمی‌شود.
+                // اگر قطعی کوتاه باشد و کاربر زود برگردد، هیچ پیامی نمایش داده نمی‌شود.
+                // اگر قطعی طول بکشد، فقط یک‌بار اعلام می‌شود
+                // (حتی اگر بعدش مدام قطع و وصل شود).
+
+                clearTimeout(
+                    participant.stableTimer
                 );
 
+                participant.stableTimer =
+                    null;
 
-                io.to(roomId).emit(
-                    "system-message",
-                    {
-                        type: "warning",
-                        text:
-                            `⚠️ اینترنت ${name} قطع شد`
-                    }
-                );
+                if (
+                    !participant.warned &&
+                    !participant.noticeTimer
+                ) {
+
+                    participant.noticeTimer =
+                        setTimeout(
+                            () => {
+
+                                participant.noticeTimer =
+                                    null;
+
+                                // اگر در این فاصله برگشته باشد، چیزی اعلام نمی‌شود
+                                if (participant.online) {
+                                    return;
+                                }
+
+                                participant.warned =
+                                    true;
+
+                                io.to(roomId).emit(
+                                    "room-users",
+                                    getRoomUsers(roomId)
+                                );
+
+                                io.to(roomId).emit(
+                                    "system-message",
+                                    {
+                                        type: "warning",
+                                        text:
+                                            `⚠️ اینترنت ${participant.name} قطع شد`
+                                    }
+                                );
+
+                            },
+                            OFFLINE_NOTICE_DELAY_MS
+                        );
+
+                }
 
             }
         );
