@@ -14,9 +14,10 @@ const io = new Server(server, {
     },
     transports: ["websocket", "polling"],
 
-    // تشخیص سریع‌تر قطع شدن اینترنت (حدود ۲۰ ثانیه)
-    pingInterval: 10000,
-    pingTimeout: 10000
+    // تحمل بیشتر برای اینترنت ناپایدار یا مرورگری که مشغول است.
+    // (مقدار قبلی ۱۰ ثانیه بود و گاهی بی‌دلیل اتصال را قطع می‌کرد)
+    pingInterval: 20000,
+    pingTimeout: 40000
 });
 
 app.use(
@@ -63,7 +64,7 @@ function isValidRoom(socket, roomId) {
 // (با متغیر محیطی RECONNECT_GRACE_MS هم قابل تغییر است)
 const RECONNECT_GRACE_MS =
     Number(process.env.RECONNECT_GRACE_MS) ||
-    2 * 60 * 1000;
+    10 * 60 * 1000;
 
 
 // =====================================
@@ -76,7 +77,7 @@ const RECONNECT_GRACE_MS =
 // (با متغیر محیطی OFFLINE_NOTICE_DELAY_MS قابل تغییر است)
 const OFFLINE_NOTICE_DELAY_MS =
     Number(process.env.OFFLINE_NOTICE_DELAY_MS) ||
-    5000;
+    10000;
 
 // بعد از «قطع شد»، اتصال باید این‌قدر بدون قطعی بماند
 // تا «دوباره وصل شد» نمایش داده شود.
@@ -926,6 +927,49 @@ io.on(
 
 
         // =====================================
+        // خروج عمدی از اتاق (دکمه‌ی «خروج»)
+        // =====================================
+
+        socket.on(
+            "leave-room",
+            (data) => {
+
+                const roomId =
+                    socket.data.roomId;
+
+                const clientId =
+                    socket.data.clientId;
+
+                if (
+                    !data ||
+                    !roomId ||
+                    !clientId ||
+                    cleanText(data.roomId, 50) !== roomId
+                ) {
+                    return;
+                }
+
+                socket.leave(
+                    roomId
+                );
+
+                socket.data.roomId =
+                    null;
+
+                socket.data.clientId =
+                    null;
+
+                // فوراً و بدون مهلت بازگشت حذف می‌شود
+                removeParticipant(
+                    roomId,
+                    clientId
+                );
+
+            }
+        );
+
+
+        // =====================================
         // قطع اتصال
         // =====================================
 
@@ -1069,6 +1113,36 @@ io.on(
                 }
 
             }
+        );
+
+    }
+);
+
+
+// =====================================
+// خطای پیش‌بینی‌نشده نباید کل سرور را بخواباند
+// (وگرنه همه‌ی کاربران یک‌باره قطع می‌شوند)
+// =====================================
+
+process.on(
+    "uncaughtException",
+    (error) => {
+
+        console.error(
+            "Uncaught exception:",
+            error
+        );
+
+    }
+);
+
+process.on(
+    "unhandledRejection",
+    (reason) => {
+
+        console.error(
+            "Unhandled rejection:",
+            reason
         );
 
     }

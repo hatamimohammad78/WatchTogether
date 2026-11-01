@@ -1,4 +1,11 @@
-const socket = io();
+// اول WebSocket (پایدارتر از long-polling)؛ اگر نشد خودکار polling
+const socket = io({
+    transports: ["websocket", "polling"],
+    tryAllTransports: true,
+    reconnectionDelay: 500,
+    reconnectionDelayMax: 3000,
+    timeout: 20000
+});
 
 
 // =====================================
@@ -867,11 +874,8 @@ function sendChatFrom(inputElement) {
         connectionDown
     ) {
 
-        showConnectionBanner(
-            "⚠️ اینترنت قطع است؛ پیام ارسال نشد",
-            "warning",
-            connectionLostNotified ? 0 : 4000
-        );
+        status.textContent =
+            "اینترنت قطع است ⚠️ پیام ارسال نشد";
 
         return;
 
@@ -2067,6 +2071,119 @@ function enterRoom() {
 
     chatInput.disabled = false;
 
+    saveSession(name, room);
+
+}
+
+
+// =====================================
+// نشست: بعد از رفرش یا بسته‌شدن تب توسط مرورگر،
+// خودکار به همان اتاق برمی‌گردیم (بدون پرسیدن دوباره)
+// =====================================
+
+function saveSession(name, room) {
+
+    try {
+
+        sessionStorage.setItem(
+            "jahanSession",
+            JSON.stringify({ name, room })
+        );
+
+        // برای پر شدن خودکار فرم ورود دفعه‌ی بعد
+        localStorage.setItem("jahanName", name);
+        localStorage.setItem("jahanRoom", room);
+
+    }
+    catch (error) {}
+
+}
+
+
+function initSession() {
+
+    let saved = null;
+
+    try {
+
+        saved =
+            JSON.parse(
+                sessionStorage.getItem("jahanSession") || "null"
+            );
+
+    }
+    catch (error) {}
+
+    let lastName = "";
+    let lastRoom = "";
+
+    try {
+
+        lastName = localStorage.getItem("jahanName") || "";
+        lastRoom = localStorage.getItem("jahanRoom") || "";
+
+    }
+    catch (error) {}
+
+    entryNameInput.value =
+        (saved && saved.name) || lastName;
+
+    entryRoomInput.value =
+        (saved && saved.room) || lastRoom;
+
+    // صفحه رفرش شده: بدون نمایش فرم، دوباره وارد همان اتاق شو
+    if (
+        saved &&
+        saved.name &&
+        saved.room
+    ) {
+
+        enterRoom();
+
+    }
+
+}
+
+
+const leaveRoomBtn =
+    document.getElementById("leaveRoomBtn");
+
+if (leaveRoomBtn) {
+
+    leaveRoomBtn.addEventListener(
+        "click",
+        () => {
+
+            if (!roomId) {
+                return;
+            }
+
+            if (!confirm("از اتاق خارج می‌شوی؟")) {
+                return;
+            }
+
+            try {
+
+                socket.emit(
+                    "leave-room",
+                    { roomId }
+                );
+
+                sessionStorage.removeItem("jahanSession");
+
+            }
+            catch (error) {}
+
+            setTimeout(
+                () => {
+                    location.reload();
+                },
+                150
+            );
+
+        }
+    );
+
 }
 
 
@@ -2269,27 +2386,6 @@ socket.on("system-message", (data) => {
             data.text,
             data.type
         );
-
-        // هشدار قطع/وصل شدن اینترنت پارتنر روی خود پلیر هم نمایش داده می‌شود
-        // (داخل حالت تمام‌صفحه هم دیده می‌شود)
-        if (data.type === "warning") {
-
-            showConnectionBanner(
-                data.text,
-                "warning",
-                6000
-            );
-
-        }
-        else if (data.type === "success") {
-
-            showConnectionBanner(
-                data.text,
-                "success",
-                3500
-            );
-
-        }
 
     }
 
@@ -2924,22 +3020,25 @@ socket.on(
 // سرور او را چند دقیقه داخل اتاق نگه می‌دارد و بعد از وصل شدن
 // اینترنت، خودکار دوباره وارد همان اتاق می‌شود.
 //
+// پیام‌های وضعیت اینترنت فقط داخل «چت» (و متن وضعیت بالای صفحه) می‌آیند،
+// روی ویدیو هیچ‌چیز نمایش داده نمی‌شود.
+//
 // وقتی نت ضعیف است و مدام قطع و وصل می‌شود:
+//   • «قطع شد» فقط یک‌بار و فقط اگر قطعی از چند ثانیه بیشتر شد
+//   • «وصل شد» فقط وقتی که اتصال چند ثانیه بدون قطعی پایدار مانده باشد
 //
-//   • «قطع شد» فقط یک‌بار نمایش داده می‌شود
-//     (و فقط اگر قطعی از چند ثانیه بیشتر شده باشد)
-//
-//   • «وصل شد» فقط وقتی نمایش داده می‌شود که اتصال
-//     چند ثانیه کامل بدون قطعی پایدار مانده باشد
+// نکته: قطعی فقط از روی خود اتصال Socket تشخیص داده می‌شود.
+// رویداد offline مرورگر عمداً استفاده نمی‌شود، چون روی لپ‌تاپ‌ها
+// (مخصوصاً با VPN یا چند کارت شبکه) بدون قطعی واقعی هم فعال می‌شود.
 //
 // زمان‌ها قابل تغییرند:
-//   window.JAHAN_NET_CONFIG = { lostNoticeDelayMs: 3000, stableDelayMs: 8000 }
+//   window.JAHAN_NET_CONFIG = { lostNoticeDelayMs: 10000, stableDelayMs: 8000 }
 
 const NET_CONFIG =
     Object.assign(
         {
             // قطعی باید حداقل این‌قدر (میلی‌ثانیه) طول بکشد تا «قطع شد» نمایش داده شود
-            lostNoticeDelayMs: 3000,
+            lostNoticeDelayMs: 10000,
 
             // اتصال باید این‌قدر بدون قطعی بماند تا «وصل شد» نمایش داده شود
             stableDelayMs: 8000
@@ -2947,12 +3046,7 @@ const NET_CONFIG =
         window.JAHAN_NET_CONFIG || {}
     );
 
-const connectionBanner =
-    document.getElementById("connectionBanner");
-
-let connectionBannerTimeout = null;
-
-// الان اینترنت (یا Socket) قطع است؟
+// الان Socket قطع است؟
 let connectionDown = false;
 
 let lostNoticeTimer = null;
@@ -2960,58 +3054,6 @@ let stableTimer = null;
 
 // بعد از پایدار شدن اتصال، وضعیت فیلم از پارتنر گرفته شود
 let needsResync = false;
-
-
-function showConnectionBanner(text, type, autoHideMs) {
-
-    if (!connectionBanner) {
-        return;
-    }
-
-    clearTimeout(
-        connectionBannerTimeout
-    );
-
-    connectionBanner.textContent =
-        text;
-
-    connectionBanner.classList.toggle(
-        "success",
-        type === "success"
-    );
-
-    connectionBanner.classList.remove(
-        "hidden"
-    );
-
-    if (autoHideMs) {
-
-        connectionBannerTimeout =
-            setTimeout(
-                hideConnectionBanner,
-                autoHideMs
-            );
-
-    }
-
-}
-
-
-function hideConnectionBanner() {
-
-    if (!connectionBanner) {
-        return;
-    }
-
-    clearTimeout(
-        connectionBannerTimeout
-    );
-
-    connectionBanner.classList.add(
-        "hidden"
-    );
-
-}
 
 
 function refreshRoomStatus() {
@@ -3087,14 +3129,8 @@ function handleConnectionLost() {
     closeVoiceConnection();
 
 
-    // قبلاً «قطع شد» را اعلام کرده‌ایم:
-    // پیام تکراری نمی‌دهیم، فقط بنر و وضعیت به‌روز می‌شود.
+    // قبلاً «قطع شد» را اعلام کرده‌ایم: پیام تکراری نمی‌دهیم
     if (connectionLostNotified) {
-
-        showConnectionBanner(
-            "⚠️ اینترنت شما قطع شد؛ در حال اتصال مجدد...",
-            "warning"
-        );
 
         refreshRoomStatus();
 
@@ -3103,7 +3139,7 @@ function handleConnectionLost() {
     }
 
 
-    // قطعی‌های خیلی کوتاه اصلاً اعلام نمی‌شوند
+    // قطعی‌های کوتاه اصلاً اعلام نمی‌شوند
     if (!lostNoticeTimer) {
 
         lostNoticeTimer =
@@ -3135,11 +3171,6 @@ function announceLost() {
         "warning"
     );
 
-    showConnectionBanner(
-        "⚠️ اینترنت شما قطع شد؛ در حال اتصال مجدد...",
-        "warning"
-    );
-
     refreshRoomStatus();
 
 }
@@ -3158,19 +3189,10 @@ function handleConnectionBack() {
 
     needsResync = true;
 
-    // «وصل شد» را فوراً نمی‌گوییم؛
-    // اول باید ببینیم اتصال پایدار می‌ماند یا نه.
-    if (connectionLostNotified) {
-
-        showConnectionBanner(
-            "⚠️ اتصال ناپایدار است؛ در حال بررسی...",
-            "warning"
-        );
-
-    }
-
     refreshRoomStatus();
 
+    // «وصل شد» را فوراً نمی‌گوییم؛
+    // اول باید ببینیم اتصال پایدار می‌ماند یا نه.
     clearTimeout(
         stableTimer
     );
@@ -3218,12 +3240,6 @@ function announceStable() {
         addSystemChatMessage(
             "✅ اینترنت شما وصل شد.",
             "success"
-        );
-
-        showConnectionBanner(
-            "✅ اینترنت وصل شد",
-            "success",
-            3500
         );
 
     }
@@ -3282,31 +3298,15 @@ socket.on(
 );
 
 
-// مرورگر معمولاً زودتر از Socket.IO متوجه قطع شدن اینترنت می‌شود
-
-window.addEventListener(
-    "offline",
-    handleConnectionLost
-);
-
+// وقتی مرورگر می‌گوید اینترنت برگشته، فقط سریع‌تر تلاش می‌کنیم وصل شویم
+// (بدون اینکه چیزی اعلام کنیم)
 
 window.addEventListener(
     "online",
     () => {
 
-        if (socket.connected) {
+        if (!socket.connected) {
 
-            // Socket هیچ‌وقت قطع نشده بود، پس هنوز داخل اتاق هستیم
-            if (connectionDown) {
-
-                handleConnectionBack();
-
-            }
-
-        }
-        else {
-
-            // سریع‌تر برای اتصال مجدد تلاش کن
             socket.connect();
 
         }
@@ -4234,3 +4234,10 @@ document.addEventListener(
 
     }
 );
+
+
+// =====================================
+// شروع: پر کردن فرم ورود / ورود خودکار بعد از رفرش
+// =====================================
+
+initSession();

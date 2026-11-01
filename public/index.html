@@ -14,7 +14,7 @@
 
     <meta
         name="theme-color"
-        content="#000000"
+        content="#1b0309"
     >
 
     <meta
@@ -33,6 +33,10 @@
     >
 
     <title>جهان هستی</title>
+
+    <link rel="icon" type="image/png" href="/logo.png">
+
+    <link rel="apple-touch-icon" href="/icon-192.png">
 
     <!-- فونت‌ها از روی خود سایت لود می‌شوند (بدون وابستگی به Google Fonts) -->
 
@@ -303,6 +307,32 @@
 
                 </div>
 
+            
+
+                <button
+                    id="leaveRoomBtn"
+                    class="topbar-pill-btn"
+                    type="button"
+                    aria-label="خروج از اتاق"
+                    title="خروج از اتاق"
+                >
+
+                    <svg
+                        class="ico"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <path d="M16 17l5-5-5-5"></path>
+                        <path d="M21 12H9"></path>
+                    </svg>
+
+                    <span class="btn-label">
+                        خروج
+                    </span>
+
+                </button>
+
             </div>
 
         </header>
@@ -431,15 +461,6 @@
                             </div>
 
                         </div>
-
-
-
-                        <div
-                            id="connectionBanner"
-                            class="connection-banner hidden"
-                            role="status"
-                            aria-live="assertive"
-                        ></div>
 
 
 
