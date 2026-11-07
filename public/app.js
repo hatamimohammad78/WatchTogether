@@ -2433,20 +2433,90 @@ fileInput.addEventListener(
 
 
 // =====================================
+// خواندن زیرنویس با تشخیص کدگذاری فارسی
+// =====================================
+
+async function readSubtitleFile(file) {
+
+    const buffer = await file.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+
+    // تشخیص BOM برای UTF-8 و UTF-16
+    if (
+        bytes.length >= 3 &&
+        bytes[0] === 0xEF &&
+        bytes[1] === 0xBB &&
+        bytes[2] === 0xBF
+    ) {
+        return new TextDecoder("utf-8").decode(bytes.subarray(3));
+    }
+
+    if (
+        bytes.length >= 2 &&
+        bytes[0] === 0xFF &&
+        bytes[1] === 0xFE
+    ) {
+        return new TextDecoder("utf-16le").decode(bytes.subarray(2));
+    }
+
+    if (
+        bytes.length >= 2 &&
+        bytes[0] === 0xFE &&
+        bytes[1] === 0xFF
+    ) {
+        return new TextDecoder("utf-16be").decode(bytes.subarray(2));
+    }
+
+    // بعضی فایل‌های UTF-16 بدون BOM ذخیره می‌شوند.
+    const sampleLength = Math.min(bytes.length, 400);
+    let evenNulls = 0;
+    let oddNulls = 0;
+
+    for (let i = 0; i < sampleLength; i++) {
+        if (bytes[i] === 0) {
+            if (i % 2 === 0) evenNulls++;
+            else oddNulls++;
+        }
+    }
+
+    if (oddNulls > sampleLength * 0.15 && oddNulls > evenNulls * 2) {
+        return new TextDecoder("utf-16le").decode(bytes);
+    }
+
+    if (evenNulls > sampleLength * 0.15 && evenNulls > oddNulls * 2) {
+        return new TextDecoder("utf-16be").decode(bytes);
+    }
+
+    // اول UTF-8 معتبر را امتحان می‌کنیم تا متن فارسی خراب نشود.
+    try {
+        return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+    } catch (error) {
+        // زیرنویس‌های قدیمی فارسی معمولاً با Windows-1256 هستند.
+        try {
+            return new TextDecoder("windows-1256").decode(bytes);
+        } catch (encodingError) {
+            return new TextDecoder("utf-8").decode(bytes);
+        }
+    }
+
+}
+
+
+// =====================================
 // SRT → VTT
 // =====================================
 
 function convertSrtToVtt(srtText) {
 
-    return (
-        "WEBVTT\n\n" +
-        srtText
-            .replace(/\r+/g, "")
-            .replace(
-                /(\d{2}:\d{2}:\d{2}),(\d{3})/g,
-                "$1.$2"
-            )
-    );
+    const cleanText = srtText
+        .replace(/^\uFEFF/, "")
+        .replace(/\r\n?/g, "\n")
+        .replace(
+            /(\d{2}:\d{2}:\d{2}),(\d{3})/g,
+            "$1.$2"
+        );
+
+    return "WEBVTT\n\n" + cleanText;
 
 }
 
@@ -2466,8 +2536,17 @@ subtitleInput.addEventListener(
             return;
         }
 
-        const rawText =
-            await file.text();
+        let rawText;
+
+        try {
+            rawText = await readSubtitleFile(file);
+        } catch (error) {
+            console.error("Subtitle decoding error:", error);
+            status.textContent =
+                "خواندن فایل زیرنویس ممکن نشد. لطفاً فرمت فایل را بررسی کنید.";
+            subtitleInput.value = "";
+            return;
+        }
 
         const isSrt =
             file.name
@@ -2500,8 +2579,8 @@ subtitleInput.addEventListener(
 
         const blob =
             new Blob(
-                [vttText],
-                { type: "text/vtt" }
+                ["\uFEFF", vttText],
+                { type: "text/vtt;charset=utf-8" }
             );
 
         subtitleUrl =
