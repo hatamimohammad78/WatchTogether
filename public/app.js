@@ -3771,185 +3771,164 @@ updateVolumeIcon();
 
 
 // =====================================
-// Fullscreen
+// Fullscreen (desktop, Android and iOS)
 // =====================================
 
 let fallbackFullscreenActive = false;
+let iosNativeFullscreenActive = false;
+let fallbackRestoreState = null;
 
+function isIOSDevice() {
+    return /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
 
 function isNativeFullscreen() {
-
     return Boolean(
         document.fullscreenElement ||
-        document.webkitFullscreenElement
+        document.webkitFullscreenElement ||
+        iosNativeFullscreenActive
     );
-
 }
-
 
 function isCurrentlyFullscreen() {
-
     return isNativeFullscreen() || fallbackFullscreenActive;
-
 }
-
 
 function updateFullscreenIcon() {
+    const active = isCurrentlyFullscreen();
 
-    const active =
-        isCurrentlyFullscreen();
+    expandIcon.classList.toggle("hidden-icon", active);
+    compressIcon.classList.toggle("hidden-icon", !active);
 
-    expandIcon.classList.toggle(
-        "hidden-icon",
-        active
-    );
-
-    compressIcon.classList.toggle(
-        "hidden-icon",
-        !active
-    );
-
-    playerWrapper.classList.toggle(
-        "is-fullscreen",
-        active
-    );
-
-    playerWrapper.classList.toggle(
-        "is-fallback-fullscreen",
-        fallbackFullscreenActive
-    );
-
-    document.body.classList.toggle(
-        "player-fallback-fullscreen",
-        fallbackFullscreenActive
-    );
-
+    playerWrapper.classList.toggle("is-fullscreen", active && !fallbackFullscreenActive);
+    playerWrapper.classList.toggle("is-fallback-fullscreen", fallbackFullscreenActive);
+    document.documentElement.classList.toggle("player-fallback-fullscreen", fallbackFullscreenActive);
+    document.body.classList.toggle("player-fallback-fullscreen", fallbackFullscreenActive);
 }
 
-
 function enterFallbackFullscreen() {
+    if (!fallbackRestoreState) {
+        const parent = playerWrapper.parentNode;
+        const placeholder = document.createComment("player-wrapper-home");
+        parent.insertBefore(placeholder, playerWrapper);
+
+        fallbackRestoreState = {
+            placeholder,
+            scrollX: window.scrollX,
+            scrollY: window.scrollY,
+            bodyStyle: document.body.getAttribute("style"),
+            htmlStyle: document.documentElement.getAttribute("style")
+        };
+
+        // Move the player out of transformed/overflow-clipped layout ancestors.
+        // This makes fixed positioning reliable on mobile browsers.
+        document.body.appendChild(playerWrapper);
+        document.documentElement.style.overflow = "hidden";
+        document.body.style.position = "fixed";
+        document.body.style.top = `-${fallbackRestoreState.scrollY}px`;
+        document.body.style.left = "0";
+        document.body.style.right = "0";
+        document.body.style.width = "100%";
+        document.body.style.overflow = "hidden";
+    }
 
     fallbackFullscreenActive = true;
     updateFullscreenIcon();
-
 }
 
+function exitFallbackFullscreen() {
+    if (!fallbackFullscreenActive) return;
+
+    fallbackFullscreenActive = false;
+    const state = fallbackRestoreState;
+
+    if (state) {
+        if (state.placeholder && state.placeholder.parentNode) {
+            state.placeholder.parentNode.insertBefore(playerWrapper, state.placeholder);
+            state.placeholder.remove();
+        }
+
+        if (state.bodyStyle === null) document.body.removeAttribute("style");
+        else document.body.setAttribute("style", state.bodyStyle);
+
+        if (state.htmlStyle === null) document.documentElement.removeAttribute("style");
+        else document.documentElement.setAttribute("style", state.htmlStyle);
+
+        fallbackRestoreState = null;
+        window.scrollTo(state.scrollX, state.scrollY);
+    }
+
+    updateFullscreenIcon();
+}
 
 async function enterPlayerFullscreen() {
+    // iOS Safari exposes native fullscreen on the video element, not reliably on divs.
+    if (isIOSDevice() && typeof video.webkitEnterFullscreen === "function") {
+        try {
+            video.webkitEnterFullscreen();
+            return;
+        } catch (error) {
+            // Fall through to the CSS fullscreen mode below.
+        }
+    }
 
     const requestFullscreen =
         playerWrapper.requestFullscreen ||
         playerWrapper.webkitRequestFullscreen;
 
-    if (!requestFullscreen) {
-
-        enterFallbackFullscreen();
-        return;
-
-    }
-
-    try {
-
-        const result = requestFullscreen.call(playerWrapper);
-
-        if (result && typeof result.then === "function") {
-            await result;
+    if (requestFullscreen) {
+        try {
+            const result = requestFullscreen.call(playerWrapper, { navigationUI: "hide" });
+            if (result && typeof result.then === "function") await result;
+            updateFullscreenIcon();
+            return;
+        } catch (error) {
+            // Browser denied native fullscreen; use the CSS fallback.
         }
-
-        updateFullscreenIcon();
-
-    }
-    catch (error) {
-
-        // بعضی مرورگرهای موبایل Fullscreen API را برای div رد می‌کنند.
-        // در این حالت از تمام‌صفحه‌سازی CSS استفاده می‌کنیم.
-        enterFallbackFullscreen();
-
     }
 
+    enterFallbackFullscreen();
 }
-
 
 async function exitPlayerFullscreen() {
-
     if (fallbackFullscreenActive) {
-
-        fallbackFullscreenActive = false;
-        updateFullscreenIcon();
+        exitFallbackFullscreen();
         return;
-
     }
 
     try {
-
-        if (document.exitFullscreen) {
-
-            await document.exitFullscreen();
-
-        }
-        else if (document.webkitExitFullscreen) {
-
-            document.webkitExitFullscreen();
-
-        }
-
-    }
-    catch (error) {
-
+        if (document.exitFullscreen) await document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    } catch (error) {
         enterFallbackFullscreen();
-
     }
-
 }
 
+fullscreenBtn.addEventListener("click", () => {
+    if (!isCurrentlyFullscreen()) enterPlayerFullscreen();
+    else exitPlayerFullscreen();
+});
 
-fullscreenBtn.addEventListener(
-    "click",
-    () => {
-
-        if (!isCurrentlyFullscreen()) {
-
-            enterPlayerFullscreen();
-
-        }
-        else {
-
-            exitPlayerFullscreen();
-
-        }
-
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && fallbackFullscreenActive) {
+        exitFallbackFullscreen();
     }
-);
+});
 
+document.addEventListener("fullscreenchange", updateFullscreenIcon);
+document.addEventListener("webkitfullscreenchange", updateFullscreenIcon);
 
-document.addEventListener(
-    "keydown",
-    (event) => {
+// iOS native video fullscreen lifecycle.
+video.addEventListener("webkitbeginfullscreen", () => {
+    iosNativeFullscreenActive = true;
+    updateFullscreenIcon();
+});
 
-        if (
-            event.key === "Escape" &&
-            fallbackFullscreenActive
-        ) {
-
-            fallbackFullscreenActive = false;
-            updateFullscreenIcon();
-
-        }
-
-    }
-);
-
-
-document.addEventListener(
-    "fullscreenchange",
-    updateFullscreenIcon
-);
-
-document.addEventListener(
-    "webkitfullscreenchange",
-    updateFullscreenIcon
-);
-
+video.addEventListener("webkitendfullscreen", () => {
+    iosNativeFullscreenActive = false;
+    updateFullscreenIcon();
+});
 
 // =====================================
 // کنترل‌های پلیر

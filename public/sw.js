@@ -1,4 +1,4 @@
-const CACHE_NAME = "jahan-hasti-v2";
+const CACHE_NAME = "jahan-hasti-v3-fullscreen";
 
 const FILES_TO_CACHE = [
   "/",

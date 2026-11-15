@@ -877,16 +877,33 @@ video[src] ~ .player-empty {
 }
 
 
-/* حالت جایگزین تمام‌صفحه برای مرورگرهای موبایل فاقد Fullscreen API */
+/* CSS fullscreen fallback. app.js temporarily moves the player to body,
+   avoiding clipping and fixed-position bugs from mobile layout ancestors. */
+html.player-fallback-fullscreen,
+body.player-fallback-fullscreen {
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+}
+
+body.player-fallback-fullscreen {
+    margin: 0 !important;
+    touch-action: none;
+}
+
 .player-wrapper.is-fallback-fullscreen {
     position: fixed !important;
     inset: 0 !important;
     z-index: 2147483647 !important;
+    display: block !important;
     width: 100vw !important;
     height: 100vh !important;
     height: 100dvh !important;
-    max-height: 100vh !important;
-    max-height: 100dvh !important;
+    max-width: none !important;
+    max-height: none !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
     border: 0 !important;
@@ -894,6 +911,8 @@ video[src] ~ .player-empty {
     background: #000 !important;
     overflow: hidden !important;
     box-shadow: none !important;
+    transform: none !important;
+    contain: none !important;
 }
 
 .player-wrapper.is-fallback-fullscreen::before {
@@ -903,8 +922,10 @@ video[src] ~ .player-empty {
 .player-wrapper.is-fallback-fullscreen video {
     position: absolute !important;
     inset: 0 !important;
+    display: block !important;
     width: 100% !important;
     height: 100% !important;
+    max-width: none !important;
     max-height: none !important;
     aspect-ratio: auto !important;
     object-fit: contain !important;
@@ -912,14 +933,16 @@ video[src] ~ .player-empty {
     border-radius: 0 !important;
 }
 
-body.player-fallback-fullscreen {
-    overflow: hidden !important;
-    overscroll-behavior: none;
-    touch-action: none;
-}
-
-body.player-fallback-fullscreen .player-wrapper.is-fallback-fullscreen {
-    transform: none !important;
+.player-wrapper.is-fallback-fullscreen .player-controls {
+    position: absolute !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 10 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    border-radius: 0 !important;
+    padding-bottom: max(16px, env(safe-area-inset-bottom)) !important;
 }
 
 
