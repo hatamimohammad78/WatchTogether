@@ -3774,12 +3774,22 @@ updateVolumeIcon();
 // Fullscreen
 // =====================================
 
-function isCurrentlyFullscreen() {
+let fallbackFullscreenActive = false;
+
+
+function isNativeFullscreen() {
 
     return Boolean(
         document.fullscreenElement ||
         document.webkitFullscreenElement
     );
+
+}
+
+
+function isCurrentlyFullscreen() {
+
+    return isNativeFullscreen() || fallbackFullscreenActive;
 
 }
 
@@ -3804,6 +3814,92 @@ function updateFullscreenIcon() {
         active
     );
 
+    playerWrapper.classList.toggle(
+        "is-fallback-fullscreen",
+        fallbackFullscreenActive
+    );
+
+    document.body.classList.toggle(
+        "player-fallback-fullscreen",
+        fallbackFullscreenActive
+    );
+
+}
+
+
+function enterFallbackFullscreen() {
+
+    fallbackFullscreenActive = true;
+    updateFullscreenIcon();
+
+}
+
+
+async function enterPlayerFullscreen() {
+
+    const requestFullscreen =
+        playerWrapper.requestFullscreen ||
+        playerWrapper.webkitRequestFullscreen;
+
+    if (!requestFullscreen) {
+
+        enterFallbackFullscreen();
+        return;
+
+    }
+
+    try {
+
+        const result = requestFullscreen.call(playerWrapper);
+
+        if (result && typeof result.then === "function") {
+            await result;
+        }
+
+        updateFullscreenIcon();
+
+    }
+    catch (error) {
+
+        // بعضی مرورگرهای موبایل Fullscreen API را برای div رد می‌کنند.
+        // در این حالت از تمام‌صفحه‌سازی CSS استفاده می‌کنیم.
+        enterFallbackFullscreen();
+
+    }
+
+}
+
+
+async function exitPlayerFullscreen() {
+
+    if (fallbackFullscreenActive) {
+
+        fallbackFullscreenActive = false;
+        updateFullscreenIcon();
+        return;
+
+    }
+
+    try {
+
+        if (document.exitFullscreen) {
+
+            await document.exitFullscreen();
+
+        }
+        else if (document.webkitExitFullscreen) {
+
+            document.webkitExitFullscreen();
+
+        }
+
+    }
+    catch (error) {
+
+        enterFallbackFullscreen();
+
+    }
+
 }
 
 
@@ -3813,36 +3909,30 @@ fullscreenBtn.addEventListener(
 
         if (!isCurrentlyFullscreen()) {
 
-            if (
-                playerWrapper.requestFullscreen
-            ) {
-
-                playerWrapper.requestFullscreen();
-
-            }
-            else if (
-                playerWrapper.webkitRequestFullscreen
-            ) {
-
-                playerWrapper.webkitRequestFullscreen();
-
-            }
+            enterPlayerFullscreen();
 
         }
         else {
 
-            if (document.exitFullscreen) {
+            exitPlayerFullscreen();
 
-                document.exitFullscreen();
+        }
 
-            }
-            else if (
-                document.webkitExitFullscreen
-            ) {
+    }
+);
 
-                document.webkitExitFullscreen();
 
-            }
+document.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (
+            event.key === "Escape" &&
+            fallbackFullscreenActive
+        ) {
+
+            fallbackFullscreenActive = false;
+            updateFullscreenIcon();
 
         }
 

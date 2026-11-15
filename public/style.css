@@ -877,6 +877,52 @@ video[src] ~ .player-empty {
 }
 
 
+/* حالت جایگزین تمام‌صفحه برای مرورگرهای موبایل فاقد Fullscreen API */
+.player-wrapper.is-fallback-fullscreen {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2147483647 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-height: 100vh !important;
+    max-height: 100dvh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #000 !important;
+    overflow: hidden !important;
+    box-shadow: none !important;
+}
+
+.player-wrapper.is-fallback-fullscreen::before {
+    display: none !important;
+}
+
+.player-wrapper.is-fallback-fullscreen video {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    aspect-ratio: auto !important;
+    object-fit: contain !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+}
+
+body.player-fallback-fullscreen {
+    overflow: hidden !important;
+    overscroll-behavior: none;
+    touch-action: none;
+}
+
+body.player-fallback-fullscreen .player-wrapper.is-fallback-fullscreen {
+    transform: none !important;
+}
+
+
 /* =====================================
    VOICE INDICATORS
 ===================================== */
