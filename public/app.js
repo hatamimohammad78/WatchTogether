@@ -601,6 +601,7 @@ function updateSubtitleStyleTag() {
 
     subtitleStyleTag.textContent = `
         #video::cue {
+            font-family: "Vazirmatn", Tahoma, "Segoe UI", sans-serif;
             color: ${subtitleColor};
             font-size: ${subtitleFontSize}px;
             background-color: rgba(0, 0, 0, ${subtitleBgOpacity});
@@ -2433,30 +2434,97 @@ fileInput.addEventListener(
 
 
 // =====================================
-// خواندن زیرنویس با تشخیص کدگذاری فارسی
+// SRT → VTT
 // =====================================
+
+function convertSrtToVtt(srtText) {
+
+    return (
+        "WEBVTT\n\n" +
+        srtText
+            .replace(/\r+/g, "")
+            .replace(
+                /(\d{2}:\d{2}:\d{2}),(\d{3})/g,
+                "$1.$2"
+            )
+    );
+
+}
+
+
+// =====================================
+// خواندن فایل زیرنویس (با تشخیص کدگذاری)
+// =====================================
+
+// خیلی از زیرنویس‌های فارسی با کدگذاری قدیمی Windows-1256 ذخیره شده‌اند، نه UTF-8.
+// اگر چنین فایلی مثل UTF-8 خوانده شود، همه‌ی حروف فارسی خراب می‌شوند
+// و به‌جای متن، «؟» یا «�» دیده می‌شود.
+//
+// ترتیب تشخیص:  UTF-16 (با BOM)  →  UTF-8 معتبر  →  Windows-1256
+
+
+function readFileBuffer(file) {
+
+    if (typeof file.arrayBuffer === "function") {
+
+        return file.arrayBuffer();
+
+    }
+
+    return new Promise((resolve, reject) => {
+
+        const reader =
+            new FileReader();
+
+        reader.onload = () => {
+            resolve(reader.result);
+        };
+
+        reader.onerror = () => {
+            reject(reader.error);
+        };
+
+        reader.readAsArrayBuffer(file);
+
+    });
+
+}
+
+
+// در Windows-1256 حرف‌های «ی» و «ک» فارسی وجود ندارند
+// و به شکل عربی (ي و ك) ذخیره می‌شوند؛ اینجا به شکل فارسی برمی‌گردانیم.
+function normalizeLegacyPersian(text) {
+
+    return text
+        .replace(/\u064A/g, "\u06CC")
+        .replace(/\u0649/g, "\u06CC")
+        .replace(/\u0643/g, "\u06A9");
+
+}
+
 
 async function readSubtitleFile(file) {
 
-    const buffer = await file.arrayBuffer();
-    const bytes = new Uint8Array(buffer);
+    const buffer =
+        await readFileBuffer(file);
 
-    // تشخیص BOM برای UTF-8 و UTF-16
-    if (
-        bytes.length >= 3 &&
-        bytes[0] === 0xEF &&
-        bytes[1] === 0xBB &&
-        bytes[2] === 0xBF
-    ) {
-        return new TextDecoder("utf-8").decode(bytes.subarray(3));
-    }
+    const bytes =
+        new Uint8Array(buffer);
+
+
+    // UTF-16 با BOM
 
     if (
         bytes.length >= 2 &&
         bytes[0] === 0xFF &&
         bytes[1] === 0xFE
     ) {
-        return new TextDecoder("utf-16le").decode(bytes.subarray(2));
+
+        return {
+            text: new TextDecoder("utf-16le").decode(bytes),
+            encoding: "utf-16le"
+        };
+
     }
 
     if (
@@ -2464,59 +2532,67 @@ async function readSubtitleFile(file) {
         bytes[0] === 0xFE &&
         bytes[1] === 0xFF
     ) {
-        return new TextDecoder("utf-16be").decode(bytes.subarray(2));
+
+        return {
+            text: new TextDecoder("utf-16be").decode(bytes),
+            encoding: "utf-16be"
+        };
+
     }
 
-    // بعضی فایل‌های UTF-16 بدون BOM ذخیره می‌شوند.
-    const sampleLength = Math.min(bytes.length, 400);
-    let evenNulls = 0;
-    let oddNulls = 0;
 
-    for (let i = 0; i < sampleLength; i++) {
-        if (bytes[i] === 0) {
-            if (i % 2 === 0) evenNulls++;
-            else oddNulls++;
-        }
-    }
+    // UTF-8 (فقط اگر کاملاً معتبر باشد)
 
-    if (oddNulls > sampleLength * 0.15 && oddNulls > evenNulls * 2) {
-        return new TextDecoder("utf-16le").decode(bytes);
-    }
-
-    if (evenNulls > sampleLength * 0.15 && evenNulls > oddNulls * 2) {
-        return new TextDecoder("utf-16be").decode(bytes);
-    }
-
-    // اول UTF-8 معتبر را امتحان می‌کنیم تا متن فارسی خراب نشود.
     try {
-        return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
-    } catch (error) {
-        // زیرنویس‌های قدیمی فارسی معمولاً با Windows-1256 هستند.
-        try {
-            return new TextDecoder("windows-1256").decode(bytes);
-        } catch (encodingError) {
-            return new TextDecoder("utf-8").decode(bytes);
-        }
+
+        return {
+            text:
+                new TextDecoder("utf-8", { fatal: true })
+                    .decode(bytes),
+            encoding: "utf-8"
+        };
+
     }
+    catch (error) {}
+
+
+    // کدگذاری قدیمی فارسی/عربی
+
+    try {
+
+        return {
+            text:
+                normalizeLegacyPersian(
+                    new TextDecoder("windows-1256").decode(bytes)
+                ),
+            encoding: "windows-1256"
+        };
+
+    }
+    catch (error) {}
+
+    return {
+        text: new TextDecoder("utf-8").decode(bytes),
+        encoding: "utf-8-lossy"
+    };
 
 }
 
 
-// =====================================
-// SRT → VTT
-// =====================================
+// بعضی فایل‌ها از ابتدا خراب‌اند: حروف فارسی توی خود فایل به «?» تبدیل شده
+// (مثلاً بعد از تبدیل بد کدگذاری). این‌ها را هیچ برنامه‌ای نمی‌تواند درست کند.
+function looksLikeBrokenSubtitle(text) {
 
-function convertSrtToVtt(srtText) {
+    const marks =
+        (text.match(/[?\uFF1F\u061F\uFFFD]/g) || []).length;
 
-    const cleanText = srtText
-        .replace(/^\uFEFF/, "")
-        .replace(/\r\n?/g, "\n")
-        .replace(
-            /(\d{2}:\d{2}:\d{2}),(\d{3})/g,
-            "$1.$2"
-        );
+    const letters =
+        (text.match(/[A-Za-z\u0600-\u06FF]/g) || []).length;
 
-    return "WEBVTT\n\n" + cleanText;
+    return (
+        marks > 30 &&
+        marks / (marks + letters) > 0.4
+    );
 
 }
 
@@ -2536,17 +2612,16 @@ subtitleInput.addEventListener(
             return;
         }
 
-        let rawText;
+        const decoded =
+            await readSubtitleFile(file);
 
-        try {
-            rawText = await readSubtitleFile(file);
-        } catch (error) {
-            console.error("Subtitle decoding error:", error);
-            status.textContent =
-                "خواندن فایل زیرنویس ممکن نشد. لطفاً فرمت فایل را بررسی کنید.";
-            subtitleInput.value = "";
-            return;
-        }
+        const rawText =
+            decoded.text;
+
+        console.log(
+            "Subtitle encoding:",
+            decoded.encoding
+        );
 
         const isSrt =
             file.name
@@ -2579,8 +2654,8 @@ subtitleInput.addEventListener(
 
         const blob =
             new Blob(
-                ["\uFEFF", vttText],
-                { type: "text/vtt;charset=utf-8" }
+                [vttText],
+                { type: "text/vtt" }
             );
 
         subtitleUrl =
@@ -2633,7 +2708,9 @@ subtitleInput.addEventListener(
         }, 150);
 
         status.textContent =
-            `زیرنویس "${file.name}" فعال شد ✅`;
+            looksLikeBrokenSubtitle(rawText)
+                ? `زیرنویس "${file.name}" خودش خراب است (حروف فارسی توی فایل «؟» شده‌اند)؛ فایل دیگری را امتحان کن ⚠️`
+                : `زیرنویس "${file.name}" فعال شد ✅`;
 
     }
 );
